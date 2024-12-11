@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarIcon, MapPinIcon } from 'lucide-react'
+import { CalendarIcon, MapPinIcon, PlusIcon } from 'lucide-react'
 import { WalletButton } from "@/components/WalletButton"
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -49,7 +49,17 @@ const DiscoverEvents = () => {
     <div className="min-h-screen bg-gradient-to-br from-secondary to-primary">
       <header className="container mx-auto flex items-center justify-between p-6">
         <h1 className="text-2xl font-bold text-white">NFT Tickets</h1>
-        <WalletButton />
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="secondary" 
+            onClick={() => navigate('/create')}
+            className="flex items-center gap-2"
+          >
+            <PlusIcon className="w-4 h-4" />
+            Create Event
+          </Button>
+          <WalletButton />
+        </div>
       </header>
 
       <div className="container mx-auto py-8">
