@@ -59,25 +59,25 @@ export function DateTimePicker({ date, setDate }: DateTimePickerProps) {
           {date ? format(date, "PPP HH:mm") : <span>Pick a date and time</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 bg-popover" align="start">
+      <PopoverContent className="w-auto p-0 bg-white" align="start">
         <Calendar
           mode="single"
           selected={date}
           onSelect={handleDateSelect}
           initialFocus
-          className="bg-popover text-popover-foreground"
+          className="bg-white"
         />
-        <div className="p-3 border-t border-border">
+        <div className="p-3 border-t border-border bg-white">
           <Select onValueChange={handleTimeSelect} value={selectedTime}>
-            <SelectTrigger className="bg-popover border-input text-popover-foreground">
+            <SelectTrigger className="bg-white border-input">
               <SelectValue placeholder="Select a time" />
             </SelectTrigger>
-            <SelectContent className="bg-popover border-input">
+            <SelectContent className="bg-white border-input">
               {Array.from({ length: 24 * 4 }).map((_, i) => {
                 const hours = Math.floor(i / 4)
                 const minutes = (i % 4) * 15
                 const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
-                return <SelectItem key={i} value={timeString} className="text-popover-foreground hover:bg-accent hover:text-accent-foreground">{timeString}</SelectItem>
+                return <SelectItem key={i} value={timeString} className="hover:bg-accent hover:text-accent-foreground">{timeString}</SelectItem>
               })}
             </SelectContent>
           </Select>
