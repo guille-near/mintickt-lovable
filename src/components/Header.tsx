@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { WalletButton } from "@/components/WalletButton";
 import { PlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthProvider";
@@ -33,7 +32,6 @@ export const Header = () => {
             <PlusIcon className="w-4 h-4" />
             Create Event
           </Button>
-          <WalletButton />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
