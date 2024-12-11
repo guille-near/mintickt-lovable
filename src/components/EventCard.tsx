@@ -8,15 +8,14 @@ interface EventCardProps {
   date: string;
   price: number;
   image: string;
-  id: string;  // Changed from number to string to match Supabase UUID
+  id: string;  // This is already correctly typed as string for UUID
 }
 
 export const EventCard = ({ title, date, price, image, id }: EventCardProps) => {
   const navigate = useNavigate();
 
-  const handleViewDetails = (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigate(`/event/${id}`);
+  const handleViewDetails = () => {
+    navigate(`/event/${id}`);  // Using the UUID directly from props
   };
 
   return (
