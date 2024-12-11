@@ -4,7 +4,7 @@ export const WalletButton = () => {
   return (
     <div className="wallet-button-wrapper">
       <WalletMultiButton className="wallet-button" />
-      <style jsx global>{`
+      <style>{`
         .wallet-button {
           background-color: #7B3FE4 !important;
           border-radius: 9999px !important;
