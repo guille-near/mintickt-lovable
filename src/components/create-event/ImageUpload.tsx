@@ -72,9 +72,6 @@ export function ImageUpload({
                 <p className="text-sm text-muted-foreground">
                   Drag & drop or click to upload
                 </p>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 164 35" className="w-16 h-4 mt-2 mx-auto">
-                  <path d="M0 3h4v29H0zm24 0h4v29h-4zm18 0h4v29h-4zm67 0h4v29h-4zm35 0h4v29h-4zm17 0h4v29h-4zM5 3h17v4H5zm25 0h12v4H30zm19 0h31v4H49zm48 0h8v4h-8zm15 0h18v4H112zm30 0h17v4h-17zM5 17h8v4H5zm25 0h8v4h-8zm19 0h8v4h-8zm48 0h8v4h-8zm15 0h8v4h-8zm30 0h8v4h-8zM5 31h17v4H5zm25 0h12v4H30zm19 0h16v4H49zm48 0h21v4h-21zm15 0h18v4h-18zm30 0h7v4h-7z" fill="currentColor" />
-                </svg>
               </div>
             )}
             <input
