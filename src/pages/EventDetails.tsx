@@ -16,7 +16,7 @@ export default function EventDetails() {
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
-      console.log('Fetching event with ID:', id); // Debug log
+      console.log('Fetching event with ID:', id);
       const { data, error } = await supabase
         .from('events')
         .select('*')
@@ -24,14 +24,14 @@ export default function EventDetails() {
         .single();
 
       if (error) {
-        console.error('Supabase error:', error); // Debug log
+        console.error('Supabase error:', error);
         throw error;
       }
       
-      console.log('Fetched event:', data); // Debug log
+      console.log('Fetched event:', data);
       return data;
     },
-    enabled: !!id, // Only run query if we have an ID
+    enabled: !!id,
   });
 
   if (isLoading) {
@@ -62,25 +62,6 @@ export default function EventDetails() {
       </div>
     );
   }
-
-  // Mock updates data (since we don't have this in the database yet)
-  const updates = [
-    {
-      date: "2024-05-01",
-      title: "Headliner Announcement Coming Soon!",
-      message: "Exciting news! We've just confirmed our headliner for the Summer Music Festival 2024. Stay tuned for the big reveal next week!"
-    },
-    {
-      date: "2024-05-15",
-      title: "Early Bird Tickets Now Available",
-      message: "Early bird tickets are now on sale! Get them before they're gone. First 100 buyers get a special meet-and-greet pass!"
-    },
-    {
-      date: "2024-06-01",
-      title: "Full Lineup Announced",
-      message: "We're thrilled to announce our full lineup! Check our website for the complete list of amazing artists joining us this summer."
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary to-primary">
