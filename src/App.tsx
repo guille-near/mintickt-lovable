@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletContextProvider } from "./contexts/WalletContextProvider";
 import Index from "./pages/Index";
 import DiscoverEvents from "./pages/DiscoverEvents";
+import EventDetails from "./pages/EventDetails";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/discover" element={<DiscoverEvents />} />
+            <Route path="/event/:id" element={<EventDetails />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

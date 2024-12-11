@@ -1,14 +1,18 @@
 import { Card } from "@/components/ui/card";
 import { Ticket } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface EventCardProps {
   title: string;
   date: string;
   price: number;
   image: string;
+  id: number;
 }
 
-export const EventCard = ({ title, date, price, image }: EventCardProps) => {
+export const EventCard = ({ title, date, price, image, id }: EventCardProps) => {
+  const navigate = useNavigate();
+
   return (
     <Card className="group relative overflow-hidden rounded-lg bg-card backdrop-blur-sm transition-all hover:scale-105">
       <div className="aspect-square overflow-hidden">
@@ -26,7 +30,10 @@ export const EventCard = ({ title, date, price, image }: EventCardProps) => {
             <Ticket className="mr-2 h-4 w-4" />
             {price} SOL
           </span>
-          <button className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/80">
+          <button 
+            onClick={() => navigate(`/event/${id}`)}
+            className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/80"
+          >
             View Details
           </button>
         </div>
