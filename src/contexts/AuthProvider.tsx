@@ -43,15 +43,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) throw error;
-      toast.success("Successfully signed in!");
-      navigate("/discover");
+      
+      if (error) {
+        if (error.message === "Invalid login credentials") {
+          toast.error("Invalid email or password. Please try again.");
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
+
+      if (data?.user) {
+        toast.success("Successfully signed in!");
+        navigate("/discover");
+      }
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error("An unexpected error occurred. Please try again.");
+      console.error("Sign in error:", error);
     }
   };
 
@@ -61,21 +73,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password,
       });
-      if (error) throw error;
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       toast.success("Registration successful! Please check your email.");
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error("An unexpected error occurred. Please try again.");
+      console.error("Sign up error:", error);
     }
   };
 
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       navigate("/");
       toast.success("Successfully signed out!");
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error("An unexpected error occurred while signing out.");
+      console.error("Sign out error:", error);
     }
   };
 
