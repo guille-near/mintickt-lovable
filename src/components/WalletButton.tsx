@@ -29,7 +29,6 @@ export const WalletButton = () => {
             const { error: insertError } = await supabase
               .from('profiles')
               .insert({
-                id: crypto.randomUUID(),
                 wallet_address: publicKey.toString(),
               });
 

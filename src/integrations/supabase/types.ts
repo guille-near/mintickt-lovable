@@ -67,7 +67,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          id: string
+          id?: string
           wallet_address: string
         }
         Update: {
