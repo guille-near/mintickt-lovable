@@ -42,7 +42,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
         <div className="text-2xl font-bold text-white">
           Total: {ticketQuantity * ticketPrice} SOL
         </div>
-        <Button className="bg-primary text-white hover:bg-primary/80">
+        <Button className="bg-primary text-primary-foreground hover:bg-primary/80">
           <Ticket className="mr-2 h-4 w-4" /> Buy Tickets
         </Button>
       </CardFooter>

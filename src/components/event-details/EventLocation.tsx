@@ -30,7 +30,7 @@ export const EventLocation = ({ location, mapUrl }: EventLocationProps) => {
           <p className="text-sm text-gray-300">
             {location}
           </p>
-          <Button variant="outline" className="text-white hover:text-primary-foreground">
+          <Button variant="outline" className="text-white hover:bg-primary hover:text-primary-foreground">
             <MapPin className="mr-2 h-4 w-4" /> Get Directions
           </Button>
         </div>
