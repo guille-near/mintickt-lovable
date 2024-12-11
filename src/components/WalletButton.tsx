@@ -2,83 +2,32 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthProvider";
 import { toast } from "sonner";
 
 export const WalletButton = () => {
   const { publicKey, connected } = useWallet();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { user } = useAuth();
   const hasHandledInitialConnection = useRef(false);
 
   useEffect(() => {
     const handleConnection = async () => {
-      // Only handle connection if we haven't done it before and wallet is connected
-      if (!hasHandledInitialConnection.current && connected && publicKey) {
+      if (!hasHandledInitialConnection.current && connected && publicKey && user) {
         hasHandledInitialConnection.current = true;
         
         try {
-          // Create a valid email format from the wallet address
-          const sanitizedEmail = `wallet_${publicKey.toString().substring(0, 8)}@example.com`;
-          
-          // First try to sign up the user
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email: sanitizedEmail,
-            password: publicKey.toString(),
-          });
+          const { error } = await supabase
+            .from('profiles')
+            .update({ wallet_address: publicKey.toString() })
+            .eq('id', user.id);
 
-          // If sign up fails because user exists, try to sign in
-          if (signUpError && signUpError.message.includes('already registered')) {
-            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-              email: sanitizedEmail,
-              password: publicKey.toString(),
-            });
-
-            if (signInError) {
-              console.error('Error signing in:', signInError);
-              toast.error('Failed to authenticate');
-              return;
-            }
-          } else if (signUpError) {
-            console.error('Error signing up:', signUpError);
-            toast.error('Failed to authenticate');
+          if (error) {
+            console.error('Error updating wallet address:', error);
+            toast.error('Failed to update wallet address');
             return;
           }
 
-          // Check if profile exists
-          const { data: profile, error: fetchError } = await supabase
-            .from('profiles')
-            .select()
-            .eq('wallet_address', publicKey.toString())
-            .single();
-
-          if (fetchError) {
-            if (fetchError.code === 'PGRST116') {
-              // Profile doesn't exist, create it
-              const { error: insertError } = await supabase
-                .from('profiles')
-                .insert({
-                  wallet_address: publicKey.toString(),
-                  email: sanitizedEmail,
-                });
-
-              if (insertError) {
-                console.error('Error creating profile:', insertError);
-                toast.error('Failed to create profile');
-                return;
-              }
-            } else {
-              console.error('Error fetching profile:', fetchError);
-              toast.error('Failed to fetch profile');
-              return;
-            }
-          }
-
-          // Only redirect to discover if we're on the home page
-          if (location.pathname === '/') {
-            navigate('/discover');
-            toast.success('Successfully connected wallet');
-          }
+          toast.success('Successfully connected wallet');
         } catch (error) {
           console.error('Error:', error);
           toast.error('An unexpected error occurred');
@@ -87,7 +36,7 @@ export const WalletButton = () => {
     };
 
     handleConnection();
-  }, [connected, publicKey, navigate, location.pathname]);
+  }, [connected, publicKey, user]);
 
   return <WalletMultiButton />;
 };
