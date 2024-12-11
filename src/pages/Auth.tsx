@@ -5,11 +5,63 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isRecovering, setIsRecovering] = useState(false);
   const { signIn, signUp } = useAuth();
+
+  const handlePasswordRecovery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+      if (error) throw error;
+      toast.success("Password recovery email sent! Please check your inbox.");
+      setIsRecovering(false);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  if (isRecovering) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md p-6">
+          <h1 className="text-2xl font-bold text-center mb-8">Password Recovery</h1>
+          <form onSubmit={handlePasswordRecovery} className="space-y-4">
+            <div>
+              <Label htmlFor="recovery-email">Email</Label>
+              <Input
+                id="recovery-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Button type="submit" className="w-full">
+                Send Recovery Email
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => setIsRecovering(false)}
+              >
+                Back to Sign In
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -50,6 +102,14 @@ export default function Auth() {
               </div>
               <Button type="submit" className="w-full">
                 Sign In
+              </Button>
+              <Button
+                type="button"
+                variant="link"
+                className="w-full"
+                onClick={() => setIsRecovering(true)}
+              >
+                Forgot Password?
               </Button>
             </form>
           </TabsContent>
