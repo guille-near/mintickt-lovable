@@ -1,17 +1,22 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
 export const WalletButton = () => {
   const { publicKey, connected } = useWallet();
   const navigate = useNavigate();
+  const location = useLocation();
+  const hasHandledInitialConnection = useRef(false);
 
   useEffect(() => {
     const handleConnection = async () => {
-      if (connected && publicKey) {
+      // Only handle connection if we haven't done it before and wallet is connected
+      if (!hasHandledInitialConnection.current && connected && publicKey) {
+        hasHandledInitialConnection.current = true;
+        
         try {
           // Check if profile exists
           const { data: profile, error: fetchError } = await supabase
@@ -41,9 +46,11 @@ export const WalletButton = () => {
             }
           }
 
-          // Redirect to discover page
-          navigate('/discover');
-          toast.success('Successfully connected wallet');
+          // Only redirect to discover if we're on the home page
+          if (location.pathname === '/') {
+            navigate('/discover');
+            toast.success('Successfully connected wallet');
+          }
         } catch (error) {
           console.error('Error:', error);
           toast.error('An unexpected error occurred');
@@ -52,7 +59,7 @@ export const WalletButton = () => {
     };
 
     handleConnection();
-  }, [connected, publicKey, navigate]);
+  }, [connected, publicKey, navigate, location.pathname]);
 
   return <WalletMultiButton />;
 };
