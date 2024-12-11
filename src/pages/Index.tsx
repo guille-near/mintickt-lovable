@@ -3,21 +3,21 @@ import { EventCard } from "@/components/EventCard";
 
 const mockEvents = [
   {
-    id: 1,
+    id: "1",  // Changed from number to string
     title: "Solana Summer Fest",
     date: "Aug 15, 2024",
     price: 2.5,
     image: "https://picsum.photos/seed/1/400",
   },
   {
-    id: 2,
+    id: "2",  // Changed from number to string
     title: "NFT Conference 2024",
     date: "Sep 20, 2024",
     price: 1.8,
     image: "https://picsum.photos/seed/2/400",
   },
   {
-    id: 3,
+    id: "3",  // Changed from number to string
     title: "Blockchain Summit",
     date: "Oct 5, 2024",
     price: 3.0,
