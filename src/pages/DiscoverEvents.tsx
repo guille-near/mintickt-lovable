@@ -80,7 +80,10 @@ const DiscoverEvents = () => {
                 </p>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full text-white hover:text-primary-foreground">
+                <Button 
+                  variant="default"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                >
                   View Details
                 </Button>
               </CardFooter>
