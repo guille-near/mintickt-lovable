@@ -17,21 +17,7 @@ export const Header = () => {
   return (
     <header className="border-b">
       <div className="container mx-auto flex items-center justify-between p-6">
-        <h1 
-          onClick={() => navigate('/discover')} 
-          className="text-2xl font-bold text-foreground cursor-pointer"
-        >
-          NFT Tickets
-        </h1>
         <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            onClick={() => navigate('/create')}
-            className="flex items-center gap-2"
-          >
-            <PlusIcon className="w-4 h-4" />
-            Create Event
-          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -42,7 +28,7 @@ export const Header = () => {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="start">
               <DropdownMenuItem onClick={() => navigate('/account')}>
                 Account
               </DropdownMenuItem>
@@ -51,7 +37,21 @@ export const Header = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/create')}
+            className="flex items-center gap-2"
+          >
+            <PlusIcon className="w-4 h-4" />
+            Create Event
+          </Button>
         </div>
+        <h1 
+          onClick={() => navigate('/discover')} 
+          className="text-2xl font-bold text-foreground cursor-pointer"
+        >
+          NFT Tickets
+        </h1>
       </div>
     </header>
   );
