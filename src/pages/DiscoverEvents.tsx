@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -6,30 +6,44 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CalendarIcon, MapPinIcon } from 'lucide-react'
 import { WalletButton } from "@/components/WalletButton"
 import { useNavigate } from 'react-router-dom'
-
-// Mock data for events
-const mockEvents = [
-  { id: 1, title: "Summer Music Festival", date: "2023-07-15", location: "Central Park", category: "Music" },
-  { id: 2, title: "Tech Conference 2023", date: "2023-08-10", location: "Convention Center", category: "Technology" },
-  { id: 3, title: "Food & Wine Expo", date: "2023-09-05", location: "City Hall", category: "Food" },
-  { id: 4, title: "Art Gallery Opening", date: "2023-07-22", location: "Downtown Museum", category: "Art" },
-  { id: 5, title: "Startup Pitch Night", date: "2023-08-18", location: "Innovation Hub", category: "Business" },
-  { id: 6, title: "Comedy Night", date: "2023-09-12", location: "Laugh Factory", category: "Entertainment" },
-]
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from "@/integrations/supabase/client"
+import { EventCard } from "@/components/EventCard"
 
 const DiscoverEvents = () => {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
 
-  const filterEvents = useCallback(() => {
-    return mockEvents.filter(event => 
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (selectedCategory === "all" || event.category === selectedCategory)
+  const { data: events, isLoading, error } = useQuery({
+    queryKey: ['events'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      return data
+    }
+  })
+
+  const filterEvents = () => {
+    if (!events) return []
+    return events.filter(event => 
+      event.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
-  }, [searchTerm, selectedCategory])
+  }
 
   const filteredEvents = filterEvents()
+
+  if (isLoading) {
+    return <div className="container mx-auto py-8 text-white">Loading events...</div>
+  }
+
+  if (error) {
+    return <div className="container mx-auto py-8 text-white">Error loading events: {error.message}</div>
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary to-primary">
@@ -67,30 +81,14 @@ const DiscoverEvents = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEvents.map(event => (
-            <Card key={event.id} className="bg-card backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-white">{event.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="flex items-center text-sm text-gray-300 mb-2">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {event.date}
-                </p>
-                <p className="flex items-center text-sm text-gray-300">
-                  <MapPinIcon className="mr-2 h-4 w-4" />
-                  {event.location}
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button 
-                  variant="default"
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                  onClick={() => navigate(`/event/${event.id}`)}
-                >
-                  View Details
-                </Button>
-              </CardFooter>
-            </Card>
+            <EventCard
+              key={event.id}
+              id={event.id}
+              title={event.title}
+              date={new Date(event.date).toLocaleDateString()}
+              price={Number(event.price)}
+              image={event.image_url || '/placeholder.svg'}
+            />
           ))}
         </div>
       </div>
