@@ -42,7 +42,10 @@ export const Header = () => {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent 
+              align="end" 
+              className="backdrop-blur-sm bg-white/70 border border-gray-200"
+            >
               <DropdownMenuItem onClick={() => navigate('/account')}>
                 Account
               </DropdownMenuItem>
