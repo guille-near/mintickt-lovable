@@ -18,8 +18,8 @@ export const WalletButton = () => {
         hasHandledInitialConnection.current = true;
         
         try {
-          // First, sign in with Supabase using the wallet address
-          const { error: signInError } = await supabase.auth.signInWithPassword({
+          // Create a JWT token using the wallet address
+          const { data: { session }, error: signInError } = await supabase.auth.signInWithPassword({
             email: `${publicKey.toString()}@phantom.com`,
             password: publicKey.toString(),
           });
