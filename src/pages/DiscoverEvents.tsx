@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CalendarIcon, MapPinIcon } from 'lucide-react'
 import { WalletButton } from "@/components/WalletButton"
+import { useNavigate } from 'react-router-dom'
 
 // Mock data for events
 const mockEvents = [
@@ -17,6 +18,7 @@ const mockEvents = [
 ]
 
 const DiscoverEvents = () => {
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
 
@@ -83,6 +85,7 @@ const DiscoverEvents = () => {
                 <Button 
                   variant="default"
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={() => navigate(`/event/${event.id}`)}
                 >
                   View Details
                 </Button>
