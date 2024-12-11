@@ -1,4 +1,3 @@
-import { WalletButton } from "@/components/WalletButton";
 import { EventForm } from "@/components/create-event/EventForm";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useNavigate } from "react-router-dom";
@@ -16,37 +15,26 @@ export default function CreateEvent() {
       return;
     }
 
-    if (!formData.name || !formData.date || !formData.location) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-
     try {
-      // First, ensure we have a profile for this wallet
-      const { data: existingProfile, error: profileError } = await supabase
+      // First, get the profile ID for the connected wallet
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id')
         .eq('wallet_address', publicKey.toString())
         .single();
 
       if (profileError) {
-        // If no profile exists, create one
-        const { data: newProfile, error: createProfileError } = await supabase
-          .from('profiles')
-          .insert({ wallet_address: publicKey.toString() })
-          .select('id')
-          .single();
-
-        if (createProfileError) throw createProfileError;
-        
-        // Use the newly created profile's ID
-        formData.creator_id = newProfile.id;
-      } else {
-        // Use the existing profile's ID
-        formData.creator_id = existingProfile.id;
+        console.error('Error fetching profile:', profileError);
+        toast.error('Failed to fetch profile');
+        return;
       }
 
-      // Create the event with the creator_id
+      if (!profile) {
+        toast.error('Profile not found');
+        return;
+      }
+
+      // Create the event with the creator_id set to the profile's ID
       const { data: event, error } = await supabase
         .from('events')
         .insert({
@@ -58,19 +46,23 @@ export default function CreateEvent() {
           price: formData.ticketType === 'free' ? 0 : parseFloat(formData.price),
           total_tickets: parseInt(formData.totalTickets),
           remaining_tickets: parseInt(formData.totalTickets),
-          creator_id: formData.creator_id,
+          creator_id: profile.id,
           is_free: formData.ticketType === 'free'
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating event:', error);
+        toast.error('Failed to create event');
+        return;
+      }
 
       toast.success("Event created successfully!");
       navigate(`/event/${event.id}`);
     } catch (error) {
-      console.error('Error creating event:', error);
-      toast.error("Failed to create event");
+      console.error('Error:', error);
+      toast.error('An unexpected error occurred');
     }
   };
 
