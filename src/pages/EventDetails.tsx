@@ -55,13 +55,13 @@ export default function EventDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-secondary to-primary">
+      <div className="min-h-screen bg-background">
         <header className="container mx-auto flex items-center justify-between p-6">
-          <h1 className="text-2xl font-bold text-white">NFT Tickets</h1>
+          <h1 className="text-2xl font-bold text-primary">NFT Tickets</h1>
           <WalletButton />
         </header>
         <div className="container mx-auto px-4 py-8">
-          <p className="text-white">Loading event details...</p>
+          <p className="text-primary">Loading event details...</p>
         </div>
       </div>
     );
@@ -69,13 +69,13 @@ export default function EventDetails() {
 
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-secondary to-primary">
+      <div className="min-h-screen bg-background">
         <header className="container mx-auto flex items-center justify-between p-6">
-          <h1 className="text-2xl font-bold text-white">NFT Tickets</h1>
+          <h1 className="text-2xl font-bold text-primary">NFT Tickets</h1>
           <WalletButton />
         </header>
         <div className="container mx-auto px-4 py-8">
-          <p className="text-white">Error loading event details. Please try again later.</p>
+          <p className="text-primary">Error loading event details. Please try again later.</p>
           {error && <p className="text-red-400 mt-2">{(error as Error).message}</p>}
         </div>
       </div>
@@ -83,9 +83,9 @@ export default function EventDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary to-primary">
+    <div className="min-h-screen bg-background">
       <header className="container mx-auto flex items-center justify-between p-6">
-        <h1 className="text-2xl font-bold text-white">NFT Tickets</h1>
+        <h1 className="text-2xl font-bold text-primary">NFT Tickets</h1>
         <WalletButton />
       </header>
 
@@ -108,22 +108,22 @@ export default function EventDetails() {
               location={event.location || 'Location TBA'}
             />
             
-            <Card className="w-full md:w-1/2 bg-card backdrop-blur-sm">
+            <Card className="w-full md:w-1/2 bg-card">
               <CardContent className="flex items-center space-x-4 py-4">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src="/placeholder.svg" alt="Event Organizer" />
                   <AvatarFallback><User className="h-6 w-6" /></AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-semibold text-white">Event Organizer</p>
-                  <p className="text-sm text-gray-300">Organizer</p>
+                  <p className="font-semibold text-primary">Event Organizer</p>
+                  <p className="text-sm text-muted-foreground">Organizer</p>
                 </div>
               </CardContent>
             </Card>
 
             <div>
-              <h2 className="text-2xl font-bold mb-4 text-white">Event Details</h2>
-              <p className="text-gray-300">
+              <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
+              <p className="text-muted-foreground">
                 {event.description || 'No description available.'}
               </p>
             </div>

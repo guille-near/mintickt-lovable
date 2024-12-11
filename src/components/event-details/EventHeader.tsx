@@ -10,8 +10,8 @@ interface EventHeaderProps {
 export const EventHeader = ({ title, date, time, location }: EventHeaderProps) => {
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-white">{title}</h1>
-      <div className="space-y-4 text-white">
+      <h1 className="text-3xl font-bold text-primary">{title}</h1>
+      <div className="space-y-4 text-muted-foreground">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5" />
           <span>{date}</span>
