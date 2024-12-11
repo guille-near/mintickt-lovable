@@ -22,19 +22,31 @@ export default function CreateEvent() {
     }
 
     try {
-      // Get the creator's profile
-      const { data: profile } = await supabase
+      // First, ensure we have a profile for this wallet
+      const { data: existingProfile, error: profileError } = await supabase
         .from('profiles')
         .select('id')
         .eq('wallet_address', publicKey.toString())
         .single();
 
-      if (!profile) {
-        toast.error("Profile not found");
-        return;
+      if (profileError) {
+        // If no profile exists, create one
+        const { data: newProfile, error: createProfileError } = await supabase
+          .from('profiles')
+          .insert({ wallet_address: publicKey.toString() })
+          .select('id')
+          .single();
+
+        if (createProfileError) throw createProfileError;
+        
+        // Use the newly created profile's ID
+        formData.creator_id = newProfile.id;
+      } else {
+        // Use the existing profile's ID
+        formData.creator_id = existingProfile.id;
       }
 
-      // Create the event
+      // Create the event with the creator_id
       const { data: event, error } = await supabase
         .from('events')
         .insert({
@@ -46,7 +58,8 @@ export default function CreateEvent() {
           price: formData.ticketType === 'free' ? 0 : parseFloat(formData.price),
           total_tickets: parseInt(formData.totalTickets),
           remaining_tickets: parseInt(formData.totalTickets),
-          creator_id: profile.id
+          creator_id: formData.creator_id,
+          is_free: formData.ticketType === 'free'
         })
         .select()
         .single();
