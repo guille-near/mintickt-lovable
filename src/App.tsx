@@ -7,6 +7,7 @@ import { WalletContextProvider } from "./contexts/WalletContextProvider";
 import Index from "./pages/Index";
 import DiscoverEvents from "./pages/DiscoverEvents";
 import EventDetails from "./pages/EventDetails";
+import CreateEvent from "./pages/CreateEvent";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/discover" element={<DiscoverEvents />} />
             <Route path="/event/:id" element={<EventDetails />} />
+            <Route path="/create" element={<CreateEvent />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
