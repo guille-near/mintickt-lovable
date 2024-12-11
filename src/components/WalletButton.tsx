@@ -59,6 +59,7 @@ export const WalletButton = () => {
                 .from('profiles')
                 .insert({
                   wallet_address: publicKey.toString(),
+                  email: sanitizedEmail,
                 });
 
               if (insertError) {
