@@ -1,23 +1,13 @@
-import { useState } from 'react'
-import { Calendar, Clock, MapPin, Ticket, User, MessageCircle } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { WalletButton } from "@/components/WalletButton"
+import { User } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { WalletButton } from "@/components/WalletButton";
+import { EventHeader } from "@/components/event-details/EventHeader";
+import { EventUpdates } from "@/components/event-details/EventUpdates";
+import { EventLocation } from "@/components/event-details/EventLocation";
+import { TicketPurchase } from "@/components/event-details/TicketPurchase";
 
 export default function EventDetails() {
-  const [ticketQuantity, setTicketQuantity] = useState(1)
-
   // Mock event data
   const event = {
     title: "Summer Music Festival 2024",
@@ -46,7 +36,7 @@ export default function EventDetails() {
         message: "We're thrilled to announce our full lineup! Check our website for the complete list of amazing artists joining us this summer."
       }
     ]
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary to-primary">
@@ -67,21 +57,13 @@ export default function EventDetails() {
             </div>
           </div>
           <div className="lg:col-span-2 space-y-6">
-            <h1 className="text-3xl font-bold text-white">{event.title}</h1>
-            <div className="space-y-4 text-white">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                <span>{event.date}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5" />
-                <span>{event.time}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5" />
-                <span>{event.location}</span>
-              </div>
-            </div>
+            <EventHeader
+              title={event.title}
+              date={event.date}
+              time={event.time}
+              location={event.location}
+            />
+            
             <Card className="w-full md:w-1/2 bg-card backdrop-blur-sm">
               <CardContent className="flex items-center space-x-4 py-4">
                 <Avatar className="h-10 w-10">
@@ -94,108 +76,20 @@ export default function EventDetails() {
                 </div>
               </CardContent>
             </Card>
+
             <div>
               <h2 className="text-2xl font-bold mb-4 text-white">Event Details</h2>
               <p className="text-gray-300">
                 Join us for an unforgettable summer music festival featuring top artists and amazing performances.
               </p>
             </div>
-            <Card className="bg-card backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-white">Updates</CardTitle>
-                <CardDescription className="text-gray-300">Latest updates from the organizer</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {event.updates.map((update, index) => (
-                    <Dialog key={index}>
-                      <DialogTrigger asChild>
-                        <div className="border-b border-gray-700 pb-4 last:border-b-0 last:pb-0 cursor-pointer hover:bg-gray-800/50 rounded-md p-2 transition-colors">
-                          <p className="text-sm text-gray-400 mb-2">{update.date}</p>
-                          <div className="flex items-start space-x-2">
-                            <MessageCircle className="w-5 h-5 mt-1 flex-shrink-0 text-gray-300" />
-                            <div>
-                              <p className="text-sm font-medium text-white">{update.title}</p>
-                              <p className="text-sm text-gray-400 mt-1 line-clamp-2">{update.message}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </DialogTrigger>
-                      <DialogContent className="bg-card backdrop-blur-sm">
-                        <DialogHeader>
-                          <DialogTitle className="text-white">{update.title}</DialogTitle>
-                          <DialogDescription className="text-gray-300">{update.date}</DialogDescription>
-                        </DialogHeader>
-                        <p className="mt-4 text-gray-300">{update.message}</p>
-                      </DialogContent>
-                    </Dialog>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-card backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-white">Get Your Tickets</CardTitle>
-                <CardDescription className="text-gray-300">Secure your spot at {event.title}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label className="text-white">Number of Tickets</Label>
-                    <Input 
-                      type="number" 
-                      min="1" 
-                      max="10" 
-                      value={ticketQuantity} 
-                      onChange={(e) => setTicketQuantity(parseInt(e.target.value) || 1)} 
-                      className="bg-background/50 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-white">Price per Ticket</Label>
-                    <Input value={`${event.ticketPrice} SOL`} disabled className="bg-background/50 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <div className="text-2xl font-bold text-white">
-                  Total: {ticketQuantity * event.ticketPrice} SOL
-                </div>
-                <Button className="bg-primary text-white hover:bg-primary/80">
-                  <Ticket className="mr-2 h-4 w-4" /> Buy Tickets
-                </Button>
-              </CardFooter>
-            </Card>
-            <Card className="bg-card backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-white">Event Location</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="aspect-video w-full overflow-hidden rounded-md">
-                    <iframe
-                      src={event.mapUrl}
-                      width="600"
-                      height="450"
-                      style={{border:0}}
-                      allowFullScreen=""
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      className="w-full h-full"
-                    ></iframe>
-                  </div>
-                  <p className="text-sm text-gray-300">
-                    {event.location}
-                  </p>
-                  <Button variant="outline" className="text-white hover:text-primary-foreground">
-                    <MapPin className="mr-2 h-4 w-4" /> Get Directions
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+
+            <EventUpdates updates={event.updates} />
+            <TicketPurchase ticketPrice={event.ticketPrice} eventTitle={event.title} />
+            <EventLocation location={event.location} mapUrl={event.mapUrl} />
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
