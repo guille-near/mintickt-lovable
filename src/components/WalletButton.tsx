@@ -18,16 +18,19 @@ export const WalletButton = () => {
         hasHandledInitialConnection.current = true;
         
         try {
+          // Create a valid email format from the wallet address
+          const sanitizedEmail = `wallet_${publicKey.toString().substring(0, 8)}@example.com`;
+          
           // First try to sign up the user
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email: `${publicKey.toString()}@phantom.com`,
+            email: sanitizedEmail,
             password: publicKey.toString(),
           });
 
           // If sign up fails because user exists, try to sign in
           if (signUpError && signUpError.message.includes('already registered')) {
             const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-              email: `${publicKey.toString()}@phantom.com`,
+              email: sanitizedEmail,
               password: publicKey.toString(),
             });
 
