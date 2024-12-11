@@ -12,23 +12,29 @@ export const WalletButton = () => {
       if (connected && publicKey) {
         try {
           // Check if profile already exists
-          const { data: existingProfile } = await supabase
+          const { data: existingProfile, error: fetchError } = await supabase
             .from('profiles')
             .select()
             .eq('wallet_address', publicKey.toString())
             .single();
 
+          if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is the "not found" error code
+            console.error('Error fetching profile:', fetchError);
+            toast.error('Failed to check existing profile');
+            return;
+          }
+
           if (!existingProfile) {
             // Create new profile
-            const { error } = await supabase
+            const { error: insertError } = await supabase
               .from('profiles')
               .insert({
-                id: crypto.randomUUID(), // Generate a new UUID
+                id: crypto.randomUUID(),
                 wallet_address: publicKey.toString(),
               });
 
-            if (error) {
-              console.error('Error creating profile:', error);
+            if (insertError) {
+              console.error('Error creating profile:', insertError);
               toast.error('Failed to create profile');
               return;
             }
