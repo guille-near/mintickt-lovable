@@ -18,24 +18,28 @@ export const WalletButton = () => {
         hasHandledInitialConnection.current = true;
         
         try {
-          // Create a JWT token using the wallet address
-          const { data: { session }, error: signInError } = await supabase.auth.signInWithPassword({
+          // First try to sign up the user
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email: `${publicKey.toString()}@phantom.com`,
             password: publicKey.toString(),
           });
 
-          // If sign in fails, try to sign up
-          if (signInError) {
-            const { error: signUpError } = await supabase.auth.signUp({
+          // If sign up fails because user exists, try to sign in
+          if (signUpError && signUpError.message.includes('already registered')) {
+            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
               email: `${publicKey.toString()}@phantom.com`,
               password: publicKey.toString(),
             });
 
-            if (signUpError) {
-              console.error('Error signing up:', signUpError);
+            if (signInError) {
+              console.error('Error signing in:', signInError);
               toast.error('Failed to authenticate');
               return;
             }
+          } else if (signUpError) {
+            console.error('Error signing up:', signUpError);
+            toast.error('Failed to authenticate');
+            return;
           }
 
           // Check if profile exists
