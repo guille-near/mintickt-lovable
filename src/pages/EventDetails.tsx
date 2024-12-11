@@ -82,12 +82,12 @@ export default function EventDetails() {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-1 lg:sticky lg:top-8 lg:self-start">
-            <div className="aspect-square w-full overflow-hidden rounded-lg bg-card">
+          <div className="lg:col-span-1">
+            <div className="w-full max-w-full overflow-hidden rounded-lg bg-card">
               <img
                 src={event.image_url || '/placeholder.svg'}
                 alt={event.title}
-                className="object-cover w-full h-full"
+                className="h-auto w-full object-cover"
               />
             </div>
           </div>
