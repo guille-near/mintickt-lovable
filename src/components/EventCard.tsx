@@ -32,7 +32,7 @@ export const EventCard = ({ title, date, price, image, id }: EventCardProps) => 
           </span>
           <button 
             onClick={() => navigate(`/event/${id}`)}
-            className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/80"
+            className="w-full rounded-lg bg-accent text-accent-foreground px-4 py-2 text-sm font-medium transition-colors hover:bg-accent/90"
           >
             View Details
           </button>
