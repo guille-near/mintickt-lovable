@@ -8,7 +8,7 @@ interface EventCardProps {
   date: string;
   price: number;
   image: string;
-  id: number;
+  id: string;  // Changed from number to string to match Supabase UUID
 }
 
 export const EventCard = ({ title, date, price, image, id }: EventCardProps) => {
