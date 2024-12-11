@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Ticket } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -30,12 +31,12 @@ export const EventCard = ({ title, date, price, image, id }: EventCardProps) => 
             <Ticket className="mr-2 h-4 w-4" />
             {price} SOL
           </span>
-          <button 
+          <Button 
             onClick={() => navigate(`/event/${id}`)}
-            className="w-full rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium transition-colors hover:bg-primary/90"
+            className="w-full bg-[#1d1d1d] text-white hover:bg-[#2d2d2d]"
           >
             View Details
-          </button>
+          </Button>
         </div>
       </div>
     </Card>
