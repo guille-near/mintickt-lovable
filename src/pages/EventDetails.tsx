@@ -83,11 +83,11 @@ export default function EventDetails() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
-            <div className="w-full max-w-full overflow-hidden rounded-lg bg-card">
+            <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
               <img
                 src={event.image_url || '/placeholder.svg'}
                 alt={event.title}
-                className="h-auto w-full object-cover"
+                className="absolute inset-0 h-full w-full object-cover rounded-lg"
               />
             </div>
           </div>
