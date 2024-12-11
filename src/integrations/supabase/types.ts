@@ -9,7 +9,116 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      events: {
+        Row: {
+          created_at: string
+          creator_id: string
+          date: string
+          description: string | null
+          id: string
+          image_url: string | null
+          location: string | null
+          price: number
+          remaining_tickets: number
+          title: string
+          total_tickets: number
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          date: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          price: number
+          remaining_tickets: number
+          title: string
+          total_tickets: number
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          date?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          price?: number
+          remaining_tickets?: number
+          title?: string
+          total_tickets?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      tickets: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          mint_address: string
+          owner_id: string
+          used: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          mint_address: string
+          owner_id: string
+          used?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          mint_address?: string
+          owner_id?: string
+          used?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
