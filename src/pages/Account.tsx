@@ -10,6 +10,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
+import { useNavigate } from "react-router-dom";
 
 interface Profile {
   username: string | null;
@@ -20,6 +21,7 @@ interface Profile {
 
 export default function Account() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { publicKey } = useWallet();
   const [profile, setProfile] = useState<Profile>({
     username: "",
@@ -29,20 +31,29 @@ export default function Account() {
   });
 
   useEffect(() => {
-    if (user) {
-      getProfile();
+    if (!user) {
+      navigate("/auth");
+      return;
     }
-  }, [user]);
+    getProfile();
+  }, [user, navigate]);
 
   async function getProfile() {
     try {
+      if (!user?.id) return;
+      
       const { data, error } = await supabase
         .from("profiles")
         .select()
-        .eq("id", user?.id)
+        .eq("id", user.id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching profile:", error);
+        toast.error("Failed to load profile");
+        return;
+      }
+
       if (data) {
         setProfile({
           username: data.username || "",
@@ -52,12 +63,18 @@ export default function Account() {
         });
       }
     } catch (error: any) {
-      toast.error(error.message);
+      console.error("Profile fetch error:", error);
+      toast.error("An error occurred while loading your profile");
     }
   }
 
   async function updateProfile() {
     try {
+      if (!user?.id) {
+        toast.error("You must be logged in to update your profile");
+        return;
+      }
+
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -66,12 +83,18 @@ export default function Account() {
           avatar_url: profile.avatar_url,
           wallet_address: publicKey?.toString() || profile.wallet_address,
         })
-        .eq("id", user?.id);
+        .eq("id", user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error updating profile:", error);
+        toast.error("Failed to update profile");
+        return;
+      }
+
       toast.success("Profile updated successfully!");
     } catch (error: any) {
-      toast.error(error.message);
+      console.error("Profile update error:", error);
+      toast.error("An error occurred while updating your profile");
     }
   }
 
