@@ -1,12 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { WalletButton } from "@/components/WalletButton";
-import { PlusIcon, UserCircle } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthProvider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export const Header = () => {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
 
   return (
     <header className="border-b">
@@ -27,16 +34,25 @@ export const Header = () => {
             Create Event
           </Button>
           <WalletButton />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/account')}
-          >
-            <UserCircle className="h-5 w-5" />
-          </Button>
-          <Button variant="outline" onClick={() => signOut()}>
-            Sign Out
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                <Avatar>
+                  <AvatarFallback>
+                    {user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => navigate('/account')}>
+                Account
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => signOut()}>
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
