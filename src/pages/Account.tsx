@@ -46,9 +46,9 @@ export default function Account() {
         .from("profiles")
         .select()
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error("Error fetching profile:", error);
         toast.error("Failed to load profile");
         return;
@@ -77,11 +77,13 @@ export default function Account() {
 
       const { error } = await supabase
         .from("profiles")
-        .update({
+        .upsert({
+          id: user.id,
           username: profile.username,
           bio: profile.bio,
           avatar_url: profile.avatar_url,
           wallet_address: publicKey?.toString() || profile.wallet_address,
+          email: user.email,
         })
         .eq("id", user.id);
 

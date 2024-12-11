@@ -43,6 +43,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [navigate, isInitialLoad]);
 
+  const createProfile = async (userId: string, email: string) => {
+    const { error } = await supabase
+      .from('profiles')
+      .insert([{ id: userId, email: email }]);
+    
+    if (error) {
+      console.error('Error creating profile:', error);
+      // Don't throw here as the user is already created
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -71,14 +82,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
+      
       if (error) {
         toast.error(error.message);
         return;
       }
+
+      if (data.user) {
+        await createProfile(data.user.id, email);
+      }
+
       toast.success("Registration successful! Please check your email.");
     } catch (error: any) {
       toast.error("An unexpected error occurred. Please try again.");
