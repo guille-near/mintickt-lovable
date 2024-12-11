@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { PlusIcon } from 'lucide-react'
-import { WalletButton } from "@/components/WalletButton"
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from "@/integrations/supabase/client"
@@ -47,23 +46,6 @@ const DiscoverEvents = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto flex items-center justify-between p-6">
-          <h1 className="text-2xl font-bold text-foreground">NFT Tickets</h1>
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="outline"
-              onClick={() => navigate('/create')}
-              className="flex items-center gap-2"
-            >
-              <PlusIcon className="w-4 h-4" />
-              Create Event
-            </Button>
-            <WalletButton />
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto py-8">
         <h1 className="text-3xl font-bold mb-8 text-foreground">Discover Events</h1>
         
