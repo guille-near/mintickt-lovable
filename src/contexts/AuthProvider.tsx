@@ -18,14 +18,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session) {
+      if (session && isInitialLoad) {
         navigate("/discover");
       }
+      setIsInitialLoad(false);
     });
 
     const {
@@ -33,13 +35,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session) {
+      if (session && _event === 'SIGNED_IN') {
         navigate("/discover");
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, isInitialLoad]);
 
   const signIn = async (email: string, password: string) => {
     try {
