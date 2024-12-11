@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarIcon, MapPinIcon, PlusIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { WalletButton } from "@/components/WalletButton"
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -38,32 +38,34 @@ const DiscoverEvents = () => {
   const filteredEvents = filterEvents()
 
   if (isLoading) {
-    return <div className="container mx-auto py-8 text-white">Loading events...</div>
+    return <div className="container mx-auto py-8 text-foreground">Loading events...</div>
   }
 
   if (error) {
-    return <div className="container mx-auto py-8 text-white">Error loading events: {error.message}</div>
+    return <div className="container mx-auto py-8 text-foreground">Error loading events: {error.message}</div>
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary to-primary">
-      <header className="container mx-auto flex items-center justify-between p-6">
-        <h1 className="text-2xl font-bold text-white">NFT Tickets</h1>
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="secondary" 
-            onClick={() => navigate('/create')}
-            className="flex items-center gap-2"
-          >
-            <PlusIcon className="w-4 h-4" />
-            Create Event
-          </Button>
-          <WalletButton />
+    <div className="min-h-screen bg-background">
+      <header className="border-b">
+        <div className="container mx-auto flex items-center justify-between p-6">
+          <h1 className="text-2xl font-bold text-foreground">NFT Tickets</h1>
+          <div className="flex items-center gap-4">
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/create')}
+              className="flex items-center gap-2"
+            >
+              <PlusIcon className="w-4 h-4" />
+              Create Event
+            </Button>
+            <WalletButton />
+          </div>
         </div>
       </header>
 
       <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-8 text-white">Discover Events</h1>
+        <h1 className="text-3xl font-bold mb-8 text-foreground">Discover Events</h1>
         
         <div className="flex gap-4 mb-8">
           <Input
@@ -103,7 +105,7 @@ const DiscoverEvents = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default DiscoverEvents;
