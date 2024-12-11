@@ -53,7 +53,13 @@ export const EventForm = ({ onSubmit }: EventFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    const isFree = formData.ticketType === 'free';
+    const submissionData = {
+      ...formData,
+      price: isFree ? null : formData.price,
+      is_free: isFree,
+    };
+    onSubmit(submissionData);
   };
 
   return (

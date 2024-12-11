@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type Database = {
+export interface Database {
   public: {
     Tables: {
       events: {
@@ -17,8 +17,9 @@ export type Database = {
           description: string | null
           id: string
           image_url: string | null
+          is_free: boolean
           location: string | null
-          price: number
+          price: number | null
           remaining_tickets: number
           title: string
           total_tickets: number
@@ -30,8 +31,9 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          is_free?: boolean
           location?: string | null
-          price: number
+          price?: number | null
           remaining_tickets: number
           title: string
           total_tickets: number
@@ -43,8 +45,9 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          is_free?: boolean
           location?: string | null
-          price?: number
+          price?: number | null
           remaining_tickets?: number
           title?: string
           total_tickets?: number
@@ -56,7 +59,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       profiles: {
