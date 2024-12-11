@@ -4,6 +4,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Header } from "@/components/Header";
 
 export default function CreateEvent() {
   const navigate = useNavigate();
@@ -61,12 +62,8 @@ export default function CreateEvent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary to-primary">
-      <header className="container mx-auto flex items-center justify-between p-6">
-        <h1 className="text-2xl font-bold text-white">Create Event</h1>
-        <WalletButton />
-      </header>
-
+    <div className="min-h-screen bg-background">
+      <Header />
       <main className="container mx-auto px-6 py-12">
         <div className="max-w-4xl mx-auto">
           <EventForm onSubmit={handleSubmit} />

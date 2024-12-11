@@ -9,6 +9,7 @@ import { EventUpdates } from "@/components/event-details/EventUpdates";
 import { EventLocation } from "@/components/event-details/EventLocation";
 import { TicketPurchase } from "@/components/event-details/TicketPurchase";
 import { supabase } from "@/integrations/supabase/client";
+import { Header } from "@/components/Header";
 
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
@@ -56,10 +57,7 @@ export default function EventDetails() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <header className="container mx-auto flex items-center justify-between p-6">
-          <h1 className="text-2xl font-bold text-primary">NFT Tickets</h1>
-          <WalletButton />
-        </header>
+        <Header />
         <div className="container mx-auto px-4 py-8">
           <p className="text-primary">Loading event details...</p>
         </div>
@@ -70,10 +68,7 @@ export default function EventDetails() {
   if (error || !event) {
     return (
       <div className="min-h-screen bg-background">
-        <header className="container mx-auto flex items-center justify-between p-6">
-          <h1 className="text-2xl font-bold text-primary">NFT Tickets</h1>
-          <WalletButton />
-        </header>
+        <Header />
         <div className="container mx-auto px-4 py-8">
           <p className="text-primary">Error loading event details. Please try again later.</p>
           {error && <p className="text-red-400 mt-2">{(error as Error).message}</p>}
@@ -84,11 +79,7 @@ export default function EventDetails() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="container mx-auto flex items-center justify-between p-6">
-        <h1 className="text-2xl font-bold text-primary">NFT Tickets</h1>
-        <WalletButton />
-      </header>
-
+      <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1 lg:sticky lg:top-8 lg:self-start">
