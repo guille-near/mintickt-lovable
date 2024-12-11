@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,12 +17,12 @@ const mockEvents = [
 
 const DiscoverEvents = () => {
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("all")
 
   const filterEvents = useCallback(() => {
     return mockEvents.filter(event => 
       event.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (selectedCategory === "" || event.category === selectedCategory)
+      (selectedCategory === "all" || event.category === selectedCategory)
     )
   }, [searchTerm, selectedCategory])
 
@@ -46,7 +46,7 @@ const DiscoverEvents = () => {
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Categories</SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="Music">Music</SelectItem>
               <SelectItem value="Technology">Technology</SelectItem>
               <SelectItem value="Food">Food</SelectItem>
