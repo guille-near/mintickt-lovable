@@ -11,20 +11,27 @@ import { TicketPurchase } from "@/components/event-details/TicketPurchase";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function EventDetails() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
+      console.log('Fetching event with ID:', id); // Debug log
       const { data, error } = await supabase
         .from('events')
         .select('*')
         .eq('id', id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error); // Debug log
+        throw error;
+      }
+      
+      console.log('Fetched event:', data); // Debug log
       return data;
     },
+    enabled: !!id, // Only run query if we have an ID
   });
 
   if (isLoading) {
@@ -50,6 +57,7 @@ export default function EventDetails() {
         </header>
         <div className="container mx-auto px-4 py-8">
           <p className="text-white">Error loading event details. Please try again later.</p>
+          {error && <p className="text-red-400 mt-2">{(error as Error).message}</p>}
         </div>
       </div>
     );
