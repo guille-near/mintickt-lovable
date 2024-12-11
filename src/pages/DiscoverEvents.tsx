@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from "@/integrations/supabase/client"
 import { EventCard } from "@/components/EventCard"
+import { Header } from "@/components/Header"
 
 const DiscoverEvents = () => {
   const navigate = useNavigate()
@@ -37,15 +38,26 @@ const DiscoverEvents = () => {
   const filteredEvents = filterEvents()
 
   if (isLoading) {
-    return <div className="container mx-auto py-8 text-foreground">Loading events...</div>
+    return (
+      <>
+        <Header />
+        <div className="container mx-auto py-8 text-foreground">Loading events...</div>
+      </>
+    )
   }
 
   if (error) {
-    return <div className="container mx-auto py-8 text-foreground">Error loading events: {error.message}</div>
+    return (
+      <>
+        <Header />
+        <div className="container mx-auto py-8 text-foreground">Error loading events: {error.message}</div>
+      </>
+    )
   }
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       <div className="container mx-auto py-8">
         <h1 className="text-3xl font-bold mb-8 text-foreground">Discover Events</h1>
         
