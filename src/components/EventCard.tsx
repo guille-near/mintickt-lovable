@@ -14,6 +14,11 @@ interface EventCardProps {
 export const EventCard = ({ title, date, price, image, id }: EventCardProps) => {
   const navigate = useNavigate();
 
+  const handleViewDetails = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate(`/event/${id}`);
+  };
+
   return (
     <Card className="group relative overflow-hidden rounded-lg bg-card backdrop-blur-sm transition-all hover:scale-105">
       <div className="aspect-square overflow-hidden">
@@ -32,7 +37,7 @@ export const EventCard = ({ title, date, price, image, id }: EventCardProps) => 
             {price} SOL
           </span>
           <Button 
-            onClick={() => navigate(`/event/${id}`)}
+            onClick={handleViewDetails}
             className="w-full bg-[#1d1d1d] text-white hover:bg-[#2d2d2d]"
           >
             View Details
