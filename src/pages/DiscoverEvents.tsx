@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { PlusIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from "@/integrations/supabase/client"
@@ -41,7 +40,7 @@ const DiscoverEvents = () => {
     return (
       <>
         <Header />
-        <div className="container mx-auto py-8 text-foreground">Loading events...</div>
+        <div className="container py-8">Loading events...</div>
       </>
     )
   }
@@ -50,20 +49,25 @@ const DiscoverEvents = () => {
     return (
       <>
         <Header />
-        <div className="container mx-auto py-8 text-foreground">Error loading events: {error.message}</div>
+        <div className="container py-8">Error loading events: {error.message}</div>
       </>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Header />
-      <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-8 text-foreground">Discover Events</h1>
+      <div className="container py-8 space-y-6">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">Discover Events</h1>
+          <p className="text-muted-foreground">
+            Browse and find events that interest you.
+          </p>
+        </div>
         
-        <div className="flex gap-4 mb-8">
+        <div className="flex items-center gap-2">
           <Input
-            type="text"
+            type="search"
             placeholder="Search events..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -85,7 +89,7 @@ const DiscoverEvents = () => {
           </Select>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredEvents.map(event => (
             <EventCard
               key={event.id}
