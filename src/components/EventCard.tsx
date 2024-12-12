@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Ticket } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface EventCardProps {
@@ -9,9 +9,10 @@ interface EventCardProps {
   price: number;
   image: string;
   id: string;
+  location?: string;
 }
 
-export const EventCard = ({ title, date, price, image, id }: EventCardProps) => {
+export const EventCard = ({ title, date, image, id, location }: EventCardProps) => {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
@@ -31,9 +32,9 @@ export const EventCard = ({ title, date, price, image, id }: EventCardProps) => 
         <h3 className="text-lg font-semibold text-foreground">{title}</h3>
         <p className="mt-1 text-sm text-muted-foreground">{date}</p>
         <div className="mt-4 flex items-center justify-between">
-          <span className="flex items-center text-foreground">
-            <Ticket className="mr-2 h-4 w-4" />
-            {price} SOL
+          <span className="flex items-center text-muted-foreground text-sm">
+            <MapPin className="mr-2 h-4 w-4" />
+            {location || 'Location TBA'}
           </span>
           <Button 
             onClick={handleViewDetails}
