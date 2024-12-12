@@ -71,7 +71,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
 
   if (isMobile) {
     return (
-      <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t border-border p-4 z-50">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/60 backdrop-blur-sm border-t border-border p-4 z-50">
         <Drawer>
           <DrawerTrigger asChild>
             <Button className="w-full">
