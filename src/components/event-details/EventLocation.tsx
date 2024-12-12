@@ -9,9 +9,9 @@ interface EventLocationProps {
 
 export const EventLocation = ({ location, mapUrl }: EventLocationProps) => {
   return (
-    <Card className="bg-card backdrop-blur-sm">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-white">Event Location</CardTitle>
+        <CardTitle>Event Location</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -27,10 +27,10 @@ export const EventLocation = ({ location, mapUrl }: EventLocationProps) => {
               className="w-full h-full"
             />
           </div>
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-muted-foreground">
             {location}
           </p>
-          <Button variant="outline" className="text-white hover:bg-primary hover:text-primary-foreground">
+          <Button variant="outline">
             <MapPin className="mr-2 h-4 w-4" /> Get Directions
           </Button>
         </div>
