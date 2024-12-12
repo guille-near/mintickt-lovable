@@ -77,7 +77,7 @@ const DiscoverEvents = () => {
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-popover">
               <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="Music">Music</SelectItem>
               <SelectItem value="Technology">Technology</SelectItem>
