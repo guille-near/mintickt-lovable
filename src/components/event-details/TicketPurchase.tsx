@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Minus, Plus, Ticket } from "lucide-react";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 
 interface TicketPurchaseProps {
   ticketPrice: number;
@@ -26,41 +27,64 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
     }
   };
 
+  const MobileTicketControls = () => (
+    <div className="space-y-6 px-4">
+      <div>
+        <Label>Price per ticket</Label>
+        <div className="text-2xl font-bold">{ticketPrice} SOL</div>
+      </div>
+      <div>
+        <Label>Quantity</Label>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={decreaseQuantity}
+            disabled={ticketQuantity <= 1}
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <span className="text-xl font-bold min-w-[3ch] text-center">
+            {ticketQuantity}
+          </span>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={increaseQuantity}
+            disabled={ticketQuantity >= 10}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      <div>
+        <Label>Total</Label>
+        <div className="text-2xl font-bold">
+          {(ticketPrice * ticketQuantity).toFixed(2)} SOL
+        </div>
+      </div>
+      <Button className="w-full">
+        <Ticket className="mr-2 h-4 w-4" /> Purchase Tickets
+      </Button>
+    </div>
+  );
+
   if (isMobile) {
     return (
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex flex-col">
-            <span className="text-sm text-muted-foreground">Price</span>
-            <span className="text-lg font-bold">{ticketPrice} SOL</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={decreaseQuantity}
-              disabled={ticketQuantity <= 1}
-            >
-              <Minus className="h-3 w-3" />
+        <Drawer>
+          <DrawerTrigger asChild>
+            <Button className="w-full">
+              <Ticket className="mr-2 h-4 w-4" /> Buy Tickets
             </Button>
-            <span className="text-lg font-bold min-w-[2ch] text-center">
-              {ticketQuantity}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={increaseQuantity}
-              disabled={ticketQuantity >= 10}
-            >
-              <Plus className="h-3 w-3" />
-            </Button>
-          </div>
-          <Button className="flex-1 max-w-[150px]">
-            <Ticket className="mr-2 h-4 w-4" /> Buy
-          </Button>
-        </div>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Purchase Tickets</DrawerTitle>
+            </DrawerHeader>
+            <MobileTicketControls />
+          </DrawerContent>
+        </Drawer>
       </div>
     );
   }
