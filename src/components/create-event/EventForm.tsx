@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DateTimePicker } from "./DateTimePicker";
 import { ImageUpload } from "./ImageUpload";
 import { GiphySearch } from "./GiphySearch";
+import { LocationInput } from "./LocationInput";
 import { useState, useRef, useEffect } from "react";
 
 interface FormData {
@@ -93,16 +94,10 @@ export const EventForm = ({ onSubmit }: EventFormProps) => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="location" className="text-foreground">Location</Label>
-                <Input 
-                  id="location" 
-                  value={formData.location}
-                  onChange={(e) => handleChange('location', e.target.value)}
-                  placeholder="Enter event location"
-                  className="bg-input text-input-foreground placeholder-muted-foreground border-input"
-                />
-              </div>
+              <LocationInput 
+                value={formData.location}
+                onChange={(location) => handleChange('location', location)}
+              />
 
               <div>
                 <Label htmlFor="description" className="text-foreground">Description</Label>
