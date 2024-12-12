@@ -16,6 +16,25 @@ export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
   const isMobile = useIsMobile();
 
+  // Sample updates data
+  const updates = [
+    {
+      date: "2024-05-01",
+      title: "Event Details Update",
+      message: "Stay tuned for more information about this exciting event!"
+    },
+    {
+      date: "2024-05-15",
+      title: "Ticket Information",
+      message: "Early bird tickets will be available soon. Don't miss out!"
+    },
+    {
+      date: "2024-06-01",
+      title: "Location Details",
+      message: "Check back for specific details about the venue and directions."
+    }
+  ];
+
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
@@ -63,7 +82,7 @@ export default function EventDetails() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
+      <div className={`container mx-auto px-4 py-8 pb-24 md:pb-8 ${isMobile ? 'h-[calc(100vh-4rem)] overflow-y-auto' : ''}`}>
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
             {!isMobile && (
