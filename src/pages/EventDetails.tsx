@@ -10,9 +10,11 @@ import { EventLocation } from "@/components/event-details/EventLocation";
 import { TicketPurchase } from "@/components/event-details/TicketPurchase";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
+  const isMobile = useIsMobile();
 
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
@@ -80,21 +82,32 @@ export default function EventDetails() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
-            <div className="sticky top-8 space-y-6">
-              <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
+            {!isMobile && (
+              <div className="sticky top-8 space-y-6">
+                <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
+                  <img
+                    src={event.image_url || '/placeholder.svg'}
+                    alt={event.title}
+                    className="absolute inset-0 h-full w-full object-cover rounded-lg"
+                  />
+                </div>
+                <div>
+                  <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
+                </div>
+              </div>
+            )}
+            {isMobile && (
+              <div className="relative w-full pb-[75%]">
                 <img
                   src={event.image_url || '/placeholder.svg'}
                   alt={event.title}
                   className="absolute inset-0 h-full w-full object-cover rounded-lg"
                 />
               </div>
-              <div>
-                <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
-              </div>
-            </div>
+            )}
           </div>
           <div className="lg:col-span-2 space-y-6 max-h-[calc(100vh-4rem)] overflow-y-auto">
             <EventHeader
@@ -132,6 +145,7 @@ export default function EventDetails() {
           </div>
         </div>
       </div>
+      {isMobile && <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />}
     </div>
   );
 }

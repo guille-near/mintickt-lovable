@@ -3,6 +3,7 @@ import { Ticket, Minus, Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TicketPurchaseProps {
   ticketPrice: number;
@@ -11,6 +12,7 @@ interface TicketPurchaseProps {
 
 export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps) => {
   const [ticketQuantity, setTicketQuantity] = useState(1);
+  const isMobile = useIsMobile();
 
   const decreaseQuantity = () => {
     if (ticketQuantity > 1) {
@@ -23,6 +25,45 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
       setTicketQuantity(prev => prev + 1);
     }
   };
+
+  if (isMobile) {
+    return (
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col">
+            <span className="text-sm text-muted-foreground">Precio</span>
+            <span className="text-lg font-bold">{ticketPrice} SOL</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={decreaseQuantity}
+              disabled={ticketQuantity <= 1}
+            >
+              <Minus className="h-3 w-3" />
+            </Button>
+            <span className="text-lg font-bold min-w-[2ch] text-center">
+              {ticketQuantity}
+            </span>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={increaseQuantity}
+              disabled={ticketQuantity >= 10}
+            >
+              <Plus className="h-3 w-3" />
+            </Button>
+          </div>
+          <Button className="flex-1 max-w-[150px]">
+            <Ticket className="mr-2 h-4 w-4" /> Comprar
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Card className="max-w-md mx-auto">
