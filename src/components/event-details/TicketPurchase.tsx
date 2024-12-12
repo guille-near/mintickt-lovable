@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { Ticket, Minus, Plus } from 'lucide-react';
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Minus, Plus, Ticket } from "lucide-react";
 
 interface TicketPurchaseProps {
   ticketPrice: number;
@@ -31,7 +31,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
         <div className="flex items-center justify-between gap-4">
           <div className="flex flex-col">
-            <span className="text-sm text-muted-foreground">Precio</span>
+            <span className="text-sm text-muted-foreground">Price</span>
             <span className="text-lg font-bold">{ticketPrice} SOL</span>
           </div>
           <div className="flex items-center gap-2">
@@ -58,7 +58,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
             </Button>
           </div>
           <Button className="flex-1 max-w-[150px]">
-            <Ticket className="mr-2 h-4 w-4" /> Comprar
+            <Ticket className="mr-2 h-4 w-4" /> Buy
           </Button>
         </div>
       </div>
@@ -68,19 +68,20 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
   return (
     <Card className="max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Get Your Tickets</CardTitle>
-        <CardDescription>Secure your spot at {eventTitle}</CardDescription>
+        <CardTitle>Purchase Tickets</CardTitle>
+        <CardDescription>
+          Get your tickets for {eventTitle}
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div>
-            <Label className="text-base">Price per Ticket</Label>
-            <div className="mt-2 text-2xl font-bold">{ticketPrice} SOL</div>
+            <Label>Price per ticket</Label>
+            <div className="text-2xl font-bold">{ticketPrice} SOL</div>
           </div>
-          
           <div>
-            <Label className="text-base">Number of Tickets</Label>
-            <div className="flex items-center justify-center mt-2 space-x-4">
+            <Label>Quantity</Label>
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="icon"
@@ -89,7 +90,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
               >
                 <Minus className="h-4 w-4" />
               </Button>
-              <span className="text-2xl font-bold min-w-[3ch] text-center">
+              <span className="text-xl font-bold min-w-[3ch] text-center">
                 {ticketQuantity}
               </span>
               <Button
@@ -102,19 +103,17 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
               </Button>
             </div>
           </div>
-        </div>
-      </CardContent>
-      <CardFooter className="flex flex-col space-y-4">
-        <div className="w-full pt-4 border-t">
-          <div className="flex justify-between items-center">
-            <span className="text-lg font-medium">Total</span>
-            <span className="text-2xl font-bold">
-              {(ticketQuantity * ticketPrice).toFixed(2)} SOL
-            </span>
+          <div>
+            <Label>Total</Label>
+            <div className="text-2xl font-bold">
+              {(ticketPrice * ticketQuantity).toFixed(2)} SOL
+            </div>
           </div>
         </div>
-        <Button className="w-full" size="lg">
-          <Ticket className="mr-2 h-5 w-5" /> Buy Tickets
+      </CardContent>
+      <CardFooter>
+        <Button className="w-full">
+          <Ticket className="mr-2 h-4 w-4" /> Purchase Tickets
         </Button>
       </CardFooter>
     </Card>

@@ -9,9 +9,10 @@ interface EventCardProps {
   image: string;
   id: string;
   location?: string;
+  price?: number;
 }
 
-export const EventCard = ({ title, date, image, id, location }: EventCardProps) => {
+export const EventCard = ({ title, date, image, id, location, price }: EventCardProps) => {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
