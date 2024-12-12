@@ -32,8 +32,8 @@ export const EventCard = ({ title, date, image, id, location }: EventCardProps) 
         <h3 className="text-lg font-semibold text-foreground">{title}</h3>
         <p className="mt-1 text-sm text-muted-foreground">{date}</p>
         <div className="mt-4 flex items-center justify-between">
-          <span className="flex items-center text-muted-foreground text-sm">
-            <MapPin className="mr-2 h-4 w-4" />
+          <span className="flex items-center text-muted-foreground text-sm truncate max-w-[60%]">
+            <MapPin className="mr-2 h-4 w-4 flex-shrink-0" />
             {location || 'Location TBA'}
           </span>
           <Button 
