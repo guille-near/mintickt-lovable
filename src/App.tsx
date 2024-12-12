@@ -44,14 +44,7 @@ const AppRoutes = () => (
         </PrivateRoute>
       }
     />
-    <Route
-      path="/event/:id"
-      element={
-        <PrivateRoute>
-          <EventDetails />
-        </PrivateRoute>
-      }
-    />
+    <Route path="/event/:id" element={<EventDetails />} />
     <Route
       path="/create"
       element={
