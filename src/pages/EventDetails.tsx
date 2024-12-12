@@ -83,18 +83,20 @@ export default function EventDetails() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
-            <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
-              <img
-                src={event.image_url || '/placeholder.svg'}
-                alt={event.title}
-                className="absolute inset-0 h-full w-full object-cover rounded-lg"
-              />
-            </div>
-            <div className="mt-6">
-              <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
+            <div className="sticky top-8 space-y-6">
+              <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
+                <img
+                  src={event.image_url || '/placeholder.svg'}
+                  alt={event.title}
+                  className="absolute inset-0 h-full w-full object-cover rounded-lg"
+                />
+              </div>
+              <div>
+                <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
+              </div>
             </div>
           </div>
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 max-h-[calc(100vh-4rem)] overflow-y-auto">
             <EventHeader
               title={event.title}
               date={new Date(event.date).toLocaleDateString()}
