@@ -24,6 +24,10 @@ export default {
         ring: "hsl(var(--ring))",
         background: "#FFFFFF",
         foreground: "hsl(var(--foreground))",
+        popover: {
+          DEFAULT: "#FFFFFF",
+          foreground: "#000000",
+        },
         primary: {
           DEFAULT: "#000000",
           foreground: "#ffffff",
