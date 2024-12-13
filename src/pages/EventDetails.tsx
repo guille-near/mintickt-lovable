@@ -1,5 +1,5 @@
 import { User } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,6 +14,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   // Sample updates data
@@ -38,7 +39,10 @@ export default function EventDetails() {
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
-      console.log('Fetching event with ID:', id);
+      if (!id || id === ':id') {
+        throw new Error('Invalid event ID');
+      }
+
       const { data, error } = await supabase
         .from('events')
         .select('*')
@@ -50,10 +54,13 @@ export default function EventDetails() {
         throw error;
       }
       
-      console.log('Fetched event:', data);
+      if (!data) {
+        throw new Error('Event not found');
+      }
+
       return data;
     },
-    enabled: !!id,
+    enabled: !!id && id !== ':id',
   });
 
   if (isLoading) {
