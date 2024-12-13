@@ -17,25 +17,6 @@ export default function EventDetails() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  // Sample updates data
-  const updates = [
-    {
-      date: "2024-05-01",
-      title: "Event Details Update",
-      message: "Stay tuned for more information about this exciting event!"
-    },
-    {
-      date: "2024-05-15",
-      title: "Ticket Information",
-      message: "Early bird tickets will be available soon. Don't miss out!"
-    },
-    {
-      date: "2024-06-01",
-      title: "Location Details",
-      message: "Check back for specific details about the venue and directions."
-    }
-  ];
-
   const { data: event, isLoading, error } = useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
@@ -45,7 +26,13 @@ export default function EventDetails() {
 
       const { data, error } = await supabase
         .from('events')
-        .select('*')
+        .select(`
+          *,
+          creator:profiles(
+            username,
+            avatar_url
+          )
+        `)
         .eq('id', id)
         .single();
 
@@ -86,6 +73,24 @@ export default function EventDetails() {
     );
   }
 
+  const updates = [
+    {
+      date: "2024-05-01",
+      title: "Event Details Update",
+      message: "Stay tuned for more information about this exciting event!"
+    },
+    {
+      date: "2024-05-15",
+      title: "Ticket Information",
+      message: "Early bird tickets will be available soon. Don't miss out!"
+    },
+    {
+      date: "2024-06-01",
+      title: "Location Details",
+      message: "Check back for specific details about the venue and directions."
+    }
+  ];
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -123,21 +128,10 @@ export default function EventDetails() {
                 date={new Date(event.date).toLocaleDateString()}
                 time={new Date(event.date).toLocaleTimeString()}
                 location={event.location || 'Location TBA'}
+                organizerName={event.organizer_name}
+                organizerAvatar={event.creator?.avatar_url}
               />
               
-              <Card className="w-full md:w-1/2 bg-card">
-                <CardContent className="flex items-center space-x-4 py-4">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src="/placeholder.svg" alt="Event Organizer" />
-                    <AvatarFallback><User className="h-6 w-6" /></AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-primary">Event Organizer</p>
-                    <p className="text-sm text-muted-foreground">Organizer</p>
-                  </div>
-                </CardContent>
-              </Card>
-
               <div>
                 <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
                 <p className="text-muted-foreground">

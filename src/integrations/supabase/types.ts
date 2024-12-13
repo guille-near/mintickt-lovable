@@ -19,6 +19,7 @@ export type Database = {
           image_url: string | null
           is_free: boolean
           location: string | null
+          organizer_name: string
           price: number | null
           remaining_tickets: number
           title: string
@@ -33,6 +34,7 @@ export type Database = {
           image_url?: string | null
           is_free?: boolean
           location?: string | null
+          organizer_name?: string
           price?: number | null
           remaining_tickets: number
           title: string
@@ -47,6 +49,7 @@ export type Database = {
           image_url?: string | null
           is_free?: boolean
           location?: string | null
+          organizer_name?: string
           price?: number | null
           remaining_tickets?: number
           title?: string
