@@ -96,9 +96,11 @@ export default function EventDetails() {
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8 pb-24 md:pb-8">
         <div className="grid gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-3">
-            <h1 className="text-6xl md:text-8xl font-bold mb-8 text-primary">{event.title}</h1>
-          </div>
+          {!isMobile && (
+            <div className="lg:col-span-3">
+              <h1 className="text-4xl md:text-6xl font-bold mb-8 text-primary">{event.title}</h1>
+            </div>
+          )}
           <div className="lg:col-span-1">
             {!isMobile && (
               <div className="sticky top-8 space-y-6">
@@ -115,13 +117,16 @@ export default function EventDetails() {
               </div>
             )}
             {isMobile && (
-              <div className="relative w-full pb-[75%]">
-                <img
-                  src={event.image_url || '/placeholder.svg'}
-                  alt={event.title}
-                  className="absolute inset-0 h-full w-full object-cover rounded-lg"
-                />
-              </div>
+              <>
+                <div className="relative w-full pb-[75%]">
+                  <img
+                    src={event.image_url || '/placeholder.svg'}
+                    alt={event.title}
+                    className="absolute inset-0 h-full w-full object-cover rounded-lg"
+                  />
+                </div>
+                <h1 className="text-4xl font-bold my-6 text-primary">{event.title}</h1>
+              </>
             )}
           </div>
           <div className="lg:col-span-2">
