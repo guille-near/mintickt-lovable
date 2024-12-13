@@ -96,6 +96,9 @@ export default function EventDetails() {
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8 pb-24 md:pb-8">
         <div className="grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-3">
+            <h1 className="text-6xl md:text-8xl font-bold mb-8 text-primary">{event.title}</h1>
+          </div>
           <div className="lg:col-span-1">
             {!isMobile && (
               <div className="sticky top-8 space-y-6">

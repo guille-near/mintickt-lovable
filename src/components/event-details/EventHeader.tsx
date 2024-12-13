@@ -20,7 +20,6 @@ export const EventHeader = ({
 }: EventHeaderProps) => {
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-primary">{title}</h1>
       <div className="flex items-center space-x-3 mb-4">
         <Avatar className="h-10 w-10">
           <AvatarImage src={organizerAvatar || ''} alt={organizerName} />
