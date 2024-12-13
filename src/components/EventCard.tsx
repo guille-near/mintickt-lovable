@@ -23,7 +23,10 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
 
   if (isMobile) {
     return (
-      <Card className="group relative overflow-hidden rounded-lg bg-card transition-all hover:shadow-lg">
+      <Card 
+        className="group relative overflow-hidden rounded-lg bg-card transition-all hover:shadow-lg cursor-pointer"
+        onClick={handleViewDetails}
+      >
         <div className="flex h-[100px]">
           <div className="w-[100px] min-w-[100px]">
             <img
