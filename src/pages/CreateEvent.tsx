@@ -4,12 +4,20 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
+import { useEffect } from "react";
 
 export default function CreateEvent() {
   const navigate = useNavigate();
   const { publicKey } = useWallet();
 
+  useEffect(() => {
+    console.log("CreateEvent component mounted");
+    console.log("Wallet public key:", publicKey?.toString());
+  }, [publicKey]);
+
   const handleSubmit = async (formData: any) => {
+    console.log("Form submission attempted", formData);
+    
     if (!publicKey) {
       toast.error("Please connect your wallet first");
       return;
@@ -22,6 +30,8 @@ export default function CreateEvent() {
         .select('id')
         .eq('wallet_address', publicKey.toString())
         .single();
+
+      console.log("Profile fetch result:", { profile, profileError });
 
       if (profileError) {
         console.error('Error fetching profile:', profileError);
