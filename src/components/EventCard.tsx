@@ -24,8 +24,8 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
   if (isMobile) {
     return (
       <Card className="group relative overflow-hidden rounded-lg bg-card transition-all hover:shadow-lg">
-        <div className="flex h-[200px]">
-          <div className="w-1/3 min-w-[200px]">
+        <div className="flex h-[120px]">
+          <div className="w-[120px] min-w-[120px]">
             <img
               src={image}
               alt={title}
@@ -48,7 +48,7 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
             <Button 
               onClick={handleViewDetails}
               variant="outline"
-              className="mt-4 w-full hover:bg-accent"
+              className="mt-2 w-full hover:bg-accent"
             >
               View Details
             </Button>
