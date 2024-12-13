@@ -96,21 +96,36 @@ export default function EventDetails() {
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8 pb-24 md:pb-8">
         <div className="grid gap-8 lg:grid-cols-3">
-          {!isMobile && (
-            <div className="lg:col-span-3">
-              <h1 className="text-4xl md:text-6xl font-bold mb-8 text-primary">{event.title}</h1>
-            </div>
-          )}
           <div className="lg:col-span-1">
-            {!isMobile && (
-              <div className="space-y-6">
-                <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
-                  <img
-                    src={event.image_url || '/placeholder.svg'}
-                    alt={event.title}
-                    className="absolute inset-0 h-full w-full object-cover rounded-lg"
+            <div className="space-y-6">
+              <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
+                <img
+                  src={event.image_url || '/placeholder.svg'}
+                  alt={event.title}
+                  className="absolute inset-0 h-full w-full object-cover rounded-lg"
+                />
+              </div>
+              {!isMobile && (
+                <>
+                  <EventHeader
+                    title={event.title}
+                    date={new Date(event.date).toLocaleDateString()}
+                    time={new Date(event.date).toLocaleTimeString()}
+                    location={event.location || 'Location TBA'}
+                    organizerName={event.organizer_name}
+                    organizerAvatar={event.creator?.avatar_url}
                   />
-                </div>
+                  <div>
+                    <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="lg:col-span-2">
+            <div className="space-y-6">
+              <h1 className="text-4xl md:text-6xl font-bold text-primary">{event.title}</h1>
+              {isMobile && (
                 <EventHeader
                   title={event.title}
                   date={new Date(event.date).toLocaleDateString()}
@@ -119,26 +134,7 @@ export default function EventDetails() {
                   organizerName={event.organizer_name}
                   organizerAvatar={event.creator?.avatar_url}
                 />
-                <div>
-                  <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
-                </div>
-              </div>
-            )}
-            {isMobile && (
-              <>
-                <div className="relative w-full pb-[75%]">
-                  <img
-                    src={event.image_url || '/placeholder.svg'}
-                    alt={event.title}
-                    className="absolute inset-0 h-full w-full object-cover rounded-lg"
-                  />
-                </div>
-                <h1 className="text-4xl font-bold my-6 text-primary">{event.title}</h1>
-              </>
-            )}
-          </div>
-          <div className="lg:col-span-2">
-            <div className="space-y-6">
+              )}
               <div>
                 <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
                 <p className="text-muted-foreground">
