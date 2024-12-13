@@ -21,9 +21,9 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
 
   return (
     <Card className="group relative overflow-hidden rounded-lg bg-card transition-all hover:shadow-lg">
-      <div className="flex h-full">
-        {/* Image container - now takes full height */}
-        <div className="w-1/3 min-w-[120px] h-full">
+      <div className="flex h-[200px]">
+        {/* Image container - takes full height */}
+        <div className="w-1/3 min-w-[200px]">
           <img
             src={image}
             alt={title}
