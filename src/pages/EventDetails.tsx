@@ -87,9 +87,9 @@ export default function EventDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <div className={`container mx-auto px-4 py-8 pb-24 md:pb-8 ${isMobile ? 'h-[calc(100vh-4rem)] overflow-y-auto' : ''}`}>
+      <main className="flex-1 container mx-auto px-4 py-8 pb-24 md:pb-8">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
             {!isMobile && (
@@ -153,7 +153,7 @@ export default function EventDetails() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
       {isMobile && <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />}
     </div>
   );
