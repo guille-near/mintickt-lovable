@@ -103,7 +103,7 @@ export default function EventDetails() {
           )}
           <div className="lg:col-span-1">
             {!isMobile && (
-              <div className="sticky top-8 space-y-6">
+              <div className="space-y-6">
                 <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
                   <img
                     src={event.image_url || '/placeholder.svg'}
@@ -111,6 +111,14 @@ export default function EventDetails() {
                     className="absolute inset-0 h-full w-full object-cover rounded-lg"
                   />
                 </div>
+                <EventHeader
+                  title={event.title}
+                  date={new Date(event.date).toLocaleDateString()}
+                  time={new Date(event.date).toLocaleTimeString()}
+                  location={event.location || 'Location TBA'}
+                  organizerName={event.organizer_name}
+                  organizerAvatar={event.creator?.avatar_url}
+                />
                 <div>
                   <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
                 </div>
@@ -131,15 +139,6 @@ export default function EventDetails() {
           </div>
           <div className="lg:col-span-2">
             <div className="space-y-6">
-              <EventHeader
-                title={event.title}
-                date={new Date(event.date).toLocaleDateString()}
-                time={new Date(event.date).toLocaleTimeString()}
-                location={event.location || 'Location TBA'}
-                organizerName={event.organizer_name}
-                organizerAvatar={event.creator?.avatar_url}
-              />
-              
               <div>
                 <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
                 <p className="text-muted-foreground">
