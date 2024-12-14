@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Play, Heart } from "lucide-react";
+import { MapPin, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -32,7 +32,7 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
             <img
               src={image}
               alt={title}
-              className="h-full w-full object-cover transition-transform group-hover:scale-105"
+              className="h-full w-full object-cover transition-transform group-hover:scale-105 rounded-lg"
             />
           </div>
 
@@ -62,18 +62,11 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
 
   return (
     <div 
-      className="group relative overflow-hidden cursor-pointer bg-white"
+      className="group relative overflow-hidden cursor-pointer bg-white w-[70%]"
       onClick={handleViewDetails}
     >
       <div className="relative aspect-square">
         <div className="absolute top-4 right-4 flex gap-2 z-20">
-          <Button 
-            size="icon" 
-            variant="ghost" 
-            className="rounded-full bg-black/20 hover:bg-black/40 text-white"
-          >
-            <Play className="h-4 w-4" />
-          </Button>
           <Button 
             size="icon" 
             variant="ghost" 
@@ -86,7 +79,7 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
         <img
           src={image}
           alt={title}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover rounded-lg"
         />
       </div>
 
