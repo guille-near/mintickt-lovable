@@ -83,7 +83,7 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
         />
       </div>
 
-      <div className="p-4 space-y-1">
+      <div className="pl-2 pt-3 space-y-1">
         <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
         <div className="space-y-1 text-sm text-muted-foreground">
           <p>{formattedDate}</p>
