@@ -61,8 +61,8 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
   });
 
   return (
-    <Card 
-      className="group relative overflow-hidden rounded-lg bg-festival text-white transition-all hover:bg-festival-hover cursor-pointer"
+    <div 
+      className="group relative overflow-hidden cursor-pointer"
       onClick={handleViewDetails}
     >
       <div className="relative h-[400px] w-full">
@@ -85,8 +85,8 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
         </div>
         
         <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-          <h3 className="text-2xl font-bold mb-2 line-clamp-2">{title}</h3>
-          <div className="space-y-2">
+          <h3 className="text-2xl font-bold mb-2 line-clamp-2 text-white">{title}</h3>
+          <div className="space-y-2 text-white">
             <p className="text-lg opacity-90">{formattedDate}</p>
             <div className="flex items-center text-lg opacity-90">
               <MapPin className="mr-2 h-5 w-5" />
@@ -104,6 +104,6 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
           className="h-full w-full object-cover"
         />
       </div>
-    </Card>
+    </div>
   );
 };
