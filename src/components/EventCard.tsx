@@ -62,11 +62,10 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
 
   return (
     <div 
-      className="group relative overflow-hidden cursor-pointer"
+      className="group relative overflow-hidden cursor-pointer bg-white"
       onClick={handleViewDetails}
     >
-      <div className="relative h-[400px] w-full">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent z-10" />
+      <div className="relative aspect-square">
         <div className="absolute top-4 right-4 flex gap-2 z-20">
           <Button 
             size="icon" 
@@ -84,25 +83,25 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
           </Button>
         </div>
         
-        <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-          <h3 className="text-2xl font-bold mb-2 line-clamp-2 text-white">{title}</h3>
-          <div className="space-y-2 text-white">
-            <p className="text-lg opacity-90">{formattedDate}</p>
-            <div className="flex items-center text-lg opacity-90">
-              <MapPin className="mr-2 h-5 w-5" />
-              <span className="truncate">
-                {location || 'Location TBA'}
-              </span>
-            </div>
-            <p className="text-xl font-semibold">{formattedPrice}</p>
-          </div>
-        </div>
-
         <img
           src={image}
           alt={title}
           className="h-full w-full object-cover"
         />
+      </div>
+
+      <div className="p-4 space-y-1">
+        <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
+        <div className="space-y-1 text-sm text-muted-foreground">
+          <p>{formattedDate}</p>
+          <div className="flex items-center">
+            <MapPin className="mr-1 h-4 w-4" />
+            <span className="truncate">
+              {location || 'Location TBA'}
+            </span>
+          </div>
+          <p className="font-medium text-foreground">{formattedPrice}</p>
+        </div>
       </div>
     </div>
   );
