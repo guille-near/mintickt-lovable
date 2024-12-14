@@ -24,6 +24,10 @@ export default {
         ring: "hsl(var(--ring))",
         background: "#FFFFFF",
         foreground: "hsl(var(--foreground))",
+        festival: {
+          DEFAULT: "#B01E28",
+          hover: "#8B1922",
+        },
         popover: {
           DEFAULT: "#FFFFFF",
           foreground: "#000000",

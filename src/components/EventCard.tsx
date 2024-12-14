@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin } from "lucide-react";
+import { MapPin, Play, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -53,37 +53,56 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
     );
   }
 
-  return (
-    <Card className="group relative overflow-hidden rounded-lg bg-card transition-all hover:shadow-lg">
-      <div className="flex flex-col">
-        <div className="h-[200px] w-full">
-          <img
-            src={image}
-            alt={title}
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
-          />
-        </div>
+  const formattedPrice = price ? `€${price.toFixed(2)}` : 'Free';
+  const formattedDate = new Date(date).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
 
-        <div className="p-4 space-y-4">
+  return (
+    <Card 
+      className="group relative overflow-hidden rounded-lg bg-festival text-white transition-all hover:bg-festival-hover cursor-pointer"
+      onClick={handleViewDetails}
+    >
+      <div className="relative h-[400px] w-full">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent z-10" />
+        <div className="absolute top-4 right-4 flex gap-2 z-20">
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="rounded-full bg-black/20 hover:bg-black/40 text-white"
+          >
+            <Play className="h-4 w-4" />
+          </Button>
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="rounded-full bg-black/20 hover:bg-black/40 text-white"
+          >
+            <Heart className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
+          <h3 className="text-2xl font-bold mb-2 line-clamp-2">{title}</h3>
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-foreground line-clamp-2">{title}</h3>
-            <p className="text-sm text-muted-foreground">{date}</p>
-            <div className="flex items-center min-w-0">
-              <MapPin className="mr-2 h-4 w-4 flex-shrink-0 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground truncate">
+            <p className="text-lg opacity-90">{formattedDate}</p>
+            <div className="flex items-center text-lg opacity-90">
+              <MapPin className="mr-2 h-5 w-5" />
+              <span className="truncate">
                 {location || 'Location TBA'}
               </span>
             </div>
+            <p className="text-xl font-semibold">{formattedPrice}</p>
           </div>
-
-          <Button 
-            onClick={handleViewDetails}
-            variant="outline"
-            className="w-full hover:bg-accent"
-          >
-            View Details
-          </Button>
         </div>
+
+        <img
+          src={image}
+          alt={title}
+          className="h-full w-full object-cover"
+        />
       </div>
     </Card>
   );
