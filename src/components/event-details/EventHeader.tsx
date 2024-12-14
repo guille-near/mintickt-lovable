@@ -26,7 +26,7 @@ export const EventHeader = ({
           <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
         </Avatar>
         <div>
-          <p className="text-sm text-muted-foreground">Organized by</p>
+          <p className="text-sm text-muted-foreground">Hosted by</p>
           <p className="font-medium">{organizerName}</p>
         </div>
       </div>
