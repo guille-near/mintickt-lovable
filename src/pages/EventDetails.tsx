@@ -124,7 +124,7 @@ export default function EventDetails() {
           </div>
           <div className="lg:col-span-2">
             <div className="space-y-6">
-              <h1 className="text-4xl md:text-6xl font-bold text-primary">{event.title}</h1>
+              <h1 className="text-4xl md:text-6xl font-extrabold text-primary">{event.title}</h1>
               {isMobile && (
                 <EventHeader
                   title={event.title}
