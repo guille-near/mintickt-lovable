@@ -9,7 +9,7 @@ import { WalletButton } from "@/components/WalletButton";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Header } from "@/components/Header";
+import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { useNavigate } from "react-router-dom";
 
 interface Profile {
@@ -101,8 +101,7 @@ export default function Account() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <AuthenticatedLayout>
       <main className="container mx-auto py-8">
         <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -162,6 +161,6 @@ export default function Account() {
           </Card>
         </div>
       </main>
-    </div>
+    </AuthenticatedLayout>
   );
 }

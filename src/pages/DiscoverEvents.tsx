@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from "@/integrations/supabase/client"
 import { EventCard } from "@/components/EventCard"
-import { Header } from "@/components/Header"
+import AuthenticatedLayout from "@/components/AuthenticatedLayout"
 
 const DiscoverEvents = () => {
   const navigate = useNavigate()
@@ -38,25 +38,22 @@ const DiscoverEvents = () => {
 
   if (isLoading) {
     return (
-      <>
-        <Header />
+      <AuthenticatedLayout>
         <div className="container py-8">Loading events...</div>
-      </>
+      </AuthenticatedLayout>
     )
   }
 
   if (error) {
     return (
-      <>
-        <Header />
+      <AuthenticatedLayout>
         <div className="container py-8">Error loading events: {error.message}</div>
-      </>
+      </AuthenticatedLayout>
     )
   }
 
   return (
-    <div className="min-h-screen">
-      <Header />
+    <AuthenticatedLayout>
       <div className="container py-8 space-y-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight">Discover Events</h1>
@@ -103,7 +100,7 @@ const DiscoverEvents = () => {
           ))}
         </div>
       </div>
-    </div>
+    </AuthenticatedLayout>
   );
 };
 

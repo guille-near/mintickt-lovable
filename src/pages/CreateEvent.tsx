@@ -3,7 +3,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Header } from "@/components/Header";
+import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { useEffect } from "react";
 
 export default function CreateEvent() {
@@ -77,13 +77,12 @@ export default function CreateEvent() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <AuthenticatedLayout>
       <main className="container mx-auto px-6 py-12">
         <div className="max-w-4xl mx-auto">
           <EventForm onSubmit={handleSubmit} />
         </div>
       </main>
-    </div>
+    </AuthenticatedLayout>
   );
 }
