@@ -30,7 +30,7 @@ export const DesktopTicketDialog = ({
           Count me in!
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="sm:max-w-md">
+      <AlertDialogContent className="sm:max-w-md" onPointerDownOutside={() => onOpenChange(false)}>
         <Card className="w-full border-none shadow-none">
           <CardHeader className="pb-4">
             <AlertDialogTitle className="text-lg">Purchase Tickets</AlertDialogTitle>

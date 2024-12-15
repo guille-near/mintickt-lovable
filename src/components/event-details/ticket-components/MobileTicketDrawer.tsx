@@ -21,7 +21,7 @@ export const MobileTicketDrawer = ({
 }: MobileTicketDrawerProps) => {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white/30 dark:bg-black/30 backdrop-blur-sm border-t border-border p-4 z-50">
-      <Drawer open={isOpen} onOpenChange={onOpenChange}>
+      <Drawer open={isOpen} onOpenChange={onOpenChange} onPointerDownOutside={() => onOpenChange(false)}>
         <DrawerTrigger asChild>
           <Button size="lg" className="w-full">
             Count me in!
