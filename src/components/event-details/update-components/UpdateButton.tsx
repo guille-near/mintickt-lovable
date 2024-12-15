@@ -22,7 +22,7 @@ export const UpdateButton = ({ update, className }: UpdateButtonProps) => {
             <time className="truncate">{formatDate(update.date)}</time>
           </div>
           <h3 className="font-semibold text-left truncate">{update.title}</h3>
-          <p className="text-sm text-muted-foreground text-left line-clamp-2 break-words">
+          <p className="text-sm text-muted-foreground text-left overflow-hidden text-ellipsis line-clamp-2 break-words">
             {update.message}
           </p>
         </div>
