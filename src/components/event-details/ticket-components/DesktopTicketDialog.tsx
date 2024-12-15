@@ -1,6 +1,6 @@
-import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Minus, Plus } from "lucide-react";
 
@@ -33,10 +33,10 @@ export const DesktopTicketDialog = ({
       <AlertDialogContent>
         <Card className="w-full border-none shadow-none">
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Purchase Tickets</CardTitle>
-            <CardDescription className="text-sm">
+            <AlertDialogTitle className="text-lg">Purchase Tickets</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
               Get your tickets for {eventTitle}
-            </CardDescription>
+            </AlertDialogDescription>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="flex items-center justify-between gap-4">

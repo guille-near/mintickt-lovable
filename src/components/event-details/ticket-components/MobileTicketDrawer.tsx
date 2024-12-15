@@ -31,7 +31,7 @@ export const MobileTicketDrawer = ({
           <DrawerHeader>
             <DrawerTitle>Purchase Tickets</DrawerTitle>
           </DrawerHeader>
-          <div className="px-4">
+          <div className="px-4 pb-8">
             <TicketControls
               ticketPrice={ticketPrice}
               ticketQuantity={ticketQuantity}
