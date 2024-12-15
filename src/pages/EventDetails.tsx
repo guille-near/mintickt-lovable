@@ -84,7 +84,7 @@ export default function EventDetails() {
               <div className={`${isMobile ? '' : 'sticky top-0 max-h-[calc(100vh-4rem)] overflow-y-auto'}`}>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <div className="relative aspect-square w-full cursor-pointer rounded-lg overflow-hidden">
+                    <div className="relative w-full cursor-pointer rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
                       <img
                         src={event.image_url || '/placeholder.svg'}
                         alt={event.title}
