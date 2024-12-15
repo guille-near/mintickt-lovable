@@ -6,7 +6,7 @@ export const SimpleHeader = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 bg-background/80 dark:bg-transparent backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:supports-[backdrop-filter]:bg-transparent">
       <div className="container mx-auto flex items-center justify-between p-6">
         <img 
           src="/Logo.svg" 
