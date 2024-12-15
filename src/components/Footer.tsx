@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Twitter, Link } from "lucide-react";
+import { X, Instagram, Link } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -12,12 +12,12 @@ const Footer = () => {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-4">
               <a
-                href="https://facebook.com"
+                href="https://x.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                <Facebook size={20} />
+                <X size={20} />
               </a>
               <a
                 href="https://instagram.com"
@@ -26,14 +26,6 @@ const Footer = () => {
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <Instagram size={20} />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <Twitter size={20} />
               </a>
             </div>
             <div className="flex items-center gap-4 text-sm">
