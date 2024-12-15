@@ -53,8 +53,8 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
     return (
       <Card className="w-full overflow-hidden">
         <CardHeader>
-          <CardTitle>Actualizaciones</CardTitle>
-          <CardDescription>Cargando actualizaciones...</CardDescription>
+          <CardTitle>Updates</CardTitle>
+          <CardDescription>Loading updates...</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -64,8 +64,8 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
     return (
       <Card className="w-full overflow-hidden">
         <CardHeader>
-          <CardTitle>Actualizaciones</CardTitle>
-          <CardDescription>No hay actualizaciones disponibles</CardDescription>
+          <CardTitle>Updates</CardTitle>
+          <CardDescription>No updates available</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -74,8 +74,8 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
   return (
     <Card className="w-full overflow-hidden">
       <CardHeader>
-        <CardTitle>Actualizaciones</CardTitle>
-        <CardDescription>Últimas actualizaciones del organizador</CardDescription>
+        <CardTitle>Updates</CardTitle>
+        <CardDescription>Latest updates from the organizer</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
