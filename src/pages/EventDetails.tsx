@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Card } from "@/components/ui/card";
 
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
@@ -92,16 +93,7 @@ export default function EventDetails() {
                         organizerAvatar={event.creator?.avatar_url}
                       />
                     </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button size="lg" className="w-full">
-                          Count Me In!
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="sm:max-w-[425px]">
-                        <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
                   </>
                 )}
               </div>

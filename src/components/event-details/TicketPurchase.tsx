@@ -29,8 +29,8 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
     }
   };
 
-  const MobileTicketControls = () => (
-    <div className="space-y-6 px-4">
+  const TicketControls = () => (
+    <div className="space-y-6">
       <div>
         <Label>Price per ticket</Label>
         <div className="text-2xl font-bold">{ticketPrice} SOL</div>
@@ -77,14 +77,16 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
         <Drawer open={isOpen} onOpenChange={setIsOpen}>
           <DrawerTrigger asChild>
             <Button className="w-full h-11">
-              Buy
+              Count me in!
             </Button>
           </DrawerTrigger>
           <DrawerContent>
             <DrawerHeader>
               <DrawerTitle>Purchase Tickets</DrawerTitle>
             </DrawerHeader>
-            <MobileTicketControls />
+            <div className="px-4">
+              <TicketControls />
+            </div>
           </DrawerContent>
         </Drawer>
       </div>
@@ -95,7 +97,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button className="w-full">
-          Buy
+          Count me in!
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
