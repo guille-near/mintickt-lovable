@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTrigger,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -91,6 +92,9 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
+                    <DialogTitle className="sr-only">
+                      {update.title}
+                    </DialogTitle>
                     <div className="p-4">
                       <UpdateContent update={update} />
                     </div>
