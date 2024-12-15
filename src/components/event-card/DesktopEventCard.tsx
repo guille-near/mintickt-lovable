@@ -55,7 +55,7 @@ export const DesktopEventCard = ({
       <div className="pl-2 pt-3 space-y-1">
         <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
         <div className="space-y-1 text-sm">
-          <div className="flex items-center text-custom-pink">
+          <div className="flex items-center text-custom-pink relative after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/50 after:to-transparent after:animate-shine after:mask-gradient">
             <Calendar className="mr-1 h-4 w-4" />
             <p>{formatDate(date)}</p>
           </div>
