@@ -114,6 +114,8 @@ export default function EventDetails() {
                   description={event.description}
                   location={event.location}
                   id={event.id}
+                  price={event.price}
+                  title={event.title}
                 />
               </div>
             </div>
