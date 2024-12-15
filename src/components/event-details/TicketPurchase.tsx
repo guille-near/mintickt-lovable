@@ -66,7 +66,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
         </div>
       </div>
       <Button className="w-full">
-        Buy
+        Buy Tickets
       </Button>
     </div>
   );
@@ -148,7 +148,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
           </CardContent>
           <CardFooter>
             <Button className="w-full h-9 text-sm">
-              Buy
+              Buy Tickets
             </Button>
           </CardFooter>
         </Card>
