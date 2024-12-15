@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { useNavigate } from "react-router-dom";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface Profile {
   username: string | null;
@@ -103,7 +104,10 @@ export default function Account() {
   return (
     <AuthenticatedLayout>
       <main className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold">Account Settings</h1>
+          <ThemeToggle />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="p-6 col-span-2">
             <form

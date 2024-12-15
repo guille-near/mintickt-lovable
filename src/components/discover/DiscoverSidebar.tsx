@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthProvider";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Home, Search, CalendarDays, MapPin, Tags, Plus, User } from "lucide-react"
 import {
   Sidebar,
@@ -118,7 +117,6 @@ export function DiscoverSidebar() {
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
         <div className="flex items-center gap-4">
-          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="focus:outline-none">
