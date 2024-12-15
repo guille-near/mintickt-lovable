@@ -139,7 +139,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
       </CardContent>
       <CardFooter>
         <Button className="w-full h-9 text-sm">
-          <Ticket className="mr-2 h-4 w-4" /> Count Me In!
+          Buy
         </Button>
       </CardFooter>
     </Card>
