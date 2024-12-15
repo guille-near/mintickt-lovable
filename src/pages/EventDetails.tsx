@@ -12,6 +12,24 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+const dummyUpdates = [
+  {
+    date: "2024-03-20",
+    title: "¡Cambio de horario!",
+    message: "Queridos asistentes, hemos ajustado el horario del evento para comenzar una hora más tarde. El nuevo horario de inicio será a las 19:00h. Este cambio nos permitirá asegurar una mejor experiencia para todos. ¡Gracias por vuestra comprensión!"
+  },
+  {
+    date: "2024-03-15",
+    title: "Confirmación artista invitado",
+    message: "¡Estamos emocionados de anunciar que tendremos un artista sorpresa! No podemos revelar su nombre todavía, pero os aseguramos que será una actuación inolvidable. ¡Estad atentos a más actualizaciones!"
+  },
+  {
+    date: "2024-03-10",
+    title: "Información sobre parking",
+    message: "Hemos conseguido un acuerdo con el parking cercano al venue. Los asistentes al evento tendrán un 50% de descuento mostrando su entrada. El parking está ubicado en Calle Principal 123, a solo 2 minutos andando del lugar del evento."
+  }
+];
+
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -50,30 +68,8 @@ export default function EventDetails() {
     enabled: !!id && id !== ':id',
   });
 
-  const { data: eventUpdates = [], isLoading: updatesLoading } = useQuery({
-    queryKey: ['event-updates', id],
-    queryFn: async () => {
-      if (!id) return [];
-
-      const { data, error } = await supabase
-        .from('event_updates')
-        .select('*')
-        .eq('event_id', id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching updates:', error);
-        return [];
-      }
-
-      return data.map(update => ({
-        date: new Date(update.created_at).toLocaleDateString(),
-        title: update.title,
-        message: update.message
-      }));
-    },
-    enabled: !!id
-  });
+  // For now, we'll use dummy updates instead of fetching from the database
+  const eventUpdates = dummyUpdates;
 
   if (eventLoading) {
     return (
