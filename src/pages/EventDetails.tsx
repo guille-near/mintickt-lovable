@@ -77,7 +77,7 @@ export default function EventDetails() {
     <div className="min-h-screen flex flex-col">
       <SimpleHeader />
       <div className="flex-1 overflow-hidden">
-        <div className="max-w-4xl mx-auto w-full px-2 sm:px-4 py-8">
+        <div className="max-w-4xl mx-auto w-full px-2 sm:px-4 pt-4">
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-1">
               <div className="space-y-6 sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto">
@@ -113,9 +113,9 @@ export default function EventDetails() {
                     organizerAvatar={event.creator?.avatar_url}
                   />
                 )}
-              <div>
-                <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
-                <div className="space-y-4 text-muted-foreground">
+                <div>
+                  <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
+                  <div className="space-y-4 text-muted-foreground">
                   <p>
                     {event.description || 'No description available.'}
                   </p>
@@ -139,20 +139,21 @@ export default function EventDetails() {
                     Don't miss out on this extraordinary opportunity to be part of something special. Secure your tickets now and prepare for an event that will exceed your expectations.
                   </p>
                 </div>
-              </div>
-
-              {!isMobile && (
-                <div className="w-full">
-                  <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
+                  </div>
                 </div>
-              )}
 
-              <EventLocation 
-                location={event.location || 'Location TBA'} 
-                mapUrl="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.982939764862!2d-73.98823908459384!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1629794729765!5m2!1sen!2sus"
-              />
+                {!isMobile && (
+                  <div className="w-full">
+                    <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
+                  </div>
+                )}
 
-              <EventUpdates eventId={id || ''} />
+                <EventLocation 
+                  location={event.location || 'Location TBA'} 
+                  mapUrl="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.982939764862!2d-73.98823908459384!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1629794729765!5m2!1sen!2sus"
+                />
+
+                <EventUpdates eventId={id || ''} />
               </div>
             </div>
           </div>
