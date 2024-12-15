@@ -7,6 +7,8 @@ import { EventContent } from "@/components/event-details/EventContent";
 import { TicketPurchase } from "@/components/event-details/TicketPurchase";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
@@ -76,19 +78,31 @@ export default function EventDetails() {
         <div className="max-w-4xl mx-auto w-full">
           <div className={`grid gap-8 ${isMobile ? '' : 'lg:grid-cols-3'}`}>
             <div className={`${isMobile ? 'px-4' : 'lg:col-span-1'}`}>
-              <div className={`${isMobile ? '' : 'sticky top-0 max-h-[calc(100vh-4rem)] overflow-y-auto'}`}>
+              <div className={`${isMobile ? '' : 'sticky top-0 max-h-[calc(100vh-4rem)] overflow-y-auto space-y-6'}`}>
                 <EventImage imageUrl={event.image_url} title={event.title} />
                 {!isMobile && (
-                  <div className="mt-6">
-                    <EventHeader
-                      title={event.title}
-                      date={new Date(event.date).toLocaleDateString()}
-                      time={new Date(event.date).toLocaleTimeString()}
-                      location={event.location || 'Location TBA'}
-                      organizerName={event.organizer_name}
-                      organizerAvatar={event.creator?.avatar_url}
-                    />
-                  </div>
+                  <>
+                    <div>
+                      <EventHeader
+                        title={event.title}
+                        date={new Date(event.date).toLocaleDateString()}
+                        time={new Date(event.date).toLocaleTimeString()}
+                        location={event.location || 'Location TBA'}
+                        organizerName={event.organizer_name}
+                        organizerAvatar={event.creator?.avatar_url}
+                      />
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="lg" className="w-full">
+                          Count Me In!
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="sm:max-w-[425px]">
+                        <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </>
                 )}
               </div>
             </div>
@@ -104,11 +118,6 @@ export default function EventDetails() {
                     organizerName={event.organizer_name}
                     organizerAvatar={event.creator?.avatar_url}
                   />
-                )}
-                {!isMobile && (
-                  <div className="w-full">
-                    <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
-                  </div>
                 )}
                 <EventContent 
                   description={event.description}
