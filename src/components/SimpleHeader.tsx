@@ -1,12 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export const SimpleHeader = () => {
   const navigate = useNavigate();
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setHasScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 dark:bg-transparent backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:supports-[backdrop-filter]:bg-transparent">
+    <header className={`sticky top-0 z-50 transition-all duration-200 ${
+      hasScrolled ? "bg-background/80 dark:bg-transparent backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:supports-[backdrop-filter]:bg-transparent" : ""
+    }`}>
       <div className="container mx-auto flex items-center justify-between p-6">
         <img 
           src="/Logo.svg" 
