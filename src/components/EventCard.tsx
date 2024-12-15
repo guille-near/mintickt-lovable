@@ -69,7 +69,7 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
 
   return (
     <div 
-      className="group relative overflow-hidden cursor-pointer bg-white w-[95%]"
+      className="group relative overflow-hidden cursor-pointer bg-card w-[95%]"
       onClick={handleViewDetails}
     >
       <div className="relative aspect-square">
