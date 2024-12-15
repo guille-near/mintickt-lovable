@@ -30,7 +30,7 @@ export const DesktopTicketDialog = ({
           Count me in!
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="sm:max-w-md" onPointerDownOutside={() => onOpenChange(false)}>
+      <AlertDialogContent className="sm:max-w-md">
         <Card className="w-full border-none shadow-none">
           <CardHeader className="pb-4">
             <AlertDialogTitle className="text-lg">Purchase Tickets</AlertDialogTitle>
@@ -51,7 +51,10 @@ export const DesktopTicketDialog = ({
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
-                    onClick={onDecrease}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDecrease();
+                    }}
                     disabled={ticketQuantity <= 1}
                   >
                     <Minus className="h-3 w-3" />
@@ -63,7 +66,10 @@ export const DesktopTicketDialog = ({
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
-                    onClick={onIncrease}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onIncrease();
+                    }}
                     disabled={ticketQuantity >= 10}
                   >
                     <Plus className="h-3 w-3" />
