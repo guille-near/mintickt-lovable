@@ -79,7 +79,7 @@ export default function EventDetails() {
       <div className="flex-1 max-w-4xl mx-auto w-full px-2 sm:px-4 py-8">
         <div className="grid gap-8 lg:grid-cols-3 h-full">
           <div className="lg:col-span-1">
-            <div className="space-y-6 sticky top-28">
+            <div className="space-y-6 sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto">
               <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
                 <img
                   src={event.image_url || '/placeholder.svg'}
