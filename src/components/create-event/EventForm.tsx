@@ -7,21 +7,20 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DateTimePicker } from "./DateTimePicker";
 import { ImageUpload } from "./ImageUpload";
 import { GiphySearch } from "./GiphySearch";
-import { LocationInput } from "./LocationInput";
 import { useState, useRef, useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 
-interface FormData {
-  title: string;
-  date: Date | undefined;
-  location: string;
-  description: string;
+export interface FormData {
+  title?: string;
+  date?: Date;
+  location?: string;
+  description?: string;
   image: File | null;
-  giphyUrl: string;
+  giphyUrl?: string;
   ticketType: "free" | "paid";
-  price: string;
-  totalTickets: string;
-  organizerName: string;
+  price?: string;
+  totalTickets?: string;
+  organizerName?: string;
 }
 
 interface EventFormProps {
@@ -75,10 +74,15 @@ export const EventForm = ({ form }: EventFormProps) => {
                 />
               </div>
 
-              <LocationInput 
-                value={formValues.location}
-                onChange={(location) => handleChange('location', location)}
-              />
+              <div>
+                <Label htmlFor="location" className="text-foreground">Location</Label>
+                <Input 
+                  type="text"
+                  {...register('location')}
+                  placeholder="Enter event location"
+                  className="bg-input text-input-foreground placeholder-muted-foreground border-input"
+                />
+              </div>
 
               <div>
                 <Label htmlFor="description" className="text-foreground">Description</Label>

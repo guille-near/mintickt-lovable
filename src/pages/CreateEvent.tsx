@@ -6,7 +6,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { EventForm } from "@/components/create-event/EventForm";
+import { EventForm, FormData } from "@/components/create-event/EventForm";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -17,15 +17,13 @@ const formSchema = z.object({
     required_error: "Date is required",
   }),
   location: z.string().min(1, "Location is required"),
-  image: z.instanceof(File).optional().nullable(),
+  image: z.instanceof(File).nullable(),
   giphyUrl: z.string().optional(),
   ticketType: z.enum(["free", "paid"]),
   price: z.string().optional(),
   totalTickets: z.string().min(1, "Total tickets is required"),
   organizerName: z.string().min(1, "Organizer name is required"),
 });
-
-type FormData = z.infer<typeof formSchema>;
 
 export default function CreateEvent() {
   const { toast } = useToast();
@@ -36,6 +34,7 @@ export default function CreateEvent() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       ticketType: "free",
+      image: null,
       organizerName: "",
       totalTickets: "100",
     },
@@ -113,8 +112,8 @@ export default function CreateEvent() {
           location: formData.location,
           image_url: imageUrl,
           price: formData.ticketType === 'free' ? 0 : parseFloat(formData.price || "0"),
-          total_tickets: parseInt(formData.totalTickets),
-          remaining_tickets: parseInt(formData.totalTickets),
+          total_tickets: parseInt(formData.totalTickets || "0"),
+          remaining_tickets: parseInt(formData.totalTickets || "0"),
           creator_id: profiles.id,
           is_free: formData.ticketType === 'free',
           organizer_name: formData.organizerName,
