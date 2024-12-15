@@ -64,8 +64,8 @@ export function DiscoverSidebar() {
           src="/Logo.svg" 
           alt="NFT Tickets Logo" 
           className={`cursor-pointer dark:invert transition-all duration-200 ${
-            state === "collapsed" ? "h-8 w-8" : "h-8 w-auto"
-          } mx-auto`}
+            state === "collapsed" ? "w-8 h-8" : "w-32 h-8"
+          }`}
           onClick={() => navigate('/discover')} 
         />
       </SidebarHeader>
@@ -81,8 +81,8 @@ export function DiscoverSidebar() {
                       <SidebarMenuButton
                         onClick={() => navigate(item.url)}
                       >
-                        <item.icon className="h-4 w-4 shrink-0" />
-                        <span className="truncate">{item.title}</span>
+                        <item.icon className="h-5 w-5 shrink-0" />
+                        <span>{item.title}</span>
                       </SidebarMenuButton>
                     </TooltipTrigger>
                     {state === "collapsed" && (
@@ -99,8 +99,8 @@ export function DiscoverSidebar() {
                     <SidebarMenuButton
                       onClick={() => navigate('/create')}
                     >
-                      <Plus className="h-4 w-4 shrink-0" />
-                      <span className="truncate">Create Event</span>
+                      <Plus className="h-5 w-5 shrink-0" />
+                      <span>Create Event</span>
                     </SidebarMenuButton>
                   </TooltipTrigger>
                   {state === "collapsed" && (
