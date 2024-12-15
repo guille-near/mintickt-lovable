@@ -44,7 +44,7 @@ export function DiscoverSidebar() {
           <img 
             src="/Logo.svg" 
             alt="NFT Tickets Logo" 
-            className="cursor-pointer dark:invert transition-all duration-200 w-8 h-8 group-data-[collapsible=icon]:mx-auto" 
+            className="cursor-pointer dark:invert transition-all duration-200 w-8 h-8" 
             onClick={() => navigate('/discover')} 
           />
         </div>
