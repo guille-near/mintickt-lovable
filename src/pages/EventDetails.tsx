@@ -82,34 +82,26 @@ export default function EventDetails() {
           <div className={`grid gap-8 ${isMobile ? '' : 'lg:grid-cols-3'}`}>
             <div className={`${isMobile ? 'px-4' : 'lg:col-span-1'}`}>
               <div className={`${isMobile ? '' : 'sticky top-0 max-h-[calc(100vh-4rem)] overflow-y-auto'}`}>
-                {isMobile ? (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <div className="relative w-full pb-[60%] cursor-pointer rounded-lg overflow-hidden mx-auto">
-                        <img
-                          src={event.image_url || '/placeholder.svg'}
-                          alt={event.title}
-                          className="absolute inset-0 h-full w-full object-cover"
-                        />
-                      </div>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-full h-[90vh] p-0">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div className="relative aspect-square w-full cursor-pointer rounded-lg overflow-hidden">
                       <img
                         src={event.image_url || '/placeholder.svg'}
                         alt={event.title}
-                        className="w-full h-full object-contain"
+                        className="absolute inset-0 h-full w-full object-cover hover:scale-105 transition-transform duration-300"
                       />
-                    </DialogContent>
-                  </Dialog>
-                ) : (
-                  <div className="relative w-full pb-[100%] rounded-lg overflow-hidden">
-                    <img
-                      src={event.image_url || '/placeholder.svg'}
-                      alt={event.title}
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  </div>
-                )}
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-[90vw] max-h-[90vh] p-0">
+                    <div className="relative aspect-square w-full">
+                      <img
+                        src={event.image_url || '/placeholder.svg'}
+                        alt={event.title}
+                        className="absolute inset-0 h-full w-full object-contain"
+                      />
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 {!isMobile && (
                   <div className="mt-6">
                     <EventHeader
