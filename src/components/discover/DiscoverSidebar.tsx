@@ -58,7 +58,7 @@ export function DiscoverSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-b p-4 flex justify-start">
+      <SidebarHeader className="border-b flex justify-start items-center h-[57px] px-4">
         <img 
           src="/Logo.svg" 
           alt="NFT Tickets Logo" 
