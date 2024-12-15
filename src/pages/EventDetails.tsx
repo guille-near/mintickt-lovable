@@ -76,11 +76,11 @@ export default function EventDetails() {
   return (
     <div className="min-h-screen flex flex-col">
       <SimpleHeader />
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1">
         <div className="max-w-4xl mx-auto w-full px-2 sm:px-4">
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-1">
-              <div className="sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto">
+              <div className="sticky top-0 max-h-[calc(100vh-4rem)] overflow-y-auto">
                 <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
                   <img
                     src={event.image_url || '/placeholder.svg'}
