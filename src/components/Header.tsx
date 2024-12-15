@@ -20,7 +20,7 @@ export const Header = () => {
         <img 
           src="/Logo.svg" 
           alt="NFT Tickets Logo" 
-          className="h-8 cursor-pointer"
+          className="h-12 cursor-pointer" 
           onClick={() => navigate('/discover')} 
         />
         <div className="flex items-center gap-4">
