@@ -39,15 +39,15 @@ export const MobileEventCard = ({
           />
         </div>
 
-        <div className="flex flex-col flex-1 p-3 justify-between">
-          <div className="space-y-1">
+        <div className="flex flex-col flex-1 p-3 justify-between min-w-0">
+          <div className="space-y-1 min-w-0">
             <h3 className="text-base font-semibold text-foreground line-clamp-1">{title}</h3>
             <div className="flex items-center text-custom-pink">
-              <Calendar className="mr-1 h-3 w-3" />
-              <p className="text-sm">{formatDate(date)}</p>
+              <Calendar className="mr-1 h-3 w-3 flex-shrink-0" />
+              <p className="text-sm truncate">{formatDate(date)}</p>
             </div>
-            <div className="flex items-center min-w-0">
-              <MapPin className="mr-1 h-3 w-3 flex-shrink-0 text-muted-foreground" />
+            <div className="flex items-center space-x-1 min-w-0">
+              <MapPin className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
               <span className="text-sm text-muted-foreground truncate">
                 {location || 'Location TBA'}
               </span>

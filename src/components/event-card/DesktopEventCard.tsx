@@ -56,14 +56,14 @@ export const DesktopEventCard = ({
         <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
         <div className="space-y-1 text-sm">
           <div className="flex items-center text-custom-pink">
-            <Calendar className="mr-1 h-4 w-4" />
-            <p className="relative inline-flex bg-[linear-gradient(110deg,#FF00E5,45%,#ffffff,55%,#FF00E5)] bg-[length:200%_100%] animate-shine bg-clip-text text-transparent">
+            <Calendar className="mr-1 h-4 w-4 flex-shrink-0" />
+            <p className="relative inline-flex bg-[linear-gradient(110deg,#FF00E5,45%,#ffffff,55%,#FF00E5)] bg-[length:200%_100%] animate-shine bg-clip-text text-transparent truncate">
               {formatDate(date)}
             </p>
           </div>
-          <div className="flex items-center text-muted-foreground">
-            <MapPin className="mr-1 h-4 w-4" />
-            <span className="truncate">
+          <div className="flex items-center min-w-0">
+            <MapPin className="mr-1 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+            <span className="truncate text-muted-foreground max-w-[200px]">
               {location || 'Location TBA'}
             </span>
           </div>
