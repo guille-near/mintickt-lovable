@@ -92,14 +92,12 @@ export default function EventDetails() {
                       />
                     </div>
                   </DialogTrigger>
-                  <DialogContent className="max-w-[90vw] max-h-[90vh] p-0">
-                    <div className="relative aspect-square w-full">
-                      <img
-                        src={event.image_url || '/placeholder.svg'}
-                        alt={event.title}
-                        className="absolute inset-0 h-full w-full object-contain"
-                      />
-                    </div>
+                  <DialogContent className="max-w-[min(90vw,90vh)] max-h-[90vh] w-[90vh] p-0">
+                    <img
+                      src={event.image_url || '/placeholder.svg'}
+                      alt={event.title}
+                      className="h-full w-full object-contain"
+                    />
                   </DialogContent>
                 </Dialog>
                 {!isMobile && (
