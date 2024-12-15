@@ -17,7 +17,7 @@ const formSchema = z.object({
     required_error: "Date is required",
   }),
   location: z.string().min(1, "Location is required"),
-  image: z.instanceof(File).optional(),
+  image: z.instanceof(File).optional().nullable(),
   giphyUrl: z.string().optional(),
   ticketType: z.enum(["free", "paid"]),
   price: z.string().optional(),
@@ -37,6 +37,7 @@ export default function CreateEvent() {
     defaultValues: {
       ticketType: "free",
       organizerName: "",
+      totalTickets: "100",
     },
   });
 
