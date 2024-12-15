@@ -1,46 +1,74 @@
-import { EventForm } from "@/components/create-event/EventForm";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
+import { EventForm } from "@/components/create-event/EventForm";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
-import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  date: z.date({
+    required_error: "Date is required",
+  }),
+  location: z.string().min(1, "Location is required"),
+  image: z.instanceof(File).optional(),
+  giphyUrl: z.string().optional(),
+  ticketType: z.enum(["free", "paid"]),
+  price: z.string().optional(),
+  totalTickets: z.string().min(1, "Total tickets is required"),
+  organizerName: z.string().min(1, "Organizer name is required"),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 export default function CreateEvent() {
+  const { toast } = useToast();
   const navigate = useNavigate();
-  const { publicKey } = useWallet();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    console.log("CreateEvent component mounted");
-    console.log("Wallet public key:", publicKey?.toString());
-  }, [publicKey]);
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      ticketType: "free",
+      organizerName: "",
+    },
+  });
 
-  const handleSubmit = async (formData: any) => {
-    console.log("Form submission attempted", formData);
-    
-    if (!publicKey) {
-      toast.error("Please connect your wallet first");
-      return;
-    }
-
+  const onSubmit = async (formData: FormData) => {
     try {
-      // First, get the profile ID for the connected wallet
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('wallet_address', publicKey.toString())
-        .single();
+      setIsSubmitting(true);
 
-      console.log("Profile fetch result:", { profile, profileError });
-
-      if (profileError) {
-        console.error('Error fetching profile:', profileError);
-        toast.error('Failed to fetch profile');
+      // Get the current user's profile
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to create an event",
+          variant: "destructive",
+        });
         return;
       }
 
-      if (!profile) {
-        toast.error('Profile not found');
+      // Get the profile ID for the current user
+      const { data: profiles, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('wallet_address', user.id)
+        .single();
+
+      if (profileError || !profiles) {
+        console.error('Error getting profile:', profileError);
+        toast({
+          title: "Error",
+          description: "Failed to get user profile",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -58,7 +86,11 @@ export default function CreateEvent() {
 
         if (uploadError) {
           console.error('Error uploading image:', uploadError);
-          toast.error('Failed to upload image');
+          toast({
+            title: "Error",
+            description: "Failed to upload image",
+            variant: "destructive",
+          });
           return;
         }
 
@@ -74,40 +106,62 @@ export default function CreateEvent() {
       const { data: event, error } = await supabase
         .from('events')
         .insert({
-          title: formData.name,
+          title: formData.title,
           description: formData.description,
           date: formData.date?.toISOString(),
           location: formData.location,
           image_url: imageUrl,
-          price: formData.ticketType === 'free' ? 0 : parseFloat(formData.price),
+          price: formData.ticketType === 'free' ? 0 : parseFloat(formData.price || "0"),
           total_tickets: parseInt(formData.totalTickets),
           remaining_tickets: parseInt(formData.totalTickets),
-          creator_id: profile.id,
-          is_free: formData.ticketType === 'free'
+          creator_id: profiles.id,
+          is_free: formData.ticketType === 'free',
+          organizer_name: formData.organizerName,
         })
         .select()
         .single();
 
       if (error) {
         console.error('Error creating event:', error);
-        toast.error('Failed to create event');
+        toast({
+          title: "Error",
+          description: "Failed to create event",
+          variant: "destructive",
+        });
         return;
       }
 
-      toast.success("Event created successfully!");
+      toast({
+        title: "Success",
+        description: "Event created successfully",
+      });
+
+      // Navigate to the event details page
       navigate(`/event/${event.id}`);
     } catch (error) {
       console.error('Error:', error);
-      toast.error('An unexpected error occurred');
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <AuthenticatedLayout>
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-4xl mx-auto">
-          <EventForm onSubmit={handleSubmit} />
-        </div>
+      <div className="container max-w-4xl mx-auto py-6">
+        <h1 className="text-4xl font-bold mb-8">Create Event</h1>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <EventForm form={form} />
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Creating..." : "Create Event"}
+            </Button>
+          </form>
+        </Form>
       </div>
     </AuthenticatedLayout>
   );
