@@ -12,24 +12,6 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const dummyUpdates = [
-  {
-    date: "2024-03-20",
-    title: "¡Cambio de horario!",
-    message: "Queridos asistentes, hemos ajustado el horario del evento para comenzar una hora más tarde. El nuevo horario de inicio será a las 19:00h. Este cambio nos permitirá asegurar una mejor experiencia para todos. ¡Gracias por vuestra comprensión!"
-  },
-  {
-    date: "2024-03-15",
-    title: "Confirmación artista invitado",
-    message: "¡Estamos emocionados de anunciar que tendremos un artista sorpresa! No podemos revelar su nombre todavía, pero os aseguramos que será una actuación inolvidable. ¡Estad atentos a más actualizaciones!"
-  },
-  {
-    date: "2024-03-10",
-    title: "Información sobre parking",
-    message: "Hemos conseguido un acuerdo con el parking cercano al venue. Los asistentes al evento tendrán un 50% de descuento mostrando su entrada. El parking está ubicado en Calle Principal 123, a solo 2 minutos andando del lugar del evento."
-  }
-];
-
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -70,9 +52,9 @@ export default function EventDetails() {
 
   if (eventLoading) {
     return (
-      <div>
+      <div className="h-screen flex flex-col">
         <SimpleHeader />
-        <div className="max-w-4xl mx-auto px-2 py-8">
+        <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
           <p className="text-primary">Loading event details...</p>
         </div>
       </div>
@@ -81,9 +63,9 @@ export default function EventDetails() {
 
   if (eventError || !event) {
     return (
-      <div>
+      <div className="h-screen flex flex-col">
         <SimpleHeader />
-        <div className="max-w-4xl mx-auto px-2 py-8">
+        <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
           <p className="text-primary">Error loading event details. Please try again later.</p>
           {eventError && <p className="text-red-400 mt-2">{(eventError as Error).message}</p>}
         </div>
@@ -92,10 +74,10 @@ export default function EventDetails() {
   }
 
   return (
-    <div>
+    <div className="h-screen flex flex-col">
       <SimpleHeader />
-      <div className="max-w-4xl mx-auto px-2 sm:px-4 py-8 pb-32 md:pb-24">
-        <div className="grid gap-8 lg:grid-cols-3">
+      <div className="flex-1 max-w-4xl mx-auto w-full px-2 sm:px-4 py-8">
+        <div className="grid gap-8 lg:grid-cols-3 h-full">
           <div className="lg:col-span-1">
             <div className="space-y-6 sticky top-28">
               <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
@@ -117,7 +99,7 @@ export default function EventDetails() {
               )}
             </div>
           </div>
-          <div className="lg:col-span-2 lg:max-h-screen lg:overflow-y-auto">
+          <div className="lg:col-span-2 h-full overflow-y-auto pr-4">
             <div className="space-y-6">
               <h1 className="text-4xl md:text-6xl font-extrabold text-primary">{event.title}</h1>
               {isMobile && (
