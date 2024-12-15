@@ -32,10 +32,26 @@ interface EventUpdatesProps {
 export const EventUpdates = ({ updates }: EventUpdatesProps) => {
   const isMobile = useIsMobile();
 
+  const UpdateButton = ({ update }: { update: Update }) => (
+    <Button 
+      variant="ghost" 
+      className="w-full justify-start h-auto p-2 hover:bg-accent"
+    >
+      <div className="flex items-start space-x-2">
+        <MessageCircle className="mt-1 h-5 w-5" />
+        <div>
+          <p className="text-sm text-muted-foreground">{update.date}</p>
+          <p className="text-sm font-medium text-left">{update.title}</p>
+          <p className="text-sm text-muted-foreground line-clamp-2 text-left">{update.message}</p>
+        </div>
+      </div>
+    </Button>
+  );
+
   const UpdateContent = ({ update }: { update: Update }) => (
-    <div className="space-y-2">
+    <div className="space-y-4">
       <p className="text-sm text-muted-foreground">{update.date}</p>
-      <p className="text-sm font-medium">{update.title}</p>
+      <p className="text-lg font-medium">{update.title}</p>
       <p className="text-sm text-muted-foreground">{update.message}</p>
     </div>
   );
@@ -52,19 +68,7 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
             isMobile ? (
               <Drawer key={index}>
                 <DrawerTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-auto p-2 hover:bg-accent"
-                  >
-                    <div className="flex items-start space-x-2">
-                      <MessageCircle className="mt-1 h-5 w-5" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">{update.date}</p>
-                        <p className="text-sm font-medium text-left">{update.title}</p>
-                        <p className="text-sm text-muted-foreground line-clamp-2 text-left">{update.message}</p>
-                      </div>
-                    </div>
-                  </Button>
+                  <UpdateButton update={update} />
                 </DrawerTrigger>
                 <DrawerContent>
                   <DrawerHeader>
@@ -79,19 +83,7 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
             ) : (
               <Dialog key={index}>
                 <DialogTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start h-auto p-2 hover:bg-accent"
-                  >
-                    <div className="flex items-start space-x-2">
-                      <MessageCircle className="mt-1 h-5 w-5" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">{update.date}</p>
-                        <p className="text-sm font-medium text-left">{update.title}</p>
-                        <p className="text-sm text-muted-foreground line-clamp-2 text-left">{update.message}</p>
-                      </div>
-                    </div>
-                  </Button>
+                  <UpdateButton update={update} />
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
