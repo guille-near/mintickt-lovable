@@ -12,6 +12,8 @@ import { toast } from "sonner";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Camera, User } from "lucide-react";
 
 interface Profile {
   username: string | null;
@@ -30,6 +32,7 @@ export default function Account() {
     avatar_url: "",
     wallet_address: "",
   });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -66,6 +69,40 @@ export default function Account() {
     } catch (error: any) {
       console.error("Profile fetch error:", error);
       toast.error("An error occurred while loading your profile");
+    }
+  }
+
+  async function uploadAvatar(event: React.ChangeEvent<HTMLInputElement>) {
+    try {
+      setUploading(true);
+
+      if (!event.target.files || event.target.files.length === 0) {
+        return;
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setProfile({ ...profile, avatar_url: publicUrl });
+      toast.success("Profile picture uploaded successfully!");
+    } catch (error: any) {
+      console.error("Error uploading avatar:", error);
+      toast.error("Error uploading profile picture");
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -109,7 +146,37 @@ export default function Account() {
           <ThemeToggle />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-6 col-span-2">
+          <Card className="p-6">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="relative">
+                <Avatar className="h-32 w-32">
+                  <AvatarImage src={profile.avatar_url || undefined} />
+                  <AvatarFallback>
+                    <User className="h-16 w-16" />
+                  </AvatarFallback>
+                </Avatar>
+                <Label 
+                  htmlFor="avatar-upload" 
+                  className="absolute bottom-0 right-0 p-2 bg-background border rounded-full cursor-pointer hover:bg-accent transition-colors"
+                >
+                  <Camera className="h-4 w-4" />
+                  <Input 
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={uploadAvatar}
+                    disabled={uploading}
+                    className="hidden"
+                  />
+                </Label>
+              </div>
+              <WalletButton />
+              <p className="text-sm text-muted-foreground break-all">
+                {publicKey?.toString() || profile.wallet_address || "Not connected"}
+              </p>
+            </div>
+          </Card>
+          <Card className="p-6 md:col-span-2">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -150,18 +217,6 @@ export default function Account() {
               </div>
               <Button type="submit">Save Changes</Button>
             </form>
-          </Card>
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Wallet Connection</h2>
-            <div className="space-y-4">
-              <div>
-                <Label>Connected Wallet</Label>
-                <p className="text-sm text-muted-foreground break-all">
-                  {publicKey?.toString() || profile.wallet_address || "Not connected"}
-                </p>
-              </div>
-              <WalletButton />
-            </div>
           </Card>
         </div>
       </main>
