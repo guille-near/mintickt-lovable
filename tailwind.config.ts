@@ -32,7 +32,7 @@ export default {
           pink: "#FF00E5",
           gradient: {
             start: "#222222",
-            end: "#D946EF",
+            end: "#FF00E5",
           },
         },
         popover: {
