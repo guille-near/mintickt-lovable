@@ -58,16 +58,14 @@ export function DiscoverSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="h-[57px] flex items-center justify-start pl-4">
+      <div className="flex h-[57px] items-start px-4 py-4">
         <img 
           src="/Logo.svg" 
           alt="NFT Tickets Logo" 
-          className={`cursor-pointer dark:invert transition-all duration-200 ${
-            state === "collapsed" ? "w-8 h-8" : "w-8 h-8"
-          }`}
+          className={`cursor-pointer dark:invert transition-all duration-200 w-8 h-8`}
           onClick={() => navigate('/discover')} 
         />
-      </SidebarHeader>
+      </div>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Discover</SidebarGroupLabel>
