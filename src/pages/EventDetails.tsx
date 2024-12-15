@@ -116,29 +116,28 @@ export default function EventDetails() {
                 <div>
                   <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
                   <div className="space-y-4 text-muted-foreground">
-                  <p>
-                    {event.description || 'No description available.'}
-                  </p>
-                  <p>
-                    Join us for an unforgettable experience at this amazing event. We've carefully curated every detail to ensure you have the best time possible. From the moment you arrive, you'll be immersed in an atmosphere of excitement and wonder.
-                  </p>
-                  <p>
-                    This event brings together the best of entertainment, networking, and learning opportunities. Whether you're a seasoned professional or just starting out, you'll find valuable connections and insights here.
-                  </p>
-                  <p>
-                    What to expect:
-                  </p>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Interactive sessions with industry experts</li>
-                    <li>Networking opportunities with like-minded individuals</li>
-                    <li>Exclusive content and presentations</li>
-                    <li>Complimentary refreshments throughout the event</li>
-                    <li>Special surprise announcements and giveaways</li>
-                  </ul>
-                  <p>
-                    Don't miss out on this extraordinary opportunity to be part of something special. Secure your tickets now and prepare for an event that will exceed your expectations.
-                  </p>
-                </div>
+                    <p>
+                      {event.description || 'No description available.'}
+                    </p>
+                    <p>
+                      Join us for an unforgettable experience at this amazing event. We've carefully curated every detail to ensure you have the best time possible. From the moment you arrive, you'll be immersed in an atmosphere of excitement and wonder.
+                    </p>
+                    <p>
+                      This event brings together the best of entertainment, networking, and learning opportunities. Whether you're a seasoned professional or just starting out, you'll find valuable connections and insights here.
+                    </p>
+                    <p>
+                      What to expect:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-2">
+                      <li>Interactive sessions with industry experts</li>
+                      <li>Networking opportunities with like-minded individuals</li>
+                      <li>Exclusive content and presentations</li>
+                      <li>Complimentary refreshments throughout the event</li>
+                      <li>Special surprise announcements and giveaways</li>
+                    </ul>
+                    <p>
+                      Don't miss out on this extraordinary opportunity to be part of something special. Secure your tickets now and prepare for an event that will exceed your expectations.
+                    </p>
                   </div>
                 </div>
 
