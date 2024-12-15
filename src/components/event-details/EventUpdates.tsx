@@ -1,5 +1,7 @@
 import { MessageCircle } from 'lucide-react';
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -18,17 +20,35 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 
 interface Update {
+  id: string;
   date: string;
   title: string;
   message: string;
 }
 
 interface EventUpdatesProps {
-  updates: Update[];
+  eventId: string;
 }
 
-export const EventUpdates = ({ updates }: EventUpdatesProps) => {
+export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
   const isMobile = useIsMobile();
+
+  const { data: updates, isLoading } = useQuery({
+    queryKey: ['event-updates', eventId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('event_updates')
+        .select('*')
+        .eq('event_id', eventId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data.map(update => ({
+        ...update,
+        date: update.created_at
+      }));
+    }
+  });
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
@@ -63,6 +83,28 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
     </div>
   );
 
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Actualizaciones</CardTitle>
+          <CardDescription>Cargando actualizaciones...</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  if (!updates?.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Actualizaciones</CardTitle>
+          <CardDescription>No hay actualizaciones disponibles</CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -71,9 +113,9 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {updates.map((update, index) => (
+          {updates.map((update) => (
             isMobile ? (
-              <Drawer key={index}>
+              <Drawer key={update.id}>
                 <DrawerTrigger asChild>
                   <div>
                     <UpdateButton update={update} />
@@ -86,7 +128,7 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
                 </DrawerContent>
               </Drawer>
             ) : (
-              <Dialog key={index}>
+              <Dialog key={update.id}>
                 <DialogTrigger asChild>
                   <div>
                     <UpdateButton update={update} />
