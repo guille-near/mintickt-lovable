@@ -21,6 +21,15 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
     navigate(`/event/${id}`);
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    });
+  };
+
   if (isMobile) {
     return (
       <Card 
@@ -41,7 +50,7 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
               <h3 className="text-base font-semibold text-foreground line-clamp-1">{title}</h3>
               <div className="flex items-center text-custom-pink">
                 <Calendar className="mr-1 h-3 w-3" />
-                <p className="text-sm">{date}</p>
+                <p className="text-sm">{formatDate(date)}</p>
               </div>
               <div className="flex items-center min-w-0">
                 <MapPin className="mr-1 h-3 w-3 flex-shrink-0 text-muted-foreground" />
@@ -57,11 +66,6 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
   }
 
   const formattedPrice = price ? `€${price.toFixed(2)}` : 'Free';
-  const formattedDate = new Date(date).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  });
 
   return (
     <div 
@@ -91,7 +95,7 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
         <div className="space-y-1 text-sm">
           <div className="flex items-center text-custom-pink">
             <Calendar className="mr-1 h-4 w-4" />
-            <p>{formattedDate}</p>
+            <p>{formatDate(date)}</p>
           </div>
           <div className="flex items-center text-muted-foreground">
             <MapPin className="mr-1 h-4 w-4" />
