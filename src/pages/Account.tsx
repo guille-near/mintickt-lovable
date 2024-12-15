@@ -29,6 +29,7 @@ export default function Account() {
     avatar_url: "",
     wallet_address: "",
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
@@ -40,44 +41,80 @@ export default function Account() {
 
   async function getProfile() {
     try {
+      setIsLoading(true);
+      console.log("Fetching profile for user ID:", user?.id);
+      
       const { data, error } = await supabase
         .from("profiles")
         .select("username, bio, email, avatar_url, wallet_address")
         .eq("id", user?.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
-        throw error;
+        console.error("Profile fetch error:", error);
+        toast.error("Error al cargar el perfil");
+        return;
       }
 
       if (data) {
+        console.log("Profile data:", data);
         setProfile(data);
+      } else {
+        console.log("No profile found, creating one");
+        // If no profile exists, create one
+        const { error: createError } = await supabase
+          .from("profiles")
+          .insert([
+            {
+              id: user?.id,
+              email: user?.email,
+            },
+          ]);
+
+        if (createError) {
+          console.error("Profile creation error:", createError);
+          toast.error("Error al crear el perfil");
+          return;
+        }
+
+        // Set initial profile state
+        setProfile({
+          username: "",
+          bio: "",
+          email: user?.email || "",
+          avatar_url: "",
+          wallet_address: "",
+        });
       }
     } catch (error: any) {
       console.error("Profile fetch error:", error);
-      toast.error("An error occurred while loading your profile");
+      toast.error("Error al cargar el perfil");
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function updateProfile() {
     try {
-      const { error } = await supabase.from("profiles").upsert({
-        id: user?.id,
-        username: profile.username,
-        bio: profile.bio,
-        email: profile.email,
-        avatar_url: profile.avatar_url,
-        wallet_address: publicKey?.toString() || profile.wallet_address,
-      });
+      const { error } = await supabase
+        .from("profiles")
+        .upsert({
+          id: user?.id,
+          username: profile.username,
+          bio: profile.bio,
+          email: profile.email,
+          avatar_url: profile.avatar_url,
+          wallet_address: publicKey?.toString() || profile.wallet_address,
+        });
 
       if (error) {
         throw error;
       }
 
-      toast.success("Profile updated successfully!");
+      toast.success("Perfil actualizado correctamente");
     } catch (error: any) {
       console.error("Error updating profile:", error);
-      toast.error("Error updating your profile");
+      toast.error("Error al actualizar el perfil");
     }
   }
 
@@ -96,32 +133,38 @@ export default function Account() {
   return (
     <AuthenticatedLayout>
       <main className="container mx-auto py-6 px-4">
-        <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-6">
-            <div className="flex flex-col items-center space-y-4">
-              <ProfileAvatar
-                currentAvatarUrl={profile.avatar_url}
-                userId={user.id}
-                onAvatarUpdate={handleAvatarUpdate}
+        <h1 className="text-4xl font-bold mb-8">Ajustes de cuenta</h1>
+        {isLoading ? (
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="p-6">
+              <div className="flex flex-col items-center space-y-4">
+                <ProfileAvatar
+                  currentAvatarUrl={profile.avatar_url}
+                  userId={user.id}
+                  onAvatarUpdate={handleAvatarUpdate}
+                />
+                <WalletButton />
+                <p className="text-sm text-muted-foreground break-all">
+                  {publicKey?.toString() || profile.wallet_address || "No conectado"}
+                </p>
+              </div>
+            </Card>
+            <Card className="p-6 md:col-span-2">
+              <ProfileForm
+                profile={profile}
+                onProfileChange={handleProfileChange}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  updateProfile();
+                }}
               />
-              <WalletButton />
-              <p className="text-sm text-muted-foreground break-all">
-                {publicKey?.toString() || profile.wallet_address || "Not connected"}
-              </p>
-            </div>
-          </Card>
-          <Card className="p-6 md:col-span-2">
-            <ProfileForm
-              profile={profile}
-              onProfileChange={handleProfileChange}
-              onSubmit={(e) => {
-                e.preventDefault();
-                updateProfile();
-              }}
-            />
-          </Card>
-        </div>
+            </Card>
+          </div>
+        )}
       </main>
     </AuthenticatedLayout>
   );
