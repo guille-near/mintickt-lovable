@@ -31,7 +31,7 @@ export const DesktopEventCard = ({
 
   return (
     <div 
-      className="group relative overflow-hidden cursor-pointer bg-card w-[95%]"
+      className="group relative overflow-hidden cursor-pointer w-[95%]"
       onClick={onClick}
     >
       <div className="relative aspect-square">
