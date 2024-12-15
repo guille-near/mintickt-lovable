@@ -59,7 +59,7 @@ const DiscoverEvents = () => {
       <SidebarProvider>
         <div className="flex min-h-screen w-full">
           <DiscoverSidebar />
-          <main className="flex-1">
+          <main className="flex-1 overflow-auto">
             <div className="container py-8 space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-2">

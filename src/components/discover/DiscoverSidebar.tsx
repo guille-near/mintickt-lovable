@@ -1,14 +1,26 @@
-import { Home, Search, CalendarDays, MapPin, Tags } from "lucide-react"
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthProvider";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { Home, Search, CalendarDays, MapPin, Tags, Plus, User } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarHeader,
 } from "@/components/ui/sidebar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 const navigationItems = [
   {
@@ -39,8 +51,19 @@ const navigationItems = [
 ]
 
 export function DiscoverSidebar() {
+  const navigate = useNavigate();
+  const { signOut, user } = useAuth();
+
   return (
     <Sidebar>
+      <SidebarHeader className="border-b p-4">
+        <img 
+          src="/Logo.svg" 
+          alt="NFT Tickets Logo" 
+          className="h-8 cursor-pointer dark:invert mx-auto" 
+          onClick={() => navigate('/discover')} 
+        />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Discover</SidebarGroupLabel>
@@ -50,19 +73,49 @@ export function DiscoverSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     tooltip={item.title}
-                    asChild
+                    onClick={() => navigate(item.url)}
                   >
-                    <a href={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </a>
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Create Event"
+                  onClick={() => navigate('/create')}
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Create Event</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="border-t p-4">
+        <div className="flex items-center justify-between gap-2">
+          <ThemeToggle />
+          <DropdownMenu>
+            <DropdownMenuTrigger className="focus:outline-none">
+              <Avatar>
+                <AvatarFallback>
+                  {user?.email?.charAt(0).toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem onClick={() => navigate('/account')}>
+                <User className="mr-2 h-4 w-4" />
+                Account
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => signOut()}>
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   )
 }
