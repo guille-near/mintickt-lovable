@@ -77,7 +77,7 @@ export default function EventDetails() {
   return (
     <div className="flex flex-col min-h-screen dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
       <SimpleHeader />
-      <div className="flex-1">
+      <div className="flex-1 pt-6">
         <div className="max-w-4xl mx-auto w-full">
           <div className={`grid gap-8 ${isMobile ? '' : 'lg:grid-cols-3'}`}>
             <div className={`${isMobile ? 'px-4' : 'lg:col-span-1'}`}>
