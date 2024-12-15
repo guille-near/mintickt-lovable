@@ -40,7 +40,7 @@ export function DiscoverSidebar() {
   return (
     <Sidebar variant="floating" collapsible="icon">
       <SidebarHeader>
-        <div className="flex h-[57px] items-center px-4 group-data-[collapsible=icon]:justify-center">
+        <div className="flex h-[57px] items-center px-2 group-data-[collapsible=icon]:justify-center">
           <img 
             src="/Logo.svg" 
             alt="NFT Tickets Logo" 
@@ -102,7 +102,7 @@ export function DiscoverSidebar() {
       <SidebarFooter className="border-t">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="focus:outline-none w-full p-4 flex group-data-[collapsible=icon]:justify-center">
+            <button className="focus:outline-none w-full p-2 flex group-data-[collapsible=icon]:justify-center">
               <Avatar className="h-8 w-8">
                 <AvatarFallback>
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
