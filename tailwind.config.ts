@@ -30,6 +30,10 @@ export default {
         },
         custom: {
           pink: "#FF00E5",
+          gradient: {
+            start: "#D946EF",
+            end: "#222222",
+          },
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
