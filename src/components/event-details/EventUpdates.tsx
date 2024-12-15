@@ -14,7 +14,13 @@ import {
   DrawerHeader,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription 
+} from "@/components/ui/card";
 import { UpdateButton } from "./update-components/UpdateButton";
 import { UpdateContent } from "./update-components/UpdateContent";
 import type { Update } from "./types";
@@ -45,7 +51,7 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
 
   if (isLoading) {
     return (
-      <Card className="w-full min-w-0">
+      <Card className="w-full overflow-hidden">
         <CardHeader>
           <CardTitle>Actualizaciones</CardTitle>
           <CardDescription>Cargando actualizaciones...</CardDescription>
@@ -56,7 +62,7 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
 
   if (!updates?.length) {
     return (
-      <Card className="w-full min-w-0">
+      <Card className="w-full overflow-hidden">
         <CardHeader>
           <CardTitle>Actualizaciones</CardTitle>
           <CardDescription>No hay actualizaciones disponibles</CardDescription>
@@ -66,38 +72,40 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
   }
 
   return (
-    <Card className="w-full min-w-0">
+    <Card className="w-full overflow-hidden">
       <CardHeader>
         <CardTitle>Actualizaciones</CardTitle>
         <CardDescription>Últimas actualizaciones del organizador</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2 w-full min-w-0">
+        <div className="space-y-2">
           {updates.map((update) => (
             isMobile ? (
               <Drawer key={update.id}>
-                <DrawerTrigger className="w-full">
-                  <UpdateButton update={update} />
+                <DrawerTrigger asChild>
+                  <div className="w-full">
+                    <UpdateButton update={update} />
+                  </div>
                 </DrawerTrigger>
                 <DrawerContent>
-                  <DrawerHeader className="px-4">
+                  <DrawerHeader>
                     <UpdateContent update={update} />
                   </DrawerHeader>
                 </DrawerContent>
               </Drawer>
             ) : (
               <Dialog key={update.id}>
-                <DialogTrigger className="w-full">
-                  <UpdateButton update={update} />
+                <DialogTrigger asChild>
+                  <div className="w-full">
+                    <UpdateButton update={update} />
+                  </div>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle className="sr-only">
                       {update.title}
                     </DialogTitle>
-                    <div className="p-4">
-                      <UpdateContent update={update} />
-                    </div>
+                    <UpdateContent update={update} />
                   </DialogHeader>
                 </DialogContent>
               </Dialog>
