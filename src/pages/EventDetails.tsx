@@ -93,7 +93,7 @@ export default function EventDetails() {
     <AuthenticatedLayout>
       <div className="container mx-auto px-4 py-8 pb-32 md:pb-24">
         <div className="grid gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 lg:sticky lg:top-0 lg:self-start">
             <div className="space-y-6">
               <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
                 <img
@@ -103,23 +103,18 @@ export default function EventDetails() {
                 />
               </div>
               {!isMobile && (
-                <>
-                  <EventHeader
-                    title={event.title}
-                    date={new Date(event.date).toLocaleDateString()}
-                    time={new Date(event.date).toLocaleTimeString()}
-                    location={event.location || 'Location TBA'}
-                    organizerName={event.organizer_name}
-                    organizerAvatar={event.creator?.avatar_url}
-                  />
-                  <div>
-                    <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
-                  </div>
-                </>
+                <EventHeader
+                  title={event.title}
+                  date={new Date(event.date).toLocaleDateString()}
+                  time={new Date(event.date).toLocaleTimeString()}
+                  location={event.location || 'Location TBA'}
+                  organizerName={event.organizer_name}
+                  organizerAvatar={event.creator?.avatar_url}
+                />
               )}
             </div>
           </div>
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 lg:max-h-screen lg:overflow-y-auto">
             <div className="space-y-6">
               <h1 className="text-4xl md:text-6xl font-extrabold text-primary">{event.title}</h1>
               {isMobile && (
@@ -159,6 +154,12 @@ export default function EventDetails() {
                   </p>
                 </div>
               </div>
+
+              {!isMobile && (
+                <div className="w-full">
+                  <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
+                </div>
+              )}
 
               <EventLocation 
                 location={event.location || 'Location TBA'} 

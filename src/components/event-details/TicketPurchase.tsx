@@ -90,7 +90,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
   }
 
   return (
-    <Card className="max-w-md mx-auto">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Purchase Tickets</CardTitle>
         <CardDescription>
