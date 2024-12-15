@@ -45,7 +45,7 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
 
   if (isLoading) {
     return (
-      <Card className="w-full">
+      <Card className="w-full min-w-0">
         <CardHeader>
           <CardTitle>Actualizaciones</CardTitle>
           <CardDescription>Cargando actualizaciones...</CardDescription>
@@ -56,7 +56,7 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
 
   if (!updates?.length) {
     return (
-      <Card className="w-full">
+      <Card className="w-full min-w-0">
         <CardHeader>
           <CardTitle>Actualizaciones</CardTitle>
           <CardDescription>No hay actualizaciones disponibles</CardDescription>
@@ -66,13 +66,13 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full min-w-0">
       <CardHeader>
         <CardTitle>Actualizaciones</CardTitle>
         <CardDescription>Últimas actualizaciones del organizador</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2 max-w-full">
+        <div className="space-y-2 w-full min-w-0">
           {updates.map((update) => (
             isMobile ? (
               <Drawer key={update.id}>
