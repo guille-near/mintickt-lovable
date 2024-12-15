@@ -40,11 +40,11 @@ export function DiscoverSidebar() {
   return (
     <Sidebar variant="floating" collapsible="icon">
       <SidebarHeader>
-        <div className="flex h-[57px] items-center px-4 group-data-[collapsible=icon]:justify-center">
+        <div className="flex h-[57px] items-center justify-start px-4 group-data-[collapsible=icon]:justify-center">
           <img 
             src="/Logo.svg" 
             alt="NFT Tickets Logo" 
-            className="cursor-pointer dark:invert transition-all duration-200 w-6 h-6"
+            className="cursor-pointer dark:invert transition-all duration-200 w-6 h-6 group-data-[collapsible=icon]:block"
             onClick={() => navigate('/discover')} 
           />
         </div>
