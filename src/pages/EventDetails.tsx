@@ -53,7 +53,7 @@ export default function EventDetails() {
 
   if (eventLoading) {
     return (
-      <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_3%,transparent_12%),_linear-gradient(315deg,rgba(94,255,69,0.15)_1.5%,transparent_12%)] dark:bg-black">
+      <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.15)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
           <p className="text-primary">Loading event details...</p>
@@ -64,7 +64,7 @@ export default function EventDetails() {
 
   if (eventError || !event) {
     return (
-      <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_3%,transparent_12%),_linear-gradient(315deg,rgba(94,255,69,0.15)_1.5%,transparent_12%)] dark:bg-black">
+      <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.15)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
           <p className="text-primary">Error loading event details. Please try again later.</p>
@@ -75,7 +75,7 @@ export default function EventDetails() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen dark:bg-[linear-gradient(135deg,#FF00E5_3%,transparent_12%),_linear-gradient(315deg,rgba(94,255,69,0.15)_1.5%,transparent_12%)] dark:bg-black">
+    <div className="flex flex-col min-h-screen dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.15)_0.5%,transparent_8%)] dark:bg-black">
       <SimpleHeader />
       <div className="flex-1">
         <div className="max-w-4xl mx-auto w-full">
