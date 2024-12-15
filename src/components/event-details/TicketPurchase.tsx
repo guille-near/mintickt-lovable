@@ -91,53 +91,55 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
 
   return (
     <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Purchase Tickets</CardTitle>
-        <CardDescription>
+      <CardHeader className="pb-4">
+        <CardTitle className="text-lg">Purchase Tickets</CardTitle>
+        <CardDescription className="text-sm">
           Get your tickets for {eventTitle}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="pb-4">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <Label>Price per ticket</Label>
-            <div className="text-2xl font-bold">{ticketPrice} SOL</div>
+            <Label className="text-sm">Price per ticket</Label>
+            <div className="text-lg font-semibold">{ticketPrice} SOL</div>
           </div>
           <div>
-            <Label>Quantity</Label>
+            <Label className="text-sm">Quantity</Label>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="icon"
+                className="h-8 w-8"
                 onClick={decreaseQuantity}
                 disabled={ticketQuantity <= 1}
               >
-                <Minus className="h-4 w-4" />
+                <Minus className="h-3 w-3" />
               </Button>
-              <span className="text-xl font-bold min-w-[3ch] text-center">
+              <span className="text-lg font-semibold min-w-[2ch] text-center">
                 {ticketQuantity}
               </span>
               <Button
                 variant="outline"
                 size="icon"
+                className="h-8 w-8"
                 onClick={increaseQuantity}
                 disabled={ticketQuantity >= 10}
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-3 w-3" />
               </Button>
             </div>
           </div>
           <div>
-            <Label>Total</Label>
-            <div className="text-2xl font-bold">
+            <Label className="text-sm">Total</Label>
+            <div className="text-lg font-semibold">
               {(ticketPrice * ticketQuantity).toFixed(2)} SOL
             </div>
           </div>
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full h-14 text-lg">
-          Count Me In!
+        <Button className="w-full h-10">
+          <Ticket className="mr-2 h-4 w-4" /> Count Me In!
         </Button>
       </CardFooter>
     </Card>
