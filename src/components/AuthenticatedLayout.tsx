@@ -14,7 +14,7 @@ const AuthenticatedLayout = ({ children }: AuthenticatedLayoutProps) => {
       <div className="flex min-h-screen w-full">
         <DiscoverSidebar />
         <div className="flex-1 flex flex-col">
-          <div className="p-4 border-b">
+          <div className="p-4 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
             <Button variant="ghost" size="icon">
               <SidebarTrigger>
                 <ChevronLeft className="h-4 w-4" />
