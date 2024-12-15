@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Heart } from "lucide-react";
+import { MapPin, Heart, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -39,7 +39,10 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
           <div className="flex flex-col flex-1 p-3 justify-between">
             <div className="space-y-1">
               <h3 className="text-base font-semibold text-foreground line-clamp-1">{title}</h3>
-              <p className="text-sm text-muted-foreground">{date}</p>
+              <div className="flex items-center text-custom-pink">
+                <Calendar className="mr-1 h-3 w-3" />
+                <p className="text-sm">{date}</p>
+              </div>
               <div className="flex items-center min-w-0">
                 <MapPin className="mr-1 h-3 w-3 flex-shrink-0 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground truncate">
@@ -85,9 +88,12 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
 
       <div className="pl-2 pt-3 space-y-1">
         <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
-        <div className="space-y-1 text-sm text-muted-foreground">
-          <p>{formattedDate}</p>
-          <div className="flex items-center">
+        <div className="space-y-1 text-sm">
+          <div className="flex items-center text-custom-pink">
+            <Calendar className="mr-1 h-4 w-4" />
+            <p>{formattedDate}</p>
+          </div>
+          <div className="flex items-center text-muted-foreground">
             <MapPin className="mr-1 h-4 w-4" />
             <span className="truncate">
               {location || 'Location TBA'}

@@ -28,6 +28,9 @@ export default {
           DEFAULT: "#B01E28",
           hover: "#8B1922",
         },
+        custom: {
+          pink: "#FF00E5",
+        },
         popover: {
           DEFAULT: "#FFFFFF",
           foreground: "#000000",
