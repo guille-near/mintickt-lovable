@@ -85,7 +85,10 @@ export const DesktopTicketDialog = ({
             </div>
           </CardContent>
           <CardFooter>
-            <Button className="w-full h-9 text-sm">
+            <Button 
+              className="w-full h-9 text-sm"
+              onClick={() => onOpenChange(false)}
+            >
               Buy Tickets
             </Button>
           </CardFooter>

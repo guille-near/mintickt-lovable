@@ -7,6 +7,7 @@ interface TicketControlsProps {
   ticketQuantity: number;
   onDecrease: () => void;
   onIncrease: () => void;
+  onClose?: () => void;
 }
 
 export const TicketControls = ({
@@ -14,6 +15,7 @@ export const TicketControls = ({
   ticketQuantity,
   onDecrease,
   onIncrease,
+  onClose,
 }: TicketControlsProps) => {
   return (
     <div className="space-y-6">
@@ -27,7 +29,10 @@ export const TicketControls = ({
           <Button
             variant="outline"
             size="icon"
-            onClick={onDecrease}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDecrease();
+            }}
             disabled={ticketQuantity <= 1}
           >
             <Minus className="h-4 w-4" />
@@ -38,7 +43,10 @@ export const TicketControls = ({
           <Button
             variant="outline"
             size="icon"
-            onClick={onIncrease}
+            onClick={(e) => {
+              e.stopPropagation();
+              onIncrease();
+            }}
             disabled={ticketQuantity >= 10}
           >
             <Plus className="h-4 w-4" />
@@ -51,7 +59,10 @@ export const TicketControls = ({
           {(ticketPrice * ticketQuantity).toFixed(2)} SOL
         </div>
       </div>
-      <Button className="w-full">
+      <Button 
+        className="w-full"
+        onClick={onClose}
+      >
         Buy Tickets
       </Button>
     </div>

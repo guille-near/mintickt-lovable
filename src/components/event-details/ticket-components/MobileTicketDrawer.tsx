@@ -37,6 +37,7 @@ export const MobileTicketDrawer = ({
               ticketQuantity={ticketQuantity}
               onDecrease={onDecrease}
               onIncrease={onIncrease}
+              onClose={() => onOpenChange(false)}
             />
           </div>
         </DrawerContent>
