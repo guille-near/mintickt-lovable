@@ -71,14 +71,12 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
         <CardDescription>Últimas actualizaciones del organizador</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2 w-full">
+        <div className="space-y-2 max-w-full">
           {updates.map((update) => (
             isMobile ? (
               <Drawer key={update.id}>
-                <DrawerTrigger asChild>
-                  <div className="w-full">
-                    <UpdateButton update={update} />
-                  </div>
+                <DrawerTrigger className="w-full">
+                  <UpdateButton update={update} />
                 </DrawerTrigger>
                 <DrawerContent>
                   <DrawerHeader className="px-4">
@@ -88,10 +86,8 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
               </Drawer>
             ) : (
               <Dialog key={update.id}>
-                <DialogTrigger asChild>
-                  <div className="w-full">
-                    <UpdateButton update={update} />
-                  </div>
+                <DialogTrigger className="w-full">
+                  <UpdateButton update={update} />
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
