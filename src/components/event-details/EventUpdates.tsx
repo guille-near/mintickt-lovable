@@ -3,7 +3,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -11,7 +10,6 @@ import {
 import {
   Drawer,
   DrawerContent,
-  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -52,8 +50,8 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
   const UpdateContent = ({ update }: { update: Update }) => (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">{update.date}</p>
-      <p className="text-lg font-medium">{update.title}</p>
-      <p className="text-sm text-muted-foreground">{update.message}</p>
+      <h2 className="text-2xl font-semibold">{update.title}</h2>
+      <p className="text-base text-muted-foreground">{update.message}</p>
     </div>
   );
 
@@ -73,12 +71,10 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
                 </DrawerTrigger>
                 <DrawerContent>
                   <DrawerHeader>
-                    <DrawerTitle>{update.title}</DrawerTitle>
-                    <DrawerDescription>{update.date}</DrawerDescription>
+                    <div className="p-4">
+                      <UpdateContent update={update} />
+                    </div>
                   </DrawerHeader>
-                  <div className="p-4">
-                    <UpdateContent update={update} />
-                  </div>
                 </DrawerContent>
               </Drawer>
             ) : (
@@ -88,10 +84,10 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>{update.title}</DialogTitle>
-                    <DialogDescription>{update.date}</DialogDescription>
+                    <div className="p-4">
+                      <UpdateContent update={update} />
+                    </div>
                   </DialogHeader>
-                  <UpdateContent update={update} />
                 </DialogContent>
               </Dialog>
             )
