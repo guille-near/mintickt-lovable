@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthProvider";
-import { Home, Search, CalendarDays, MapPin, Tags, Plus, User } from "lucide-react"
+import { Home, Plus, User } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -22,32 +22,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { ThemeToggle } from "@/components/ThemeToggle"
 
 const navigationItems = [
   {
     title: "All Events",
     icon: Home,
     url: "/discover",
-  },
-  {
-    title: "Search",
-    icon: Search,
-    url: "/discover/search",
-  },
-  {
-    title: "Upcoming",
-    icon: CalendarDays,
-    url: "/discover/upcoming",
-  },
-  {
-    title: "Near Me",
-    icon: MapPin,
-    url: "/discover/nearby",
-  },
-  {
-    title: "Categories",
-    icon: Tags,
-    url: "/discover/categories",
   },
 ]
 
@@ -114,27 +95,30 @@ export function DiscoverSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
-        <div className="flex items-center gap-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="focus:outline-none">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>
-                    {user?.email?.charAt(0).toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={() => navigate('/account')}>
-                <User className="mr-2 h-4 w-4" />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => signOut()}>
-                Sign Out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="focus:outline-none">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback>
+                      {user?.email?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={() => navigate('/account')}>
+                  <User className="mr-2 h-4 w-4" />
+                  Account
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()}>
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <ThemeToggle />
         </div>
       </SidebarFooter>
     </Sidebar>
