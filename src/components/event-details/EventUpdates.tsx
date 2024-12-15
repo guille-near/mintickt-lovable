@@ -32,10 +32,11 @@ interface EventUpdatesProps {
 export const EventUpdates = ({ updates }: EventUpdatesProps) => {
   const isMobile = useIsMobile();
 
-  const UpdateButton = ({ update }: { update: Update }) => (
+  const UpdateButton = ({ update, onClick }: { update: Update; onClick?: () => void }) => (
     <Button 
       variant="ghost" 
       className="w-full justify-start h-auto p-2 hover:bg-accent"
+      onClick={onClick}
     >
       <div className="flex items-start space-x-2">
         <MessageCircle className="mt-1 h-5 w-5" />
@@ -67,7 +68,7 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
           {updates.map((update, index) => (
             isMobile ? (
               <Drawer key={index}>
-                <DrawerTrigger asChild>
+                <DrawerTrigger>
                   <UpdateButton update={update} />
                 </DrawerTrigger>
                 <DrawerContent>
@@ -82,7 +83,7 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
               </Drawer>
             ) : (
               <Dialog key={index}>
-                <DialogTrigger asChild>
+                <DialogTrigger>
                   <UpdateButton update={update} />
                 </DialogTrigger>
                 <DialogContent>
