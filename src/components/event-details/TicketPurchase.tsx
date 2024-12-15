@@ -74,8 +74,8 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
       <div className="fixed bottom-0 left-0 right-0 bg-white/30 backdrop-blur-sm border-t border-border p-4 z-50">
         <Drawer>
           <DrawerTrigger asChild>
-            <Button className="w-full">
-              <Ticket className="mr-2 h-4 w-4" /> Buy Tickets
+            <Button className="w-full h-14 text-lg">
+              Count Me In!
             </Button>
           </DrawerTrigger>
           <DrawerContent>
@@ -136,8 +136,8 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">
-          <Ticket className="mr-2 h-4 w-4" /> Purchase Tickets
+        <Button className="w-full h-14 text-lg">
+          Count Me In!
         </Button>
       </CardFooter>
     </Card>
