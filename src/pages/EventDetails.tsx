@@ -9,7 +9,7 @@ import { EventUpdates } from "@/components/event-details/EventUpdates";
 import { EventLocation } from "@/components/event-details/EventLocation";
 import { TicketPurchase } from "@/components/event-details/TicketPurchase";
 import { supabase } from "@/integrations/supabase/client";
-import { Header } from "@/components/Header";
+import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function EventDetails() {
@@ -52,24 +52,22 @@ export default function EventDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
+      <AuthenticatedLayout>
         <div className="container mx-auto px-4 py-8">
           <p className="text-primary">Loading event details...</p>
         </div>
-      </div>
+      </AuthenticatedLayout>
     );
   }
 
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
+      <AuthenticatedLayout>
         <div className="container mx-auto px-4 py-8">
           <p className="text-primary">Error loading event details. Please try again later.</p>
           {error && <p className="text-red-400 mt-2">{(error as Error).message}</p>}
         </div>
-      </div>
+      </AuthenticatedLayout>
     );
   }
 
@@ -92,9 +90,8 @@ export default function EventDetails() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-1 container mx-auto px-4 py-8 pb-24 md:pb-8">
+    <AuthenticatedLayout>
+      <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
             <div className="space-y-6">
@@ -172,8 +169,8 @@ export default function EventDetails() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
       {isMobile && <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />}
-    </div>
+    </AuthenticatedLayout>
   );
 }
