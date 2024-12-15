@@ -53,7 +53,7 @@ export default function EventDetails() {
 
   if (eventLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-gradient-to-t from-black to-custom-pink">
+      <div className="min-h-screen flex flex-col dark:bg-gradient-to-t dark:from-black dark:to-custom-pink">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
           <p className="text-primary">Loading event details...</p>
@@ -64,7 +64,7 @@ export default function EventDetails() {
 
   if (eventError || !event) {
     return (
-      <div className="min-h-screen flex flex-col bg-gradient-to-t from-black to-custom-pink">
+      <div className="min-h-screen flex flex-col dark:bg-gradient-to-t dark:from-black dark:to-custom-pink">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
           <p className="text-primary">Error loading event details. Please try again later.</p>
@@ -75,7 +75,7 @@ export default function EventDetails() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-t from-black to-custom-pink">
+    <div className="flex flex-col min-h-screen dark:bg-gradient-to-t dark:from-black dark:to-custom-pink">
       <SimpleHeader />
       <div className="flex-1">
         <div className="max-w-4xl mx-auto w-full">
