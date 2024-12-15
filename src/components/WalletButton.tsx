@@ -16,6 +16,19 @@ export const WalletButton = () => {
         hasHandledInitialConnection.current = true;
         
         try {
+          // First, check if any other profile already has this wallet address
+          const { data: existingProfile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('wallet_address', publicKey.toString())
+            .single();
+
+          if (existingProfile && existingProfile.id !== user.id) {
+            toast.error('This wallet is already connected to another account');
+            return;
+          }
+
+          // If no other profile has this wallet or it's our own profile, proceed with the update
           const { error } = await supabase
             .from('profiles')
             .update({ wallet_address: publicKey.toString() })
