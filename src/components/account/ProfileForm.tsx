@@ -11,9 +11,10 @@ interface ProfileFormProps {
   };
   onProfileChange: (field: string, value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
+  isLoading?: boolean;
 }
 
-export function ProfileForm({ profile, onProfileChange, onSubmit }: ProfileFormProps) {
+export function ProfileForm({ profile, onProfileChange, onSubmit, isLoading }: ProfileFormProps) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
@@ -42,7 +43,9 @@ export function ProfileForm({ profile, onProfileChange, onSubmit }: ProfileFormP
           onChange={(e) => onProfileChange("bio", e.target.value)}
         />
       </div>
-      <Button type="submit">Save Changes</Button>
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Saving..." : "Save Changes"}
+      </Button>
     </form>
   );
 }
