@@ -92,7 +92,7 @@ export default function EventDetails() {
                       />
                     </div>
                   </DialogTrigger>
-                  <DialogContent className="max-w-[min(90vw,90vh)] max-h-[90vh] w-[90vh] p-0">
+                  <DialogContent className="max-w-[90vw] max-h-[80vh] w-[120vh] p-0">
                     <img
                       src={event.image_url || '/placeholder.svg'}
                       alt={event.title}
