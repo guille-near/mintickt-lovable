@@ -1,8 +1,7 @@
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MapPin, Heart, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { MobileEventCard } from "./event-card/MobileEventCard";
+import { DesktopEventCard } from "./event-card/DesktopEventCard";
 
 interface EventCardProps {
   title: string;
@@ -13,7 +12,14 @@ interface EventCardProps {
   price?: number;
 }
 
-export const EventCard = ({ title, date, image, id, location, price }: EventCardProps) => {
+export const EventCard = ({ 
+  title, 
+  date, 
+  image, 
+  id, 
+  location, 
+  price 
+}: EventCardProps) => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
@@ -21,91 +27,26 @@ export const EventCard = ({ title, date, image, id, location, price }: EventCard
     navigate(`/event/${id}`);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: '2-digit'
-    });
-  };
-
   if (isMobile) {
     return (
-      <Card 
-        className="group relative overflow-hidden rounded-lg bg-card transition-all hover:shadow-lg cursor-pointer"
+      <MobileEventCard
+        title={title}
+        date={date}
+        image={image}
+        location={location}
         onClick={handleViewDetails}
-      >
-        <div className="flex h-[100px]">
-          <div className="w-[100px] min-w-[100px]">
-            <img
-              src={image}
-              alt={title}
-              className="h-full w-full object-cover transition-transform group-hover:scale-105 rounded-lg"
-            />
-          </div>
-
-          <div className="flex flex-col flex-1 p-3 justify-between">
-            <div className="space-y-1">
-              <h3 className="text-base font-semibold text-foreground line-clamp-1">{title}</h3>
-              <div className="flex items-center text-custom-pink">
-                <Calendar className="mr-1 h-3 w-3" />
-                <p className="text-sm">{formatDate(date)}</p>
-              </div>
-              <div className="flex items-center min-w-0">
-                <MapPin className="mr-1 h-3 w-3 flex-shrink-0 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground truncate">
-                  {location || 'Location TBA'}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
+      />
     );
   }
 
-  const formattedPrice = price ? `€${price.toFixed(2)}` : 'Free';
-
   return (
-    <div 
-      className="group relative overflow-hidden cursor-pointer bg-card w-[95%]"
+    <DesktopEventCard
+      title={title}
+      date={date}
+      image={image}
+      location={location}
+      price={price}
       onClick={handleViewDetails}
-    >
-      <div className="relative aspect-square">
-        <div className="absolute top-4 right-4 flex gap-2 z-20">
-          <Button 
-            size="icon" 
-            variant="ghost" 
-            className="rounded-full bg-black/20 hover:bg-black/40 text-white"
-          >
-            <Heart className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        <img
-          src={image}
-          alt={title}
-          className="h-full w-full object-cover rounded-lg"
-        />
-      </div>
-
-      <div className="pl-2 pt-3 space-y-1">
-        <h3 className="text-lg font-semibold line-clamp-1">{title}</h3>
-        <div className="space-y-1 text-sm">
-          <div className="flex items-center text-custom-pink">
-            <Calendar className="mr-1 h-4 w-4" />
-            <p>{formatDate(date)}</p>
-          </div>
-          <div className="flex items-center text-muted-foreground">
-            <MapPin className="mr-1 h-4 w-4" />
-            <span className="truncate">
-              {location || 'Location TBA'}
-            </span>
-          </div>
-          <p className="font-medium text-foreground">{formattedPrice}</p>
-        </div>
-      </div>
-    </div>
+    />
   );
 };
