@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { WalletButton } from "@/components/WalletButton";
 import { EventHeader } from "@/components/event-details/EventHeader";
 import { EventUpdates } from "@/components/event-details/EventUpdates";
@@ -81,13 +82,34 @@ export default function EventDetails() {
           <div className={`grid gap-8 ${isMobile ? '' : 'lg:grid-cols-3'}`}>
             <div className={`${isMobile ? '' : 'lg:col-span-1'}`}>
               <div className={`${isMobile ? '' : 'sticky top-0 max-h-[calc(100vh-4rem)] overflow-y-auto'}`}>
-                <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
-                  <img
-                    src={event.image_url || '/placeholder.svg'}
-                    alt={event.title}
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                </div>
+                {isMobile ? (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div className="relative w-full pb-[60%] cursor-pointer">
+                        <img
+                          src={event.image_url || '/placeholder.svg'}
+                          alt={event.title}
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-full h-[90vh] p-0">
+                      <img
+                        src={event.image_url || '/placeholder.svg'}
+                        alt={event.title}
+                        className="w-full h-full object-contain"
+                      />
+                    </DialogContent>
+                  </Dialog>
+                ) : (
+                  <div className="relative w-full pb-[100%]">
+                    <img
+                      src={event.image_url || '/placeholder.svg'}
+                      alt={event.title}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  </div>
+                )}
                 {!isMobile && (
                   <div className="mt-6">
                     <EventHeader
