@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthProvider";
+import { ThemeToggle } from "./ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,15 +16,16 @@ export const Header = () => {
   const { signOut, user } = useAuth();
 
   return (
-    <header className="border-b">
+    <header className="border-b border-border">
       <div className="container mx-auto flex items-center justify-between p-6">
         <img 
           src="/Logo.svg" 
           alt="NFT Tickets Logo" 
-          className="h-12 cursor-pointer" 
+          className="h-12 cursor-pointer dark:invert" 
           onClick={() => navigate('/discover')} 
         />
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           <Button
             variant="outline"
             onClick={() => navigate('/create')}
@@ -44,7 +46,7 @@ export const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent 
               align="end" 
-              className="backdrop-blur-sm bg-white/70 border border-gray-200"
+              className="w-56"
             >
               <DropdownMenuItem onClick={() => navigate('/account')}>
                 Account
