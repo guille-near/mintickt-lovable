@@ -44,7 +44,7 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
 
   if (isLoading) {
     return (
-      <Card className="max-w-full">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Actualizaciones</CardTitle>
           <CardDescription>Cargando actualizaciones...</CardDescription>
@@ -55,7 +55,7 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
 
   if (!updates?.length) {
     return (
-      <Card className="max-w-full">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>Actualizaciones</CardTitle>
           <CardDescription>No hay actualizaciones disponibles</CardDescription>
@@ -65,18 +65,18 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
   }
 
   return (
-    <Card className="max-w-full">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Actualizaciones</CardTitle>
         <CardDescription>Últimas actualizaciones del organizador</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className="space-y-2 w-full">
           {updates.map((update) => (
             isMobile ? (
               <Drawer key={update.id}>
                 <DrawerTrigger asChild>
-                  <div>
+                  <div className="w-full">
                     <UpdateButton update={update} />
                   </div>
                 </DrawerTrigger>
@@ -89,7 +89,7 @@ export const EventUpdates = ({ eventId }: EventUpdatesProps) => {
             ) : (
               <Dialog key={update.id}>
                 <DialogTrigger asChild>
-                  <div>
+                  <div className="w-full">
                     <UpdateButton update={update} />
                   </div>
                 </DialogTrigger>
