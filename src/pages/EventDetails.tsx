@@ -17,7 +17,7 @@ export default function EventDetails() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const { data: event, isLoading, error } = useQuery({
+  const { data: event, isLoading: eventLoading, error: eventError } = useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
       if (!id || id === ':id') {
@@ -50,7 +50,32 @@ export default function EventDetails() {
     enabled: !!id && id !== ':id',
   });
 
-  if (isLoading) {
+  const { data: eventUpdates = [], isLoading: updatesLoading } = useQuery({
+    queryKey: ['event-updates', id],
+    queryFn: async () => {
+      if (!id) return [];
+
+      const { data, error } = await supabase
+        .from('event_updates')
+        .select('*')
+        .eq('event_id', id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching updates:', error);
+        return [];
+      }
+
+      return data.map(update => ({
+        date: new Date(update.created_at).toLocaleDateString(),
+        title: update.title,
+        message: update.message
+      }));
+    },
+    enabled: !!id
+  });
+
+  if (eventLoading) {
     return (
       <div>
         <SimpleHeader />
@@ -61,13 +86,13 @@ export default function EventDetails() {
     );
   }
 
-  if (error || !event) {
+  if (eventError || !event) {
     return (
       <div>
         <SimpleHeader />
         <div className="container mx-auto px-4 py-8">
           <p className="text-primary">Error loading event details. Please try again later.</p>
-          {error && <p className="text-red-400 mt-2">{(error as Error).message}</p>}
+          {eventError && <p className="text-red-400 mt-2">{(eventError as Error).message}</p>}
         </div>
       </div>
     );
@@ -151,7 +176,7 @@ export default function EventDetails() {
                 mapUrl="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.982939764862!2d-73.98823908459384!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1629794729765!5m2!1sen!2sus"
               />
 
-              <EventUpdates updates={updates} />
+              <EventUpdates updates={eventUpdates} />
             </div>
           </div>
         </div>
