@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Minus, Plus, Ticket } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
+import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 
 interface TicketPurchaseProps {
@@ -13,6 +14,7 @@ interface TicketPurchaseProps {
 
 export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps) => {
   const [ticketQuantity, setTicketQuantity] = useState(1);
+  const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const decreaseQuantity = () => {
@@ -64,7 +66,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
         </div>
       </div>
       <Button className="w-full">
-        <Ticket className="mr-2 h-4 w-4" /> Purchase Tickets
+        Buy
       </Button>
     </div>
   );
@@ -72,10 +74,10 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
   if (isMobile) {
     return (
       <div className="fixed bottom-0 left-0 right-0 bg-white/30 dark:bg-black/30 backdrop-blur-sm border-t border-border p-4 z-50">
-        <Drawer>
+        <Drawer open={isOpen} onOpenChange={setIsOpen}>
           <DrawerTrigger asChild>
             <Button className="w-full h-11">
-              Count Me In!
+              Buy
             </Button>
           </DrawerTrigger>
           <DrawerContent>
@@ -90,58 +92,67 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-lg">Purchase Tickets</CardTitle>
-        <CardDescription className="text-sm">
-          Get your tickets for {eventTitle}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pb-4">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <Label className="text-sm">Price per ticket</Label>
-            <div className="text-lg font-semibold">{ticketPrice} SOL</div>
-          </div>
-          <div>
-            <Label className="text-sm">Quantity</Label>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                onClick={decreaseQuantity}
-                disabled={ticketQuantity <= 1}
-              >
-                <Minus className="h-3 w-3" />
-              </Button>
-              <span className="text-lg font-semibold min-w-[2ch] text-center">
-                {ticketQuantity}
-              </span>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                onClick={increaseQuantity}
-                disabled={ticketQuantity >= 10}
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
-          <div>
-            <Label className="text-sm">Total</Label>
-            <div className="text-lg font-semibold">
-              {(ticketPrice * ticketQuantity).toFixed(2)} SOL
-            </div>
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button className="w-full h-9 text-sm">
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+      <AlertDialogTrigger asChild>
+        <Button className="w-full">
           Buy
         </Button>
-      </CardFooter>
-    </Card>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <Card className="w-full border-none shadow-none">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg">Purchase Tickets</CardTitle>
+            <CardDescription className="text-sm">
+              Get your tickets for {eventTitle}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pb-4">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <Label className="text-sm">Price per ticket</Label>
+                <div className="text-lg font-semibold">{ticketPrice} SOL</div>
+              </div>
+              <div>
+                <Label className="text-sm">Quantity</Label>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={decreaseQuantity}
+                    disabled={ticketQuantity <= 1}
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <span className="text-lg font-semibold min-w-[2ch] text-center">
+                    {ticketQuantity}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={increaseQuantity}
+                    disabled={ticketQuantity >= 10}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+              <div>
+                <Label className="text-sm">Total</Label>
+                <div className="text-lg font-semibold">
+                  {(ticketPrice * ticketQuantity).toFixed(2)} SOL
+                </div>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button className="w-full h-9 text-sm">
+              Buy
+            </Button>
+          </CardFooter>
+        </Card>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
