@@ -93,9 +93,11 @@ export function DiscoverSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <div className="mt-auto px-4 py-2">
+          <ThemeToggle />
+        </div>
       </SidebarContent>
       <SidebarFooter className="border-t">
-        <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="focus:outline-none p-4">
