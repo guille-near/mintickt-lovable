@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { X } from "lucide-react";
 import { TicketControls } from "./TicketControls";
 
 interface MobileTicketDrawerProps {
@@ -28,6 +29,14 @@ export const MobileTicketDrawer = ({
           </Button>
         </DrawerTrigger>
         <DrawerContent>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="absolute right-4 top-4"
+            onClick={() => onOpenChange(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
           <DrawerHeader>
             <DrawerTitle>Purchase Tickets</DrawerTitle>
           </DrawerHeader>

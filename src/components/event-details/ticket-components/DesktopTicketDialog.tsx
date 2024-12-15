@@ -2,7 +2,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogTit
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, X } from "lucide-react";
 
 interface DesktopTicketDialogProps {
   isOpen: boolean;
@@ -32,6 +32,14 @@ export const DesktopTicketDialog = ({
       </AlertDialogTrigger>
       <AlertDialogContent className="sm:max-w-md">
         <Card className="w-full border-none shadow-none">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="absolute right-4 top-4"
+            onClick={() => onOpenChange(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
           <CardHeader className="pb-4">
             <AlertDialogTitle className="text-lg">Purchase Tickets</AlertDialogTitle>
             <AlertDialogDescription className="text-sm">
@@ -89,7 +97,7 @@ export const DesktopTicketDialog = ({
               className="w-full h-9 text-sm"
               onClick={() => onOpenChange(false)}
             >
-              Buy Tickets
+              Buy
             </Button>
           </CardFooter>
         </Card>

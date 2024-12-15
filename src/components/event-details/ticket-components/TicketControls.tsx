@@ -63,7 +63,7 @@ export const TicketControls = ({
         className="w-full"
         onClick={onClose}
       >
-        Buy Tickets
+        Buy
       </Button>
     </div>
   );
