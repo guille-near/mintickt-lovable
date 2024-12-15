@@ -1,7 +1,6 @@
 import { EventLocation } from "./EventLocation";
 import { EventUpdates } from "./EventUpdates";
 import { Button } from "@/components/ui/button";
-import { Ticket } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -84,16 +83,16 @@ export const EventContent = ({ description, location, id, price, title }: EventC
         </div>
       </div>
 
-      <EventLocation 
-        location={location || 'Location TBA'} 
-        mapUrl="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.982939764862!2d-73.98823908459384!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1629794729765!5m2!1sen!2sus"
-      />
+      <div className="space-y-4 text-muted-foreground">
+        <EventLocation 
+          location={location || 'Location TBA'} 
+          mapUrl="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.982939764862!2d-73.98823908459384!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1629794729765!5m2!1sen!2sus"
+        />
 
-      <div className="flex justify-center">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button size="lg" className="w-full sm:w-auto">
-              <Ticket className="mr-2 h-4 w-4" /> Count Me In!
+              Count Me In!
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent className="sm:max-w-[425px]">
