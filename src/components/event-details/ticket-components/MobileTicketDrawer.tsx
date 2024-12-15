@@ -23,7 +23,7 @@ export const MobileTicketDrawer = ({
     <div className="fixed bottom-0 left-0 right-0 bg-white/30 dark:bg-black/30 backdrop-blur-sm border-t border-border p-4 z-50">
       <Drawer open={isOpen} onOpenChange={onOpenChange}>
         <DrawerTrigger asChild>
-          <Button className="w-full h-11">
+          <Button size="lg" className="w-full">
             Count me in!
           </Button>
         </DrawerTrigger>
@@ -38,6 +38,12 @@ export const MobileTicketDrawer = ({
               onDecrease={onDecrease}
               onIncrease={onIncrease}
             />
+            <Button 
+              className="w-full mt-6"
+              onClick={() => onOpenChange(false)}
+            >
+              Buy Tickets
+            </Button>
           </div>
         </DrawerContent>
       </Drawer>
