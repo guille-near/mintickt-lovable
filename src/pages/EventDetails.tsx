@@ -96,8 +96,8 @@ export default function EventDetails() {
       <SimpleHeader />
       <div className="max-w-4xl mx-auto px-2 sm:px-4 py-8 pb-32 md:pb-24">
         <div className="grid gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-1 lg:sticky lg:top-0 lg:self-start">
-            <div className="space-y-6">
+          <div className="lg:col-span-1">
+            <div className="space-y-6 sticky top-20">
               <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
                 <img
                   src={event.image_url || '/placeholder.svg'}
