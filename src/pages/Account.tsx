@@ -1,34 +1,35 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthProvider";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
-import { WalletButton } from "@/components/WalletButton";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { WalletButton } from "@/components/WalletButton";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { useNavigate } from "react-router-dom";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, User } from "lucide-react";
 
 interface Profile {
   username: string | null;
   bio: string | null;
+  email: string;
   avatar_url: string | null;
   wallet_address: string | null;
 }
 
 export default function Account() {
-  const { user } = useAuth();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { publicKey } = useWallet();
   const [profile, setProfile] = useState<Profile>({
     username: "",
     bio: "",
+    email: "",
     avatar_url: "",
     wallet_address: "",
   });
@@ -44,26 +45,23 @@ export default function Account() {
 
   async function getProfile() {
     try {
-      if (!user?.id) return;
-      
       const { data, error } = await supabase
         .from("profiles")
-        .select()
-        .eq("id", user.id)
-        .maybeSingle();
+        .select("username, bio, email, avatar_url, wallet_address")
+        .eq("id", user?.id)
+        .single();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error("Error fetching profile:", error);
-        toast.error("Failed to load profile");
-        return;
+      if (error) {
+        throw error;
       }
 
       if (data) {
         setProfile({
-          username: data.username || "",
-          bio: data.bio || "",
-          avatar_url: data.avatar_url || "",
-          wallet_address: data.wallet_address || "",
+          username: data.username,
+          bio: data.bio,
+          email: data.email,
+          avatar_url: data.avatar_url,
+          wallet_address: data.wallet_address,
         });
       }
     } catch (error: any) {
@@ -108,43 +106,34 @@ export default function Account() {
 
   async function updateProfile() {
     try {
-      if (!user?.id) {
-        toast.error("You must be logged in to update your profile");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("profiles")
-        .upsert({
-          id: user.id,
-          username: profile.username,
-          bio: profile.bio,
-          avatar_url: profile.avatar_url,
-          wallet_address: publicKey?.toString() || profile.wallet_address,
-          email: user.email,
-        })
-        .eq("id", user.id);
+      const { error } = await supabase.from("profiles").upsert({
+        id: user?.id,
+        username: profile.username,
+        bio: profile.bio,
+        email: profile.email,
+        avatar_url: profile.avatar_url,
+        wallet_address: publicKey?.toString() || profile.wallet_address,
+      });
 
       if (error) {
-        console.error("Error updating profile:", error);
-        toast.error("Failed to update profile");
-        return;
+        throw error;
       }
 
       toast.success("Profile updated successfully!");
     } catch (error: any) {
-      console.error("Profile update error:", error);
-      toast.error("An error occurred while updating your profile");
+      console.error("Error updating profile:", error);
+      toast.error("Error updating your profile");
     }
+  }
+
+  if (!user) {
+    return null;
   }
 
   return (
     <AuthenticatedLayout>
-      <main className="container mx-auto py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Account Settings</h1>
-          <ThemeToggle />
-        </div>
+      <main className="container mx-auto py-6 px-4">
+        <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="p-6">
             <div className="flex flex-col items-center space-y-4">
@@ -182,22 +171,24 @@ export default function Account() {
                 e.preventDefault();
                 updateProfile();
               }}
-              className="space-y-6"
+              className="space-y-4"
             >
               <div>
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
-                  value={user?.email}
-                  disabled
-                  className="bg-muted"
+                  value={profile.email}
+                  onChange={(e) =>
+                    setProfile({ ...profile, email: e.target.value })
+                  }
                 />
               </div>
               <div>
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
+                  type="text"
                   value={profile.username || ""}
                   onChange={(e) =>
                     setProfile({ ...profile, username: e.target.value })
@@ -212,7 +203,6 @@ export default function Account() {
                   onChange={(e) =>
                     setProfile({ ...profile, bio: e.target.value })
                   }
-                  rows={4}
                 />
               </div>
               <Button type="submit">Save Changes</Button>
