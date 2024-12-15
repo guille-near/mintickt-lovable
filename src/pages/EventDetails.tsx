@@ -91,7 +91,7 @@ export default function EventDetails() {
 
   return (
     <AuthenticatedLayout>
-      <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
+      <div className="container mx-auto px-4 py-8 pb-32 md:pb-24">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
             <div className="space-y-6">
