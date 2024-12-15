@@ -80,6 +80,7 @@ export function DiscoverSidebar() {
                     <TooltipTrigger asChild>
                       <SidebarMenuButton
                         onClick={() => navigate(item.url)}
+                        className="w-full flex items-center gap-2"
                       >
                         <item.icon className="h-5 w-5 shrink-0" />
                         <span>{item.title}</span>
@@ -98,6 +99,7 @@ export function DiscoverSidebar() {
                   <TooltipTrigger asChild>
                     <SidebarMenuButton
                       onClick={() => navigate('/create')}
+                      className="w-full flex items-center gap-2"
                     >
                       <Plus className="h-5 w-5 shrink-0" />
                       <span>Create Event</span>
