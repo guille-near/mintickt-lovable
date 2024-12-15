@@ -1,20 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Search, PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { DiscoverSidebar } from "@/components/discover/DiscoverSidebar";
-import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { DesktopEventCard } from "@/components/event-card/DesktopEventCard";
 import { MobileEventCard } from "@/components/event-card/MobileEventCard";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 
-function PageContent() {
+export default function DiscoverEvents() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const { state, toggleSidebar } = useSidebar();
 
   const { data: events, isLoading } = useQuery({
     queryKey: ['events', selectedCategory, searchQuery],
@@ -39,25 +36,7 @@ function PageContent() {
   });
 
   return (
-    <main className="flex-1">
-      <div className="border-b">
-        <div className="container mx-auto py-4 flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className="shrink-0"
-          >
-            {state === "collapsed" ? (
-              <PanelLeftOpen className="h-4 w-4" />
-            ) : (
-              <PanelLeftClose className="h-4 w-4" />
-            )}
-          </Button>
-          <h1 className="text-xl font-semibold">Discover Events</h1>
-        </div>
-      </div>
-
+    <AuthenticatedLayout>
       <div className="container mx-auto py-6">
         <div className="relative mb-8">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -113,17 +92,6 @@ function PageContent() {
           </>
         )}
       </div>
-    </main>
-  );
-}
-
-export default function DiscoverEvents() {
-  return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <DiscoverSidebar />
-        <PageContent />
-      </div>
-    </SidebarProvider>
+    </AuthenticatedLayout>
   );
 }
