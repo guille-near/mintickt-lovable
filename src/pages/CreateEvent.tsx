@@ -44,6 +44,32 @@ export default function CreateEvent() {
         return;
       }
 
+      let imageUrl = formData.giphyUrl;
+
+      // If there's a file to upload, handle it first
+      if (formData.image) {
+        const fileExt = formData.image.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError, data } = await supabase.storage
+          .from('event-images')
+          .upload(filePath, formData.image);
+
+        if (uploadError) {
+          console.error('Error uploading image:', uploadError);
+          toast.error('Failed to upload image');
+          return;
+        }
+
+        // Get the public URL for the uploaded image
+        const { data: { publicUrl } } = supabase.storage
+          .from('event-images')
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrl;
+      }
+
       // Create the event with the creator_id set to the profile's ID
       const { data: event, error } = await supabase
         .from('events')
@@ -52,7 +78,7 @@ export default function CreateEvent() {
           description: formData.description,
           date: formData.date?.toISOString(),
           location: formData.location,
-          image_url: formData.giphyUrl,
+          image_url: imageUrl,
           price: formData.ticketType === 'free' ? 0 : parseFloat(formData.price),
           total_tickets: parseInt(formData.totalTickets),
           remaining_tickets: parseInt(formData.totalTickets),
