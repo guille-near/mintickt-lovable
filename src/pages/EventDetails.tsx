@@ -8,8 +8,8 @@ import { EventHeader } from "@/components/event-details/EventHeader";
 import { EventUpdates } from "@/components/event-details/EventUpdates";
 import { EventLocation } from "@/components/event-details/EventLocation";
 import { TicketPurchase } from "@/components/event-details/TicketPurchase";
+import { SimpleHeader } from "@/components/SimpleHeader";
 import { supabase } from "@/integrations/supabase/client";
-import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function EventDetails() {
@@ -52,45 +52,30 @@ export default function EventDetails() {
 
   if (isLoading) {
     return (
-      <AuthenticatedLayout>
+      <div>
+        <SimpleHeader />
         <div className="container mx-auto px-4 py-8">
           <p className="text-primary">Loading event details...</p>
         </div>
-      </AuthenticatedLayout>
+      </div>
     );
   }
 
   if (error || !event) {
     return (
-      <AuthenticatedLayout>
+      <div>
+        <SimpleHeader />
         <div className="container mx-auto px-4 py-8">
           <p className="text-primary">Error loading event details. Please try again later.</p>
           {error && <p className="text-red-400 mt-2">{(error as Error).message}</p>}
         </div>
-      </AuthenticatedLayout>
+      </div>
     );
   }
 
-  const updates = [
-    {
-      date: "2024-05-01",
-      title: "Event Details Update",
-      message: "Stay tuned for more information about this exciting event!"
-    },
-    {
-      date: "2024-05-15",
-      title: "Ticket Information",
-      message: "Early bird tickets will be available soon. Don't miss out!"
-    },
-    {
-      date: "2024-06-01",
-      title: "Location Details",
-      message: "Check back for specific details about the venue and directions."
-    }
-  ];
-
   return (
-    <AuthenticatedLayout>
+    <div>
+      <SimpleHeader />
       <div className="container mx-auto px-4 py-8 pb-32 md:pb-24">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1 lg:sticky lg:top-0 lg:self-start">
@@ -172,6 +157,6 @@ export default function EventDetails() {
         </div>
       </div>
       {isMobile && <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />}
-    </AuthenticatedLayout>
+    </div>
   );
 }
