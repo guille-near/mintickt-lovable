@@ -17,6 +17,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface Update {
   date: string;
@@ -42,8 +43,11 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
   );
 
   const UpdateTrigger = ({ update }: { update: Update }) => (
-    <div className="w-full cursor-pointer rounded-md hover:bg-accent">
-      <div className="flex items-start space-x-2 p-2">
+    <Button 
+      variant="ghost" 
+      className="w-full justify-start h-auto p-2 hover:bg-accent"
+    >
+      <div className="flex items-start space-x-2">
         <MessageCircle className="mt-1 h-5 w-5" />
         <div>
           <p className="text-sm text-muted-foreground">{update.date}</p>
@@ -51,7 +55,7 @@ export const EventUpdates = ({ updates }: EventUpdatesProps) => {
           <p className="text-sm text-muted-foreground line-clamp-2 text-left">{update.message}</p>
         </div>
       </div>
-    </div>
+    </Button>
   );
 
   return (
