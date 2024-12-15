@@ -117,7 +117,7 @@ export function DiscoverSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
-        <div className={`flex ${state === "collapsed" ? "flex-col" : "items-center"} justify-between gap-4`}>
+        <div className="flex items-center gap-4">
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
