@@ -102,7 +102,7 @@ export function DiscoverSidebar() {
       <SidebarFooter className="border-t">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="focus:outline-none w-full p-4 flex justify-center">
+            <button className="focus:outline-none w-full p-4 flex justify-start">
               <Avatar className="h-8 w-8">
                 <AvatarFallback>
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
