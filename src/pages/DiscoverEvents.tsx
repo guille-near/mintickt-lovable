@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from "@/integrations/supabase/client"
 import { EventCard } from "@/components/EventCard"
 import AuthenticatedLayout from "@/components/AuthenticatedLayout"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { DiscoverSidebar } from "@/components/discover/DiscoverSidebar"
 
 const DiscoverEvents = () => {
@@ -61,14 +61,11 @@ const DiscoverEvents = () => {
           <DiscoverSidebar />
           <main className="flex-1 overflow-auto">
             <div className="container py-8 space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-2">
-                  <h1 className="text-3xl font-bold tracking-tight">Discover Events</h1>
-                  <p className="text-muted-foreground">
-                    Browse and find events that interest you.
-                  </p>
-                </div>
-                <SidebarTrigger />
+              <div className="flex flex-col gap-2">
+                <h1 className="text-3xl font-bold tracking-tight">Discover Events</h1>
+                <p className="text-muted-foreground">
+                  Browse and find events that interest you.
+                </p>
               </div>
               
               <div className="flex items-center gap-2">

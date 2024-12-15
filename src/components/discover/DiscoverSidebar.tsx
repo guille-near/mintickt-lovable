@@ -13,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
+  SidebarTrigger,
 } from "@/components/ui/sidebar"
 import {
   DropdownMenu,
@@ -56,11 +57,12 @@ export function DiscoverSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-b p-4">
+      <SidebarHeader className="relative border-b p-4">
+        <SidebarTrigger className="absolute -left-3 top-4 z-50" />
         <img 
           src="/Logo.svg" 
           alt="NFT Tickets Logo" 
-          className="h-8 cursor-pointer dark:invert mx-auto" 
+          className="h-8 cursor-pointer dark:invert mx-auto group-data-[collapsible=icon]:mx-0" 
           onClick={() => navigate('/discover')} 
         />
       </SidebarHeader>
