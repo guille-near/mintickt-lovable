@@ -29,6 +29,10 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+  };
+
   const TicketControls = () => (
     <div className="space-y-6">
       <div>
@@ -74,7 +78,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
   if (isMobile) {
     return (
       <div className="fixed bottom-0 left-0 right-0 bg-white/30 dark:bg-black/30 backdrop-blur-sm border-t border-border p-4 z-50">
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <Drawer open={isOpen} onOpenChange={handleOpenChange}>
           <DrawerTrigger asChild>
             <Button className="w-full h-11">
               Count me in!
@@ -94,7 +98,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
   }
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+    <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
       <AlertDialogTrigger asChild>
         <Button className="w-full">
           Count me in!
