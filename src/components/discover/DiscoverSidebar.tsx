@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 const navigationItems = [
   {
@@ -62,8 +63,8 @@ export function DiscoverSidebar() {
         <img 
           src="/Logo.svg" 
           alt="NFT Tickets Logo" 
-          className={`h-8 cursor-pointer dark:invert transition-all duration-200 ${
-            state === "collapsed" ? "mx-auto w-8" : "w-auto mx-auto"
+          className={`cursor-pointer dark:invert transition-all duration-200 ${
+            state === "collapsed" ? "h-8 w-8 mx-auto" : "h-8 w-auto mx-auto"
           }`}
           onClick={() => navigate('/discover')} 
         />
@@ -75,34 +76,52 @@ export function DiscoverSidebar() {
             <SidebarMenu>
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    tooltip={state === "collapsed" ? item.title : undefined}
-                    onClick={() => navigate(item.url)}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SidebarMenuButton
+                        tooltip={state === "collapsed" ? item.title : undefined}
+                        onClick={() => navigate(item.url)}
+                      >
+                        <item.icon className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{item.title}</span>
+                      </SidebarMenuButton>
+                    </TooltipTrigger>
+                    {state === "collapsed" && (
+                      <TooltipContent side="right">
+                        {item.title}
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  tooltip={state === "collapsed" ? "Create Event" : undefined}
-                  onClick={() => navigate('/create')}
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Create Event</span>
-                </SidebarMenuButton>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip={state === "collapsed" ? "Create Event" : undefined}
+                      onClick={() => navigate('/create')}
+                    >
+                      <Plus className="h-4 w-4 shrink-0" />
+                      <span className="truncate">Create Event</span>
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {state === "collapsed" && (
+                    <TooltipContent side="right">
+                      Create Event
+                    </TooltipContent>
+                  )}
+                </Tooltip>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
-        <div className="flex items-center justify-between gap-2">
+        <div className={`flex ${state === "collapsed" ? "flex-col" : "items-center"} justify-between gap-2`}>
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger className="focus:outline-none">
-              <Avatar>
+              <Avatar className="h-8 w-8">
                 <AvatarFallback>
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
