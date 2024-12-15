@@ -17,12 +17,12 @@ export const Header = () => {
   return (
     <header className="border-b">
       <div className="container mx-auto flex items-center justify-between p-6">
-        <h1 
+        <img 
+          src="/Logo.svg" 
+          alt="NFT Tickets Logo" 
+          className="h-8 cursor-pointer"
           onClick={() => navigate('/discover')} 
-          className="text-2xl font-bold text-foreground cursor-pointer"
-        >
-          NFT Tickets
-        </h1>
+        />
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
