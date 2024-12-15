@@ -77,10 +77,10 @@ export default function EventDetails() {
     <div className="min-h-screen flex flex-col">
       <SimpleHeader />
       <div className="flex-1 overflow-hidden">
-        <div className="max-w-4xl mx-auto w-full px-2 sm:px-4 pt-4">
+        <div className="max-w-4xl mx-auto w-full px-2 sm:px-4">
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-1">
-              <div className="space-y-6 sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto">
+              <div className="sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto">
                 <div className="relative w-full pb-[100%] md:pb-[75%] lg:pb-[100%]">
                   <img
                     src={event.image_url || '/placeholder.svg'}
@@ -89,14 +89,16 @@ export default function EventDetails() {
                   />
                 </div>
                 {!isMobile && (
-                  <EventHeader
-                    title={event.title}
-                    date={new Date(event.date).toLocaleDateString()}
-                    time={new Date(event.date).toLocaleTimeString()}
-                    location={event.location || 'Location TBA'}
-                    organizerName={event.organizer_name}
-                    organizerAvatar={event.creator?.avatar_url}
-                  />
+                  <div className="mt-6">
+                    <EventHeader
+                      title={event.title}
+                      date={new Date(event.date).toLocaleDateString()}
+                      time={new Date(event.date).toLocaleTimeString()}
+                      location={event.location || 'Location TBA'}
+                      organizerName={event.organizer_name}
+                      organizerAvatar={event.creator?.avatar_url}
+                    />
+                  </div>
                 )}
               </div>
             </div>
