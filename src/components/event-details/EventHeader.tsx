@@ -30,7 +30,7 @@ export const EventHeader = ({
           <p className="font-medium">{organizerName}</p>
         </div>
       </div>
-      <div className="space-y-4 text-muted-foreground font-yrsa text-lg">
+      <div className="space-y-4 text-muted-foreground font-yrsa text-xl">
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5" />
           <span>{date}</span>
