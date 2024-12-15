@@ -44,7 +44,7 @@ export function DiscoverSidebar() {
           <img 
             src="/Logo.svg" 
             alt="NFT Tickets Logo" 
-            className="cursor-pointer dark:invert transition-all duration-200 w-6 h-6 mx-auto"
+            className="cursor-pointer dark:invert transition-all duration-200 w-6 h-6 group-data-[collapsible=icon]:mx-auto" 
             onClick={() => navigate('/discover')} 
           />
         </div>
@@ -102,7 +102,7 @@ export function DiscoverSidebar() {
       <SidebarFooter className="border-t">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="focus:outline-none w-full p-4 flex justify-center">
+            <button className="focus:outline-none w-full p-4 flex group-data-[collapsible=icon]:justify-center">
               <Avatar className="h-8 w-8">
                 <AvatarFallback>
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
