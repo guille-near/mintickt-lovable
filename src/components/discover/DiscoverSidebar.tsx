@@ -64,8 +64,8 @@ export function DiscoverSidebar() {
           src="/Logo.svg" 
           alt="NFT Tickets Logo" 
           className={`cursor-pointer dark:invert transition-all duration-200 ${
-            state === "collapsed" ? "h-8 w-8 mx-auto" : "h-8 w-auto mx-auto"
-          }`}
+            state === "collapsed" ? "h-8 w-8" : "h-8 w-auto"
+          } mx-auto`}
           onClick={() => navigate('/discover')} 
         />
       </SidebarHeader>
@@ -79,7 +79,6 @@ export function DiscoverSidebar() {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <SidebarMenuButton
-                        tooltip={state === "collapsed" ? item.title : undefined}
                         onClick={() => navigate(item.url)}
                       >
                         <item.icon className="h-4 w-4 shrink-0" />
@@ -87,7 +86,7 @@ export function DiscoverSidebar() {
                       </SidebarMenuButton>
                     </TooltipTrigger>
                     {state === "collapsed" && (
-                      <TooltipContent side="right">
+                      <TooltipContent side="right" sideOffset={10}>
                         {item.title}
                       </TooltipContent>
                     )}
@@ -98,7 +97,6 @@ export function DiscoverSidebar() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <SidebarMenuButton
-                      tooltip={state === "collapsed" ? "Create Event" : undefined}
                       onClick={() => navigate('/create')}
                     >
                       <Plus className="h-4 w-4 shrink-0" />
@@ -106,7 +104,7 @@ export function DiscoverSidebar() {
                     </SidebarMenuButton>
                   </TooltipTrigger>
                   {state === "collapsed" && (
-                    <TooltipContent side="right">
+                    <TooltipContent side="right" sideOffset={10}>
                       Create Event
                     </TooltipContent>
                   )}
@@ -117,15 +115,17 @@ export function DiscoverSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
-        <div className={`flex ${state === "collapsed" ? "flex-col" : "items-center"} justify-between gap-2`}>
+        <div className={`flex ${state === "collapsed" ? "flex-col" : "items-center"} justify-between gap-4`}>
           <ThemeToggle />
           <DropdownMenu>
-            <DropdownMenuTrigger className="focus:outline-none">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback>
-                  {user?.email?.charAt(0).toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
+            <DropdownMenuTrigger asChild>
+              <button className="focus:outline-none">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback>
+                    {user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem onClick={() => navigate('/account')}>
