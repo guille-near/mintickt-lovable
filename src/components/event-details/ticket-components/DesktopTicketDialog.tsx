@@ -51,10 +51,7 @@ export const DesktopTicketDialog = ({
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onDecrease();
-                    }}
+                    onClick={onDecrease}
                     disabled={ticketQuantity <= 1}
                   >
                     <Minus className="h-3 w-3" />
@@ -66,10 +63,7 @@ export const DesktopTicketDialog = ({
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onIncrease();
-                    }}
+                    onClick={onIncrease}
                     disabled={ticketQuantity >= 10}
                   >
                     <Plus className="h-3 w-3" />
@@ -85,10 +79,7 @@ export const DesktopTicketDialog = ({
             </div>
           </CardContent>
           <CardFooter>
-            <Button 
-              className="w-full h-9 text-sm"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button className="w-full h-9 text-sm">
               Buy Tickets
             </Button>
           </CardFooter>

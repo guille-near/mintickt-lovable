@@ -38,12 +38,6 @@ export const MobileTicketDrawer = ({
               onDecrease={onDecrease}
               onIncrease={onIncrease}
             />
-            <Button 
-              className="w-full mt-6"
-              onClick={() => onOpenChange(false)}
-            >
-              Buy Tickets
-            </Button>
           </div>
         </DrawerContent>
       </Drawer>
