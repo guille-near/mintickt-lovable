@@ -1,23 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { Search } from "lucide-react";
 import { DiscoverSidebar } from "@/components/discover/DiscoverSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DesktopEventCard } from "@/components/event-card/DesktopEventCard";
 import { MobileEventCard } from "@/components/event-card/MobileEventCard";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function DiscoverEvents() {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const { data: events, isLoading } = useQuery({
-    queryKey: ['events', selectedCategory],
+    queryKey: ['events', selectedCategory, searchQuery],
     queryFn: async () => {
       let query = supabase
         .from('events')
         .select('*')
         .order('date', { ascending: true });
+
+      if (searchQuery) {
+        query = query.ilike('title', `%${searchQuery}%`);
+      }
 
       if (selectedCategory) {
         query = query.eq('category', selectedCategory);
@@ -37,7 +44,18 @@ export default function DiscoverEvents() {
           <SidebarTrigger className="fixed left-0 top-20 -translate-y-1/2 z-50 bg-background/80 backdrop-blur-sm border-r h-12 w-6 rounded-r-lg flex items-center justify-center hover:bg-accent" />
           
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8">Discover Events</h1>
+            <h1 className="text-3xl font-bold mb-6">Discover Events</h1>
+            
+            <div className="relative mb-8">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search events..."
+                className="pl-10 w-full max-w-xl"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
             
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
