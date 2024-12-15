@@ -1,4 +1,4 @@
-import { Calendar } from "lucide-react";
+import { Calendar, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Update } from "../types";
 
@@ -19,7 +19,7 @@ export const UpdateButton = ({ update }: UpdateButtonProps) => {
   return (
     <Button
       variant="outline"
-      className="w-full justify-start text-left min-w-0"
+      className="w-full justify-start text-left min-w-0 py-4"
     >
       <div className="flex items-center gap-2 w-full min-w-0">
         <Calendar className="h-4 w-4 flex-shrink-0" />
@@ -29,6 +29,7 @@ export const UpdateButton = ({ update }: UpdateButtonProps) => {
             {formatDate(update.date)}
           </p>
         </div>
+        <MessageCircle className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
       </div>
     </Button>
   );
