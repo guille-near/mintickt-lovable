@@ -57,7 +57,7 @@ export const DesktopEventCard = ({
         <div className="space-y-1 text-sm">
           <div className="flex items-center text-custom-pink">
             <Calendar className="mr-1 h-4 w-4" />
-            <p className="relative after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/50 after:to-transparent after:animate-shine after:mask-gradient">
+            <p className="relative inline-flex bg-[linear-gradient(110deg,#FF00E5,45%,#ffffff,55%,#FF00E5)] bg-[length:200%_100%] animate-shine bg-clip-text text-transparent">
               {formatDate(date)}
             </p>
           </div>
