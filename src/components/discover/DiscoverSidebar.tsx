@@ -13,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import {
   DropdownMenu,
@@ -53,6 +54,7 @@ const navigationItems = [
 export function DiscoverSidebar() {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
+  const { state } = useSidebar();
 
   return (
     <Sidebar>
@@ -60,7 +62,9 @@ export function DiscoverSidebar() {
         <img 
           src="/Logo.svg" 
           alt="NFT Tickets Logo" 
-          className="h-8 cursor-pointer dark:invert mx-auto group-data-[collapsible=icon]:mx-0" 
+          className={`h-8 cursor-pointer dark:invert transition-all duration-200 ${
+            state === "collapsed" ? "mx-auto w-8" : "w-auto mx-auto"
+          }`}
           onClick={() => navigate('/discover')} 
         />
       </SidebarHeader>
@@ -72,7 +76,7 @@ export function DiscoverSidebar() {
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
-                    tooltip={item.title}
+                    tooltip={state === "collapsed" ? item.title : undefined}
                     onClick={() => navigate(item.url)}
                   >
                     <item.icon className="h-4 w-4" />
@@ -82,7 +86,7 @@ export function DiscoverSidebar() {
               ))}
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  tooltip="Create Event"
+                  tooltip={state === "collapsed" ? "Create Event" : undefined}
                   onClick={() => navigate('/create')}
                 >
                   <Plus className="h-4 w-4" />
