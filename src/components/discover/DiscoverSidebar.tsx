@@ -95,14 +95,14 @@ export function DiscoverSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <div className="mt-auto px-4 py-2">
+        <div className={`mt-auto px-4 py-2 ${state === "collapsed" ? "hidden" : ""}`}>
           <ThemeToggle />
         </div>
       </SidebarContent>
       <SidebarFooter className="border-t">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="focus:outline-none p-4">
+            <button className="focus:outline-none w-full p-4 flex justify-center">
               <Avatar className="h-8 w-8">
                 <AvatarFallback>
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
