@@ -68,14 +68,11 @@ export default function EventDetails() {
     enabled: !!id && id !== ':id',
   });
 
-  // For now, we'll use dummy updates instead of fetching from the database
-  const eventUpdates = dummyUpdates;
-
   if (eventLoading) {
     return (
       <div>
         <SimpleHeader />
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-2 py-8">
           <p className="text-primary">Loading event details...</p>
         </div>
       </div>
@@ -86,7 +83,7 @@ export default function EventDetails() {
     return (
       <div>
         <SimpleHeader />
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-2 py-8">
           <p className="text-primary">Error loading event details. Please try again later.</p>
           {eventError && <p className="text-red-400 mt-2">{(eventError as Error).message}</p>}
         </div>
@@ -97,7 +94,7 @@ export default function EventDetails() {
   return (
     <div>
       <SimpleHeader />
-      <div className="container mx-auto px-4 py-8 pb-32 md:pb-24">
+      <div className="container mx-auto px-2 sm:px-4 py-8 pb-32 md:pb-24">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1 lg:sticky lg:top-0 lg:self-start">
             <div className="space-y-6">
