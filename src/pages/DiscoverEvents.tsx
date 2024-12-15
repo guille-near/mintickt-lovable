@@ -38,6 +38,7 @@ export default function DiscoverEvents() {
   return (
     <AuthenticatedLayout>
       <div className="container mx-auto py-6">
+        <h1 className="text-2xl font-semibold mb-6">Discover events</h1>
         <div className="relative mb-8">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
