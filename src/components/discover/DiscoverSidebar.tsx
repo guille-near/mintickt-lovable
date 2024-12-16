@@ -1,10 +1,10 @@
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar"
 import { Home, Library, Search } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { Link, useLocation } from "react-router-dom"
 
 export function DiscoverSidebar() {
-  const pathname = usePathname()
+  const location = useLocation()
+  const pathname = location.pathname
 
   return (
     <Sidebar>
@@ -19,7 +19,7 @@ export function DiscoverSidebar() {
                   isActive={pathname === "/"}
                   tooltip="Home"
                 >
-                  <Link href="/">
+                  <Link to="/">
                     <Home />
                     <span>Home</span>
                   </Link>
@@ -31,7 +31,7 @@ export function DiscoverSidebar() {
                   isActive={pathname === "/search"}
                   tooltip="Search"
                 >
-                  <Link href="/search">
+                  <Link to="/search">
                     <Search />
                     <span>Search</span>
                   </Link>
@@ -43,7 +43,7 @@ export function DiscoverSidebar() {
                   isActive={pathname === "/library"}
                   tooltip="Library"
                 >
-                  <Link href="/library">
+                  <Link to="/library">
                     <Library />
                     <span>Library</span>
                   </Link>
