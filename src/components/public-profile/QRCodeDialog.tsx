@@ -17,7 +17,7 @@ export function QRCodeDialog({ profileUrl }: QRCodeDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="w-9 h-9">
+        <Button variant="outline" size="sm" className="border border-input">
           <QrCode className="h-4 w-4" />
         </Button>
       </DialogTrigger>
