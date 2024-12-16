@@ -11,14 +11,12 @@ declare_id!("your_program_id");
 pub mod event_tickets {
     use super::*;
 
-    // Inicializar una nueva colección de NFTs para un evento
     pub fn initialize_event_collection(
         ctx: Context<InitializeEventCollection>,
         name: String,
         symbol: String,
         uri: String,
     ) -> Result<()> {
-        // Crear la colección del evento
         let event = &mut ctx.accounts.event;
         event.authority = ctx.accounts.authority.key();
         event.collection_mint = ctx.accounts.collection_mint.key();
@@ -26,46 +24,80 @@ pub mod event_tickets {
         event.symbol = symbol;
         event.uri = uri;
         event.tickets_minted = 0;
-        event.max_tickets = 100; // Configurable
+        event.max_tickets = 100;
+
+        // Inicializar los metadatos de la colección NFT
+        let seeds = &[
+            b"event",
+            ctx.accounts.authority.key().as_ref(),
+            &[*ctx.bumps.get("event").unwrap()],
+        ];
+        let signer = &[&seeds[..]];
+
+        let cpi_context = CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            token::MintTo {
+                mint: ctx.accounts.collection_mint.to_account_info(),
+                to: ctx.accounts.collection_token_account.to_account_info(),
+                authority: event.to_account_info(),
+            },
+            signer,
+        );
+
+        token::mint_to(cpi_context, 1)?;
 
         Ok(())
     }
 
-    // Acuñar un nuevo NFT como entrada
     pub fn mint_ticket(
         ctx: Context<MintTicket>,
         ticket_number: u64,
     ) -> Result<()> {
-        // Verificar que quedan entradas disponibles
-        let event = &mut ctx.accounts.event;
         require!(
-            event.tickets_minted < event.max_tickets,
+            ctx.accounts.event.tickets_minted < ctx.accounts.event.max_tickets,
             EventTicketError::SoldOut
         );
 
-        // Incrementar el contador de entradas
-        event.tickets_minted += 1;
-
-        // Aquí iría la lógica para acuñar el NFT usando Metaplex
-        // y asignarlo a la colección del evento
+        ctx.accounts.event.tickets_minted += 1;
 
         Ok(())
     }
 }
 
 #[derive(Accounts)]
+#[instruction(name: String, symbol: String, uri: String)]
 pub struct InitializeEventCollection<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
+    
     #[account(
         init,
         payer = authority,
-        space = EventCollection::LEN
+        space = EventCollection::SPACE,
+        seeds = [b"event", authority.key().as_ref()],
+        bump
     )]
     pub event: Account<'info, EventCollection>,
+    
+    #[account(
+        init,
+        payer = authority,
+        mint::decimals = 0,
+        mint::authority = event,
+    )]
     pub collection_mint: Account<'info, Mint>,
-    pub system_program: Program<'info, System>,
+    
+    #[account(
+        init,
+        payer = authority,
+        associated_token::mint = collection_mint,
+        associated_token::authority = authority,
+    )]
+    pub collection_token_account: Account<'info, TokenAccount>,
+    
     pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
 }
 
@@ -75,8 +107,6 @@ pub struct MintTicket<'info> {
     pub event: Account<'info, EventCollection>,
     #[account(mut)]
     pub authority: Signer<'info>,
-    /// CHECK: Validated in CPI
-    pub metadata_program: UncheckedAccount<'info>,
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
@@ -94,7 +124,7 @@ pub struct EventCollection {
 }
 
 impl EventCollection {
-    pub const LEN: usize = 8 + // discriminator
+    pub const SPACE: usize = 8 + // discriminator
         32 + // authority
         32 + // collection_mint
         64 + // name
