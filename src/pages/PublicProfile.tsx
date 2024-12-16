@@ -37,10 +37,8 @@ export default function PublicProfile() {
   const username = params.username?.replace('@', ''); // Remove @ if present
   const { user } = useAuthState();
 
-  console.log("PublicProfile - Component mounted");
-  console.log("PublicProfile - Raw params:", params);
-  console.log("PublicProfile - Processed username:", username);
-  console.log("PublicProfile - Current auth user:", user);
+  console.log("PublicProfile - Component mounted with params:", params);
+  console.log("PublicProfile - Looking for username:", username);
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
@@ -53,67 +51,72 @@ export default function PublicProfile() {
         throw new Error("No username provided");
       }
 
-      const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('username', username)
-        .single();
+      try {
+        console.log("PublicProfile - Executing Supabase query for username:", username);
+        const { data: profiles, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('username', username)
+          .single();
 
-      console.log("PublicProfile - Supabase query result:", { profiles, error });
+        console.log("PublicProfile - Query completed. Result:", { profiles, error });
 
-      if (error) {
-        console.error("PublicProfile - Error fetching profile:", error);
-        toast.error("Error loading profile");
-        throw error;
-      }
+        if (error) {
+          console.error("PublicProfile - Supabase error:", error);
+          toast.error("Error loading profile");
+          throw error;
+        }
 
-      if (!profiles) {
-        console.log("PublicProfile - No profile found for username:", username);
-        toast.error("Profile not found");
-        return null;
-      }
+        if (!profiles) {
+          console.log("PublicProfile - No profile found");
+          toast.error("Profile not found");
+          return null;
+        }
 
-      console.log("PublicProfile - Raw profile data:", profiles);
+        // Parse social_media JSON if it exists
+        const socialMedia = profiles.social_media ? 
+          (typeof profiles.social_media === 'string' ? JSON.parse(profiles.social_media) : profiles.social_media) : 
+          {
+            x: null,
+            linkedin: null,
+            instagram: null,
+            threads: null,
+          };
 
-      // Parse social_media JSON if it exists
-      const socialMedia = profiles.social_media ? 
-        (typeof profiles.social_media === 'string' ? JSON.parse(profiles.social_media) : profiles.social_media) : 
-        {
-          x: null,
-          linkedin: null,
-          instagram: null,
-          threads: null,
+        console.log("PublicProfile - Parsed social media:", socialMedia);
+
+        // Convert the raw data to match ProfileData type
+        const formattedProfile: ProfileData = {
+          id: profiles.id,
+          username: profiles.username,
+          email: profiles.email,
+          avatar_url: profiles.avatar_url,
+          bio: profiles.bio,
+          wallet_address: profiles.wallet_address,
+          created_at: profiles.created_at,
+          social_media: socialMedia as SocialMedia,
+          interests: profiles.interests || [],
+          show_upcoming_events: profiles.show_upcoming_events ?? true,
+          show_past_events: profiles.show_past_events ?? true,
+          past_events: profiles.past_events?.map((event: any) => ({
+            id: event.id,
+            title: event.title,
+            date: event.date,
+          })) || [],
+          upcoming_events: profiles.upcoming_events?.map((event: any) => ({
+            id: event.id,
+            title: event.title,
+            date: event.date,
+          })) || [],
         };
 
-      console.log("PublicProfile - Parsed social media:", socialMedia);
-
-      // Convert the raw data to match ProfileData type
-      const formattedProfile: ProfileData = {
-        id: profiles.id,
-        username: profiles.username,
-        email: profiles.email,
-        avatar_url: profiles.avatar_url,
-        bio: profiles.bio,
-        wallet_address: profiles.wallet_address,
-        created_at: profiles.created_at,
-        social_media: socialMedia as SocialMedia,
-        interests: profiles.interests || [],
-        show_upcoming_events: profiles.show_upcoming_events ?? true,
-        show_past_events: profiles.show_past_events ?? true,
-        past_events: profiles.past_events?.map((event: any) => ({
-          id: event.id,
-          title: event.title,
-          date: event.date,
-        })) || [],
-        upcoming_events: profiles.upcoming_events?.map((event: any) => ({
-          id: event.id,
-          title: event.title,
-          date: event.date,
-        })) || [],
-      };
-
-      console.log("PublicProfile - Formatted profile data:", formattedProfile);
-      return formattedProfile;
+        console.log("PublicProfile - Formatted profile data:", formattedProfile);
+        return formattedProfile;
+      } catch (error) {
+        console.error("PublicProfile - Unexpected error:", error);
+        toast.error("An unexpected error occurred while loading the profile");
+        throw error;
+      }
     },
     enabled: !!username,
   });
