@@ -57,7 +57,10 @@ export const useProfile = (userId: string) => {
     mutationFn: async (updates: UpdateProfileData) => {
       const { data, error } = await supabase
         .from("profiles")
-        .update(updates)
+        .update({
+          ...updates,
+          social_media: updates.social_media ? JSON.stringify(updates.social_media) : undefined,
+        })
         .eq("id", userId)
         .select()
         .single();

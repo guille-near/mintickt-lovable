@@ -6,9 +6,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Twitter, Linkedin, Instagram, AtSign, Ticket } from 'lucide-react'
+import { Twitter, Linkedin, Instagram, AtSign } from 'lucide-react'
 import { supabase } from "@/integrations/supabase/client"
-import { ProfileData } from "@/components/account/types"
+import { ProfileData, SocialMedia } from "@/components/account/types"
 import { useAuthState } from "@/hooks/useAuthState"
 
 function ShareQRCode() {
@@ -45,9 +45,40 @@ export default function PublicProfile() {
         .single()
 
       if (error) throw error
-      return data as ProfileData
+
+      // Convert the raw data to match ProfileData type
+      const profileData: ProfileData = {
+        id: data.id,
+        username: data.username,
+        email: data.email,
+        avatar_url: data.avatar_url,
+        bio: data.bio,
+        wallet_address: data.wallet_address,
+        created_at: data.created_at,
+        social_media: data.social_media as SocialMedia || {
+          x: null,
+          linkedin: null,
+          instagram: null,
+          threads: null,
+        },
+        interests: data.interests || [],
+        show_upcoming_events: data.show_upcoming_events ?? true,
+        show_past_events: data.show_past_events ?? true,
+        past_events: (data.past_events || []).map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          date: event.date,
+        })),
+        upcoming_events: (data.upcoming_events || []).map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          date: event.date,
+        })),
+      }
+
+      return profileData
     },
-    enabled: !!username
+    enabled: !!username,
   })
 
   if (isLoading) {

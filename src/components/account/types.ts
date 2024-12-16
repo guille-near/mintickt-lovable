@@ -31,7 +31,15 @@ export type ProfileData = {
   }>;
 };
 
-export type UpdateProfileData = Partial<Omit<ProfileData, 'id' | 'created_at' | 'email'>>;
+export type UpdateProfileData = {
+  username?: string | null;
+  bio?: string | null;
+  wallet_address?: string | null;
+  social_media?: { [key: string]: string | null };
+  interests?: string[];
+  show_upcoming_events?: boolean;
+  show_past_events?: boolean;
+};
 
 export const INTEREST_OPTIONS = [
   "Music",
