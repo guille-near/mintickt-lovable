@@ -8,6 +8,8 @@ export const useProfile = (userId: string) => {
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ["profile", userId],
     queryFn: async () => {
+      if (!userId) throw new Error("User ID is required");
+      
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -48,13 +50,14 @@ export const useProfile = (userId: string) => {
 
       return profileData;
     },
+    enabled: !!userId,
   });
 
   const updateProfile = useMutation({
     mutationFn: async (updates: UpdateProfileData) => {
       const { data, error } = await supabase
         .from("profiles")
-        .update(updates as any)
+        .update(updates)
         .eq("id", userId)
         .select()
         .single();

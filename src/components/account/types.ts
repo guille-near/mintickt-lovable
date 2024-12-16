@@ -7,7 +7,7 @@ export interface SocialMedia {
   threads: string | null;
 }
 
-export interface ProfileData {
+export type ProfileData = {
   id: string;
   username: string | null;
   email: string;
@@ -29,7 +29,7 @@ export interface ProfileData {
     title: string;
     date: string;
   }>;
-}
+};
 
 export type UpdateProfileData = Partial<Omit<ProfileData, 'id' | 'created_at' | 'email'>>;
 

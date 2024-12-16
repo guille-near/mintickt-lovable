@@ -6,12 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { X, Linkedin, Instagram, AtSign, EyeOff } from "lucide-react";
-import { ProfileFormData, INTEREST_OPTIONS } from "./types";
+import { ProfileData, INTEREST_OPTIONS } from "./types";
 import { format } from "date-fns";
 
 interface ProfileFormProps {
-  profile: ProfileFormData;
-  onProfileChange: (field: keyof ProfileFormData, value: any) => void;
+  profile: ProfileData;
+  onProfileChange: (field: keyof ProfileData, value: any) => void;
   onSubmit: (e: React.FormEvent) => void;
   isLoading: boolean;
   pastEvents?: Array<{ id: string; title: string; date: string }>;

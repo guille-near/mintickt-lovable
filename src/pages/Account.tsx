@@ -11,12 +11,12 @@ import type { ProfileData } from "@/components/account/types";
 export default function Account() {
   const { user, isLoading: authLoading } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
-  const { profile, isLoading: profileLoading, error } = useProfile(user?.id || '');
+  const { profile, isLoading: profileLoading, error, updateProfile } = useProfile(user?.id || '');
   const [formData, setFormData] = useState<ProfileData>({
-    id: '',
+    id: user?.id || '',
     username: null,
     bio: null,
-    email: '',
+    email: user?.email || '',
     avatar_url: null,
     wallet_address: null,
     created_at: new Date().toISOString(),
@@ -69,12 +69,6 @@ export default function Account() {
         <div className="container mx-auto py-6">
           <div className="text-center space-y-4">
             <p className="text-red-500">Error loading profile</p>
-            <button 
-              onClick={() => refetch()} 
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-            >
-              Retry
-            </button>
           </div>
         </div>
       </AuthenticatedLayout>
@@ -120,21 +114,14 @@ export default function Account() {
 
     try {
       setIsUpdating(true);
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          username: formData.username,
-          bio: formData.bio,
-          email: formData.email,
-          social_media: formData.social_media,
-          interests: formData.interests,
-          show_upcoming_events: formData.show_upcoming_events,
-          show_past_events: formData.show_past_events
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
+      await updateProfile.mutateAsync({
+        username: formData.username,
+        bio: formData.bio,
+        social_media: formData.social_media,
+        interests: formData.interests,
+        show_upcoming_events: formData.show_upcoming_events,
+        show_past_events: formData.show_past_events
+      });
 
       toast.success("Profile updated successfully");
     } catch (error: any) {
