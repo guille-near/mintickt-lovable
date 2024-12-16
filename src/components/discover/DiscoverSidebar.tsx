@@ -4,6 +4,8 @@ import { Link, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthProvider"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { useQuery } from "@tanstack/react-query"
+import { supabase } from "@/integrations/supabase/client"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,11 +18,28 @@ export function DiscoverSidebar() {
   const pathname = location.pathname
   const { user, signOut } = useAuth()
 
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id
+  });
+
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
         <div className="flex justify-start">
-          <img src="/Logo.svg" alt="Logo" className="h-8 w-auto dark:fill-white" />
+          <img src="/Logo.svg" alt="Logo" className="h-8 w-auto dark:invert" />
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -73,7 +92,7 @@ export function DiscoverSidebar() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-12 w-full justify-start gap-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.user_metadata?.avatar_url || user?.avatar_url} />
+                <AvatarImage src={profile?.avatar_url} />
                 <AvatarFallback>
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
