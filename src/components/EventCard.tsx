@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileEventCard } from "./event-card/MobileEventCard";
 import { DesktopEventCard } from "./event-card/DesktopEventCard";
@@ -8,7 +8,7 @@ interface EventCardProps {
   date: string;
   image: string;
   id: string;
-  eventLocation?: string;
+  location?: string;
   price?: number;
 }
 
@@ -17,21 +17,14 @@ export const EventCard = ({
   date, 
   image, 
   id, 
-  eventLocation, 
+  location, 
   price 
 }: EventCardProps) => {
   const navigate = useNavigate();
-  const currentLocation = useLocation();
   const isMobile = useIsMobile();
 
   const handleViewDetails = () => {
-    // If we're on the discover page, navigate internally
-    if (currentLocation.pathname === '/discover') {
-      navigate(`/event/${id}`);
-    } else {
-      // For other pages, open in new tab
-      window.open(`/event/${id}`, '_blank');
-    }
+    navigate(`/event/${id}`);
   };
 
   if (isMobile) {
@@ -40,7 +33,7 @@ export const EventCard = ({
         title={title}
         date={date}
         image={image}
-        location={eventLocation}
+        location={location}
         onClick={handleViewDetails}
       />
     );
@@ -51,7 +44,7 @@ export const EventCard = ({
       title={title}
       date={date}
       image={image}
-      location={eventLocation}
+      location={location}
       price={price}
       onClick={handleViewDetails}
     />

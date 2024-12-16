@@ -54,7 +54,7 @@ export default function EventDetails() {
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
-          <p className="text-primary font-yrsa">Loading event details...</p>
+          <p className="text-primary">Loading event details...</p>
         </div>
       </div>
     );
@@ -65,8 +65,8 @@ export default function EventDetails() {
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
-          <p className="text-primary font-yrsa">Error loading event details. Please try again later.</p>
-          {eventError && <p className="text-red-400 mt-2 font-yrsa">{(eventError as Error).message}</p>}
+          <p className="text-primary">Error loading event details. Please try again later.</p>
+          {eventError && <p className="text-red-400 mt-2">{(eventError as Error).message}</p>}
         </div>
       </div>
     );

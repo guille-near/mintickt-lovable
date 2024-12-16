@@ -1,120 +1,69 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthProvider";
 import { ProfileForm } from "@/components/account/ProfileForm";
+import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { AccountHeader } from "@/components/account/AccountHeader";
 import { useProfile } from "@/components/account/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { ProfileData } from "@/components/account/types";
+import type { ProfileFormData } from "@/components/account/types";
 
 export default function Account() {
-  console.log("Account component rendering");
-  const { user, isLoading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
-  
-  console.log("Current user:", user);
-  
-  const { 
-    profile, 
-    isLoading: profileLoading, 
-    error: profileError, 
-    updateProfile 
-  } = useProfile(user?.id || '');
-
-  console.log("Profile data:", profile);
-  console.log("Profile loading:", profileLoading);
-  console.log("Profile error:", profileError);
-
-  const [formData, setFormData] = useState<ProfileData>({
-    id: user?.id || '',
-    username: null,
-    bio: null,
-    email: user?.email || '',
-    avatar_url: null,
+  const { data: profile, isLoading, error, refetch } = useProfile(user?.id);
+  const [formData, setFormData] = useState<ProfileFormData>({
+    username: '',
+    bio: '',
+    email: '',
     wallet_address: null,
-    created_at: new Date().toISOString(),
-    social_media: {
-      x: null,
-      linkedin: null,
-      instagram: null,
-      threads: null
-    },
-    interests: [],
-    show_upcoming_events: true,
-    show_past_events: true,
-    past_events: [],
-    upcoming_events: []
   });
 
   useEffect(() => {
     if (profile) {
-      console.log("Setting form data with profile:", profile);
-      setFormData(profile);
+      setFormData({
+        username: profile.username || '',
+        bio: profile.bio || '',
+        email: profile.email,
+        wallet_address: profile.wallet_address,
+      });
     }
   }, [profile]);
 
-  if (authLoading || profileLoading) {
-    console.log("Loading state active");
-    return (
-      <div className="flex items-center justify-center h-[50vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    console.log("No user found");
-    return (
-      <div className="text-center">
-        <p className="text-red-500">Please log in to view your profile</p>
-      </div>
-    );
-  }
-
-  if (profileError) {
-    console.error("Profile error:", profileError);
-    return (
-      <div className="text-center space-y-4">
-        <p className="text-red-500">Error loading profile: {profileError.message}</p>
-      </div>
-    );
-  }
-
-  const handleAvatarUpdate = async (url: string) => {
-    if (!profile) return;
-    
-    try {
-      console.log("Updating avatar with URL:", url);
-      const { error } = await supabase
-        .from('profiles')
-        .update({ avatar_url: url })
-        .eq('id', profile.id);
-
-      if (error) throw error;
-      
-      setFormData(prev => ({
-        ...prev,
-        avatar_url: url
-      }));
-      
-      toast.success("Avatar updated successfully");
-    } catch (error: any) {
-      console.error('Error updating avatar:', error);
-      toast.error("Error updating avatar");
-    }
+  const handleProfileChange = (field: keyof ProfileFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  const handleSubmit = async (data: Partial<ProfileData>) => {
+  const handleAvatarUpdate = async (url: string) => {
+    await refetch();
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!user?.id) {
       toast.error("You must be logged in to update your profile");
       return;
     }
 
     try {
-      console.log("Submitting profile update:", data);
       setIsUpdating(true);
-      await updateProfile.mutateAsync(data);
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          username: formData.username || null,
+          bio: formData.bio || null,
+          email: formData.email,
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
       toast.success("Profile updated successfully");
+      await refetch();
     } catch (error: any) {
       console.error('Error updating profile:', error);
       toast.error("Error updating profile");
@@ -123,21 +72,66 @@ export default function Account() {
     }
   };
 
+  if (!user) {
+    return (
+      <AuthenticatedLayout>
+        <div className="container mx-auto py-6">
+          <div className="text-center">
+            <p className="text-red-500">Please log in to view your profile</p>
+          </div>
+        </div>
+      </AuthenticatedLayout>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <AuthenticatedLayout>
+        <div className="container mx-auto py-6">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </AuthenticatedLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AuthenticatedLayout>
+        <div className="container mx-auto py-6">
+          <div className="text-center space-y-4">
+            <p className="text-red-500">Error loading profile</p>
+            <button 
+              onClick={() => refetch()} 
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </AuthenticatedLayout>
+    );
+  }
+
   return (
-    <div>
-      <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
-      <div className="max-w-2xl space-y-8">
-        <AccountHeader
-          profileId={user?.id}
-          avatarUrl={profile?.avatar_url}
-          onAvatarUpdate={handleAvatarUpdate}
-        />
-        <ProfileForm
-          profile={formData}
-          onSubmit={handleSubmit}
-          isLoading={isUpdating}
-        />
+    <AuthenticatedLayout>
+      <div className="container mx-auto py-6">
+        <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
+        <div className="max-w-2xl space-y-8">
+          <AccountHeader
+            profileId={user.id}
+            avatarUrl={profile?.avatar_url}
+            onAvatarUpdate={handleAvatarUpdate}
+          />
+          <ProfileForm
+            profile={formData}
+            onProfileChange={handleProfileChange}
+            onSubmit={onSubmit}
+            isLoading={isUpdating}
+          />
+        </div>
       </div>
-    </div>
+    </AuthenticatedLayout>
   );
 }

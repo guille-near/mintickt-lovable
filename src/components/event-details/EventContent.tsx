@@ -17,7 +17,7 @@ export const EventContent = ({ description, location, id, price, title }: EventC
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold mb-4 text-primary font-yrsa">Event Details</h2>
+          <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
           <div className="space-y-4 text-muted-foreground font-yrsa font-light text-xl">
             <p>{description || 'No description available.'}</p>
             <p>
@@ -53,7 +53,7 @@ export const EventContent = ({ description, location, id, price, title }: EventC
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-4 text-primary font-yrsa">Event Details</h2>
+        <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
         <div className="space-y-4 text-muted-foreground font-yrsa font-light text-xl">
           <p>{description || 'No description available.'}</p>
           <p>

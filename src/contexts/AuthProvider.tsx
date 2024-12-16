@@ -9,17 +9,16 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { session, user, isLoading } = useAuthState();
+  const { session, user } = useAuthState();
   const { signIn, signUp, signOut } = useAuthOperations();
 
   return (
-    <AuthContext.Provider value={{ session, user, signIn, signUp, signOut, isLoading }}>
+    <AuthContext.Provider value={{ session, user, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

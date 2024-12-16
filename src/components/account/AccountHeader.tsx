@@ -1,4 +1,5 @@
 import { ProfileAvatar } from "./ProfileAvatar";
+import { WalletButton } from "../WalletButton";
 
 interface AccountHeaderProps {
   profileId: string;
@@ -15,6 +16,10 @@ export function AccountHeader({ profileId, avatarUrl, onAvatarUpdate }: AccountH
           userId={profileId}
           onAvatarUpdate={onAvatarUpdate}
         />
+      </div>
+      <div className="w-full">
+        <h2 className="text-xl font-semibold mb-4">Wallet Connection</h2>
+        <WalletButton />
       </div>
     </div>
   );
