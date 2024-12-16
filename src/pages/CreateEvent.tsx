@@ -10,7 +10,6 @@ import { EventForm, FormData } from "@/components/create-event/EventForm";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthProvider";
-import { Database } from "@/integrations/supabase/types";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -40,6 +39,31 @@ export default function CreateEvent() {
       totalTickets: "100",
     },
   });
+
+  const initializeNFTCollection = async (eventId: string) => {
+    try {
+      const response = await fetch('/functions/v1/initialize-nft-collection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+        body: JSON.stringify({ eventId }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to initialize NFT collection');
+      }
+
+      const data = await response.json();
+      console.log('NFT Collection initialized:', data);
+      return data;
+    } catch (error) {
+      console.error('Error initializing NFT collection:', error);
+      throw error;
+    }
+  };
 
   const onSubmit = async (formData: FormData) => {
     try {
@@ -126,10 +150,20 @@ export default function CreateEvent() {
         return;
       }
 
-      toast({
-        title: "Success",
-        description: "Event created successfully",
-      });
+      // Initialize NFT collection after event creation
+      try {
+        await initializeNFTCollection(event.id);
+        toast({
+          title: "Success",
+          description: "Event created and NFT collection initialized successfully",
+        });
+      } catch (nftError) {
+        console.error('Error initializing NFT collection:', nftError);
+        toast({
+          title: "Warning",
+          description: "Event created but failed to initialize NFT collection. Please try again later.",
+        });
+      }
 
       navigate(`/event/${event.id}`);
     } catch (error) {
