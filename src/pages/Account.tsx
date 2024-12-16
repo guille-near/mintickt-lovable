@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthProvider";
 import { ProfileForm } from "@/components/account/ProfileForm";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
@@ -6,20 +6,31 @@ import { AccountHeader } from "@/components/account/AccountHeader";
 import { useProfile } from "@/components/account/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { ProfileFormData } from "@/components/account/types";
 
 export default function Account() {
   const { user } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
-  const [formData, setFormData] = useState({
+  const { data: profile, isLoading, error, refetch } = useProfile(user?.id);
+  const [formData, setFormData] = useState<ProfileFormData>({
     username: '',
     bio: '',
     email: '',
-    wallet_address: '',
+    wallet_address: null,
   });
 
-  const { data: profile, isLoading, error, refetch } = useProfile(user?.id);
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        username: profile.username || '',
+        bio: profile.bio || '',
+        email: profile.email,
+        wallet_address: profile.wallet_address,
+      });
+    }
+  }, [profile]);
 
-  const handleProfileChange = (field: string, value: string) => {
+  const handleProfileChange = (field: keyof ProfileFormData, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -43,18 +54,13 @@ export default function Account() {
       const { error } = await supabase
         .from('profiles')
         .update({
-          username: formData.username,
-          bio: formData.bio,
+          username: formData.username || null,
+          bio: formData.bio || null,
           email: formData.email,
-          wallet_address: formData.wallet_address,
         })
         .eq('id', user.id);
 
       if (error) {
-        if (error.code === '23505') {
-          toast.error("This email or username is already in use");
-          return;
-        }
         throw error;
       }
 
@@ -97,7 +103,7 @@ export default function Account() {
       <AuthenticatedLayout>
         <div className="container mx-auto py-6">
           <div className="text-center space-y-4">
-            <p className="text-red-500">Error loading profile. Please try again later.</p>
+            <p className="text-red-500">Error loading profile</p>
             <button 
               onClick={() => refetch()} 
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
@@ -116,8 +122,8 @@ export default function Account() {
         <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
         <div className="max-w-2xl space-y-8">
           <AccountHeader
-            profileId={profile?.id || ''}
-            avatarUrl={profile?.avatar_url || null}
+            profileId={user.id}
+            avatarUrl={profile?.avatar_url}
             onAvatarUpdate={handleAvatarUpdate}
           />
           <ProfileForm

@@ -18,7 +18,6 @@ export function useProfile(userId: string | undefined) {
 
       if (error) {
         console.error('Error fetching profile:', error);
-        toast.error("Error loading profile");
         throw error;
       }
 
@@ -29,6 +28,5 @@ export function useProfile(userId: string | undefined) {
       return profile;
     },
     enabled: !!userId,
-    retry: 1,
   });
 }

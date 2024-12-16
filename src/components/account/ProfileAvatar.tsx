@@ -39,7 +39,6 @@ export function ProfileAvatar({ currentAvatarUrl, userId, onAvatarUpdate }: Prof
         .from('avatars')
         .getPublicUrl(filePath);
 
-      // Update the avatar_url in the profiles table
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
@@ -50,10 +49,10 @@ export function ProfileAvatar({ currentAvatarUrl, userId, onAvatarUpdate }: Prof
       }
 
       onAvatarUpdate(publicUrl);
-      toast.success("Profile picture uploaded successfully!");
+      toast.success("Profile picture updated successfully");
     } catch (error: any) {
       console.error("Error uploading avatar:", error);
-      toast.error("Error uploading profile picture");
+      toast.error("Error updating profile picture");
     } finally {
       setUploading(false);
     }
