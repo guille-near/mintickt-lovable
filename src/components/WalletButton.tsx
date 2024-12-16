@@ -16,14 +16,49 @@ export const WalletButton = () => {
         hasHandledInitialConnection.current = true;
         
         try {
-          // First, check if any other profile already has this wallet address
+          // First, check if the user's profile exists
+          const { data: userProfile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+          if (profileError) {
+            if (profileError.code === 'PGRST116') {
+              // Profile doesn't exist, create it
+              const { error: createError } = await supabase
+                .from('profiles')
+                .insert([{ 
+                  id: user.id, 
+                  email: user.email,
+                  wallet_address: publicKey.toString()
+                }]);
+
+              if (createError) {
+                console.error('Error creating profile:', createError);
+                toast.error('Error setting up your profile');
+                await disconnect();
+                hasHandledInitialConnection.current = false;
+                return;
+              }
+            } else {
+              console.error('Error checking profile:', profileError);
+              toast.error('Error checking profile status');
+              await disconnect();
+              hasHandledInitialConnection.current = false;
+              return;
+            }
+          }
+
+          // If profile exists, check if any other profile has this wallet address
           const { data: existingProfile, error: fetchError } = await supabase
             .from('profiles')
             .select('id')
             .eq('wallet_address', publicKey.toString())
+            .neq('id', user.id)
             .single();
 
-          if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is the "no rows returned" error
+          if (fetchError && fetchError.code !== 'PGRST116') {
             console.error('Error checking wallet address:', fetchError);
             toast.error('Error checking wallet status');
             await disconnect();
@@ -31,14 +66,14 @@ export const WalletButton = () => {
             return;
           }
 
-          if (existingProfile && existingProfile.id !== user.id) {
+          if (existingProfile) {
             toast.error('This wallet is already connected to another account');
             await disconnect();
             hasHandledInitialConnection.current = false;
             return;
           }
 
-          // If no other profile has this wallet or it's our own profile, proceed with the update
+          // Update the profile with the wallet address
           const { error: updateError } = await supabase
             .from('profiles')
             .update({ wallet_address: publicKey.toString() })

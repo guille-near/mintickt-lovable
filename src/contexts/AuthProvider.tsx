@@ -32,10 +32,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session && _event === 'SIGNED_IN') {
+        // Check if profile exists
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profileError && profileError.code === 'PGRST116') {
+          // Profile doesn't exist, create it
+          const { error: createError } = await supabase
+            .from('profiles')
+            .insert([{ 
+              id: session.user.id, 
+              email: session.user.email,
+            }]);
+
+          if (createError) {
+            console.error('Error creating profile:', createError);
+            toast.error('Error setting up your profile');
+            return;
+          }
+        }
+
         navigate("/discover");
       }
     });
@@ -50,24 +73,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     if (error) {
       console.error('Error creating profile:', error);
-      // Don't throw here as the user is already created
+      throw error;
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
-      // First check if the user exists
-      const { data: userExists } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .single();
-
-      if (!userExists) {
-        toast.error("No account found with this email. Please sign up first.");
-        return;
-      }
-
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -75,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          toast.error("Invalid password. Please try again.");
+          toast.error("Invalid email or password. Please try again.");
         } else {
           toast.error(error.message);
         }
@@ -83,6 +94,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data?.user) {
+        // Check if profile exists
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileError && profileError.code === 'PGRST116') {
+          // Profile doesn't exist, create it
+          await createProfile(data.user.id, email);
+        }
+
         toast.success("Successfully signed in!");
         navigate("/discover");
       }
@@ -94,18 +117,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      // Check if user already exists
-      const { data: existingUser } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .single();
-
-      if (existingUser) {
-        toast.error("An account with this email already exists. Please sign in instead.");
-        return;
-      }
-
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
