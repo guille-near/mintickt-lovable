@@ -1,5 +1,5 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar"
-import { Home, Library, LogOut, Search, Settings, User } from "lucide-react"
+import { Home, Library, LogOut, Search, User } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthProvider"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -19,7 +19,9 @@ export function DiscoverSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="p-4">
-        <img src="/Logo.svg" alt="Logo" className="h-8 w-auto" />
+        <div className="flex justify-start">
+          <img src="/Logo.svg" alt="Logo" className="h-8 w-auto dark:fill-white" />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -71,7 +73,7 @@ export function DiscoverSidebar() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-12 w-full justify-start gap-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.user_metadata?.avatar_url} />
+                <AvatarImage src={user?.user_metadata?.avatar_url || user?.avatar_url} />
                 <AvatarFallback>
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
