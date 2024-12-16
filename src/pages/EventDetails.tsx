@@ -20,51 +20,54 @@ export default function EventDetails() {
   const { data: event, isLoading: eventLoading, error: eventError } = useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
+      // Validación inicial del ID
+      if (!id) {
+        console.error('No se proporcionó ID de evento');
+        throw new Error('ID de evento no proporcionado');
+      }
+
+      // Validar formato UUID
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(id)) {
+        console.error('Formato de ID inválido:', id);
+        throw new Error('Formato de ID inválido');
+      }
+
       console.log('Iniciando búsqueda de evento con ID:', id);
 
-      if (!id || id === ':id') {
-        console.error('ID de evento inválido:', id);
-        throw new Error('ID de evento inválido');
+      const { data: eventData, error: eventError } = await supabase
+        .from('events')
+        .select(`
+          *,
+          creator:profiles (
+            username,
+            avatar_url
+          )
+        `)
+        .eq('id', id)
+        .single();
+
+      console.log('Respuesta de Supabase:', { eventData, eventError });
+
+      if (eventError) {
+        console.error('Error al cargar el evento:', eventError);
+        throw new Error(eventError.message);
       }
 
-      try {
-        const { data, error } = await supabase
-          .from('events')
-          .select(`
-            *,
-            creator:profiles(
-              username,
-              avatar_url
-            )
-          `)
-          .eq('id', id)
-          .single();
-
-        console.log('Respuesta de Supabase:', { data, error });
-
-        if (error) {
-          console.error('Error de Supabase:', error);
-          toast.error("No se pudo cargar el evento. Por favor, intenta de nuevo.");
-          throw error;
-        }
-        
-        if (!data) {
-          console.error('No se encontró el evento con ID:', id);
-          toast.error("Evento no encontrado");
-          throw new Error('Evento no encontrado');
-        }
-
-        console.log('Datos del evento cargados exitosamente:', data);
-        return data;
-      } catch (error) {
-        console.error('Error al cargar el evento:', error);
-        toast.error("Error al cargar el evento");
-        throw error;
+      if (!eventData) {
+        console.error('No se encontró el evento');
+        throw new Error('Evento no encontrado');
       }
+
+      console.log('Evento cargado exitosamente:', eventData);
+      return eventData;
     },
-    enabled: !!id && id !== ':id',
-    retry: 2,
+    retry: 1,
     retryDelay: 1000,
+    onError: (error) => {
+      console.error('Error en la consulta:', error);
+      toast.error("No se pudo cargar el evento. Por favor, intenta de nuevo.");
+    }
   });
 
   if (eventLoading) {
