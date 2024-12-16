@@ -19,12 +19,15 @@ export default function PublicProfile() {
   const params = useParams();
   const username = params.username?.replace('@', '');
 
+  console.log("PublicProfile - Rendering with username:", username);
+
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
     queryFn: async () => {
       console.log("Fetching profile for username:", username);
       
       if (!username) {
+        console.error("No username provided");
         throw new Error("No username provided");
       }
 
@@ -56,6 +59,7 @@ export default function PublicProfile() {
       }
 
       if (!data) {
+        console.error("No profile data found");
         throw new Error("Profile not found");
       }
 
@@ -69,14 +73,26 @@ export default function PublicProfile() {
           threads: null,
         };
 
-      // Ensure past_events and upcoming_events are arrays
+      console.log("Past events raw data:", data.past_events);
+      console.log("Upcoming events raw data:", data.upcoming_events);
+
+      // Format events with type checking
       const formatEvents = (events: any[] | null): EventData[] => {
-        if (!Array.isArray(events)) return [];
-        return events.map(event => ({
-          id: String(event?.id || ''),
-          title: String(event?.title || ''),
-          date: String(event?.date || '')
-        }));
+        console.log("Formatting events:", events);
+        if (!Array.isArray(events)) {
+          console.log("Events is not an array, returning empty array");
+          return [];
+        }
+        return events.map(event => {
+          console.log("Processing event:", event);
+          const formattedEvent = {
+            id: String(event?.id || ''),
+            title: String(event?.title || ''),
+            date: String(event?.date || '')
+          };
+          console.log("Formatted event:", formattedEvent);
+          return formattedEvent;
+        });
       };
 
       const profileData: ProfileData = {
@@ -95,13 +111,15 @@ export default function PublicProfile() {
         upcoming_events: formatEvents(data.upcoming_events)
       };
 
-      console.log("Processed profile data:", profileData);
+      console.log("Final processed profile data:", profileData);
       return profileData;
     },
     retry: 1,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
   });
+
+  console.log("Query state:", { isLoading, error, profile });
 
   if (error) {
     console.error("Query error:", error);
