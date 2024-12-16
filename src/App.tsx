@@ -15,12 +15,14 @@ function App() {
       <ThemeProvider>
         <WalletContextProvider>
           <AuthProvider>
-            <SidebarProvider>
-              <Router>
-                <AppRoutes />
+            <Router>
+              <SidebarProvider>
+                <div className="flex min-h-screen w-full">
+                  <AppRoutes />
+                </div>
                 <Toaster />
-              </Router>
-            </SidebarProvider>
+              </SidebarProvider>
+            </Router>
           </AuthProvider>
         </WalletContextProvider>
       </ThemeProvider>
