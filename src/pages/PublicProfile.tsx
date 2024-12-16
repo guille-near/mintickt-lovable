@@ -62,6 +62,16 @@ export default function PublicProfile() {
           threads: null,
         };
 
+      // Ensure past_events and upcoming_events are in the correct format
+      const formatEvents = (events: any[] | null) => {
+        if (!events) return [];
+        return events.map(event => ({
+          id: event.id || '',
+          title: event.title || '',
+          date: event.date || '',
+        }));
+      };
+
       const profileData: ProfileData = {
         id: data.id,
         username: data.username,
@@ -74,8 +84,8 @@ export default function PublicProfile() {
         interests: data.interests || [],
         show_upcoming_events: data.show_upcoming_events ?? true,
         show_past_events: data.show_past_events ?? true,
-        past_events: data.past_events || [],
-        upcoming_events: data.upcoming_events || [],
+        past_events: formatEvents(data.past_events),
+        upcoming_events: formatEvents(data.upcoming_events),
       };
 
       console.log("Processed profile data:", profileData);
@@ -88,6 +98,7 @@ export default function PublicProfile() {
 
   if (error) {
     console.error("Query error:", error);
+    toast.error(error instanceof Error ? error.message : "Error loading profile");
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center text-red-500">
@@ -108,6 +119,7 @@ export default function PublicProfile() {
   }
 
   if (!profile) {
+    toast.error("Profile not found");
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center text-red-500">
@@ -120,14 +132,8 @@ export default function PublicProfile() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-8">
-        <ProfileHeader
-          username={profile.username || ''}
-          bio={profile.bio || ''}
-          avatarUrl={profile.avatar_url}
-        />
-        
+        <ProfileHeader profile={profile} />
         <SocialLinks socialMedia={profile.social_media} />
-        
         <ProfileInterests interests={profile.interests} />
         
         {profile.show_upcoming_events && profile.upcoming_events?.length > 0 && (
