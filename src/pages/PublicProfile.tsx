@@ -15,12 +15,6 @@ interface EventData {
   date: string;
 }
 
-interface JsonEvent {
-  id?: Json;
-  title?: Json;
-  date?: Json;
-}
-
 export default function PublicProfile() {
   const params = useParams();
   const username = params.username?.replace('@', '');
@@ -75,17 +69,14 @@ export default function PublicProfile() {
           threads: null,
         };
 
-      // Ensure past_events and upcoming_events are in the correct format
-      const formatEvents = (events: Json[] | null): EventData[] => {
-        if (!events) return [];
-        return events.map(event => {
-          const jsonEvent = event as JsonEvent;
-          return {
-            id: String(jsonEvent.id || ''),
-            title: String(jsonEvent.title || ''),
-            date: String(jsonEvent.date || ''),
-          };
-        });
+      // Ensure past_events and upcoming_events are arrays
+      const formatEvents = (events: any[] | null): EventData[] => {
+        if (!Array.isArray(events)) return [];
+        return events.map(event => ({
+          id: String(event?.id || ''),
+          title: String(event?.title || ''),
+          date: String(event?.date || '')
+        }));
       };
 
       const profileData: ProfileData = {
@@ -101,7 +92,7 @@ export default function PublicProfile() {
         show_upcoming_events: data.show_upcoming_events ?? true,
         show_past_events: data.show_past_events ?? true,
         past_events: formatEvents(data.past_events),
-        upcoming_events: formatEvents(data.upcoming_events),
+        upcoming_events: formatEvents(data.upcoming_events)
       };
 
       console.log("Processed profile data:", profileData);
@@ -135,7 +126,6 @@ export default function PublicProfile() {
   }
 
   if (!profile) {
-    toast.error("Profile not found");
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center text-red-500">
