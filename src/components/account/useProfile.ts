@@ -7,7 +7,10 @@ export function useProfile(userId: string | undefined) {
   return useQuery({
     queryKey: ['profile', userId],
     queryFn: async () => {
+      console.log('Fetching profile for userId:', userId);
+      
       if (!userId) {
+        console.log('No user ID provided');
         throw new Error('No user ID provided');
       }
 
@@ -17,10 +20,14 @@ export function useProfile(userId: string | undefined) {
         .eq('id', userId)
         .single();
 
+      console.log('Profile fetch result:', { profile, error });
+
       if (error) {
         if (error.code === 'PGRST116') {
+          console.log('Profile not found, creating new profile');
           const { data: userData } = await supabase.auth.getUser();
           if (!userData.user) {
+            console.log('No authenticated user found');
             throw new Error('No authenticated user found');
           }
 
@@ -50,6 +57,8 @@ export function useProfile(userId: string | undefined) {
             .insert([newProfile])
             .select()
             .single();
+
+          console.log('Profile creation result:', { createdProfile, createError });
 
           if (createError) {
             console.error('Error creating profile:', createError);
@@ -95,6 +104,7 @@ export function useProfile(userId: string | undefined) {
         show_past_events: profile.show_past_events ?? true
       };
 
+      console.log('Returning formatted profile:', typedProfile);
       return typedProfile;
     },
     enabled: !!userId,
