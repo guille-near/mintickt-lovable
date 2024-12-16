@@ -30,17 +30,17 @@ const PublicProfile = () => {
         throw new Error('Username is required');
       }
 
-      const { data, error } = await supabase
+      const { data, error: supabaseError } = await supabase
         .from('profiles')
         .select('*')
         .eq('username', username)
-        .single();
+        .maybeSingle();
 
-      console.log('🎯 [PublicProfile] Supabase raw response:', { data, error });
+      console.log('🎯 [PublicProfile] Supabase raw response:', { data, error: supabaseError });
 
-      if (error) {
-        console.error('🎯 [PublicProfile] Error fetching profile:', error);
-        throw error;
+      if (supabaseError) {
+        console.error('🎯 [PublicProfile] Error fetching profile:', supabaseError);
+        throw supabaseError;
       }
 
       if (!data) {
@@ -53,6 +53,7 @@ const PublicProfile = () => {
       return convertedProfile;
     },
     enabled: !!username,
+    retry: false
   });
 
   console.log('🎯 [PublicProfile] Query state:', {
