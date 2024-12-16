@@ -39,7 +39,11 @@ export function DiscoverSidebar() {
     <Sidebar>
       <SidebarHeader className="p-4">
         <div className="flex justify-start">
-          <img src="/Logo.svg" alt="Logo" className="h-8 w-auto dark:invert" />
+          <img 
+            src="/Logo.svg" 
+            alt="Logo" 
+            className="h-8 w-auto dark:invert"
+          />
         </div>
       </SidebarHeader>
       <SidebarContent>
