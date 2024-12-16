@@ -10,60 +10,61 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Card } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { toast } = useToast();
 
   const { data: event, isLoading: eventLoading, error: eventError } = useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
-      console.log('Fetching event with ID:', id);
+      console.log('Iniciando búsqueda de evento con ID:', id);
 
       if (!id || id === ':id') {
-        throw new Error('Invalid event ID');
+        console.error('ID de evento inválido:', id);
+        throw new Error('ID de evento inválido');
       }
 
-      const { data, error } = await supabase
-        .from('events')
-        .select(`
-          *,
-          creator:profiles(
-            username,
-            avatar_url
-          )
-        `)
-        .eq('id', id)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select(`
+            *,
+            creator:profiles(
+              username,
+              avatar_url
+            )
+          `)
+          .eq('id', id)
+          .single();
 
-      if (error) {
-        console.error('Supabase error:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "No se pudo cargar el evento. Por favor, intenta de nuevo.",
-        });
+        console.log('Respuesta de Supabase:', { data, error });
+
+        if (error) {
+          console.error('Error de Supabase:', error);
+          toast.error("No se pudo cargar el evento. Por favor, intenta de nuevo.");
+          throw error;
+        }
+        
+        if (!data) {
+          console.error('No se encontró el evento con ID:', id);
+          toast.error("Evento no encontrado");
+          throw new Error('Evento no encontrado');
+        }
+
+        console.log('Datos del evento cargados exitosamente:', data);
+        return data;
+      } catch (error) {
+        console.error('Error al cargar el evento:', error);
+        toast.error("Error al cargar el evento");
         throw error;
       }
-      
-      if (!data) {
-        console.error('No event found with ID:', id);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Evento no encontrado.",
-        });
-        throw new Error('Event not found');
-      }
-
-      console.log('Event data:', data);
-      return data;
     },
     enabled: !!id && id !== ':id',
-    retry: 1,
+    retry: 2,
+    retryDelay: 1000,
   });
 
   if (eventLoading) {
