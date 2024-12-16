@@ -27,7 +27,6 @@ export interface ProfileData {
   past_events: Event[];
 }
 
-// Database types for Supabase operations
 export interface ProfileDbData {
   id: string;
   email: string;

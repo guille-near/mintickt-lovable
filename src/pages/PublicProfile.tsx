@@ -8,7 +8,7 @@ import { ProfileSocialLinks } from "@/components/public-profile/ProfileSocialLin
 import { EventsList } from "@/components/public-profile/EventsList";
 import { LoadingState } from "@/components/public-profile/LoadingState";
 import { ErrorState } from "@/components/public-profile/ErrorState";
-import { Event, ProfileData, SocialMediaLinks } from "@/components/account/types";
+import { convertFromDbProfile } from "@/components/account/profileUtils";
 
 export default function PublicProfile() {
   const { username } = useParams<{ username: string }>();
@@ -38,42 +38,7 @@ export default function PublicProfile() {
         throw new Error('Profile not found');
       }
 
-      // Parse social media data
-      const socialMedia: SocialMediaLinks = typeof profileData.social_media === 'string'
-        ? JSON.parse(profileData.social_media)
-        : profileData.social_media || {
-            x: null,
-            linkedin: null,
-            instagram: null,
-            threads: null
-          };
-
-      // Parse events arrays
-      const parseEvents = (events: any[] | null): Event[] => {
-        if (!events) return [];
-        return events.map(event => ({
-          id: event.id,
-          title: event.title,
-          date: event.date,
-        }));
-      };
-
-      const parsedProfile: ProfileData = {
-        id: profileData.id,
-        email: profileData.email,
-        username: profileData.username,
-        avatar_url: profileData.avatar_url,
-        bio: profileData.bio,
-        created_at: profileData.created_at,
-        wallet_address: profileData.wallet_address,
-        social_media: socialMedia,
-        interests: profileData.interests || [],
-        show_upcoming_events: profileData.show_upcoming_events ?? true,
-        show_past_events: profileData.show_past_events ?? true,
-        upcoming_events: parseEvents(profileData.upcoming_events),
-        past_events: parseEvents(profileData.past_events),
-      };
-
+      const parsedProfile = convertFromDbProfile(profileData);
       console.log('✅ [PublicProfile] Profile parsed successfully:', parsedProfile);
       return parsedProfile;
     },

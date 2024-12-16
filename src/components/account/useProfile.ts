@@ -2,22 +2,21 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ProfileData, Event, SocialMediaLinks, ProfileDbData } from "./types";
-import { Json } from "@/integrations/supabase/types";
 
 const convertToDbProfile = (profile: Partial<ProfileData>): Partial<ProfileDbData> => {
   return {
     ...profile,
-    social_media: profile.social_media as unknown as Json,
+    social_media: profile.social_media as unknown as Record<string, string | null>,
     past_events: profile.past_events?.map(event => ({
       id: event.id,
       title: event.title,
       date: event.date
-    })) as unknown as Json[],
+    })) as Record<string, string>[],
     upcoming_events: profile.upcoming_events?.map(event => ({
       id: event.id,
       title: event.title,
       date: event.date
-    })) as unknown as Json[]
+    })) as Record<string, string>[]
   };
 };
 
@@ -47,15 +46,15 @@ const convertFromDbProfile = (profile: any): ProfileData => {
 
   // Parse events arrays and ensure they match Event type
   const pastEvents = (profile.past_events || []).map((event: any): Event => ({
-    id: event.id,
-    title: event.title,
-    date: event.date
+    id: event.id || '',
+    title: event.title || '',
+    date: event.date || ''
   }));
 
   const upcomingEvents = (profile.upcoming_events || []).map((event: any): Event => ({
-    id: event.id,
-    title: event.title,
-    date: event.date
+    id: event.id || '',
+    title: event.title || '',
+    date: event.date || ''
   }));
 
   return {
