@@ -32,10 +32,12 @@ function ShareQRCode() {
 }
 
 export default function PublicProfile() {
-  const { username } = useParams<{ username: string }>()
-  const { user } = useAuthState()
+  const params = useParams();
+  const username = params.username;
+  const { user } = useAuthState();
 
-  console.log("PublicProfile - Rendering with username param:", username);
+  console.log("PublicProfile - Raw params:", params);
+  console.log("PublicProfile - Extracted username:", username);
   console.log("PublicProfile - Current auth user:", user);
 
   const { data: profile, isLoading, error } = useQuery({
@@ -43,10 +45,15 @@ export default function PublicProfile() {
     queryFn: async () => {
       console.log("PublicProfile - Starting profile fetch for username:", username);
       
+      if (!username) {
+        console.error("PublicProfile - No username provided");
+        throw new Error("No username provided");
+      }
+
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('*')
-        .ilike('username', username || '')
+        .ilike('username', username)
         .limit(1);
 
       console.log("PublicProfile - Supabase query result:", { profiles, error });
@@ -89,16 +96,16 @@ export default function PublicProfile() {
         interests: profileData.interests || [],
         show_upcoming_events: profileData.show_upcoming_events ?? true,
         show_past_events: profileData.show_past_events ?? true,
-        past_events: (profileData.past_events || []).map((event: any) => ({
+        past_events: profileData.past_events?.map((event: any) => ({
           id: event.id,
           title: event.title,
           date: event.date,
-        })),
-        upcoming_events: (profileData.upcoming_events || []).map((event: any) => ({
+        })) || [],
+        upcoming_events: profileData.upcoming_events?.map((event: any) => ({
           id: event.id,
           title: event.title,
           date: event.date,
-        })),
+        })) || [],
       };
 
       console.log("PublicProfile - Formatted profile data:", formattedProfile);
