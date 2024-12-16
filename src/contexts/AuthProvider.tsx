@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (error.message.includes("Email not confirmed")) {
           toast.error("Please confirm your email before signing in");
         } else if (error.message.includes("Invalid login credentials")) {
-          toast.error("Incorrect email or password. Please try again");
+          toast.error("The email or password you entered is incorrect");
         } else {
           toast.error(error.message);
         }
