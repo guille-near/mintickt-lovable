@@ -2,17 +2,11 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { ProfileData, SocialMedia } from "@/components/account/types";
+import type { ProfileData } from "@/components/account/types";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinks } from "@/components/profile/SocialLinks";
 import { ProfileInterests } from "@/components/profile/ProfileInterests";
 import { ProfileEvents } from "@/components/profile/ProfileEvents";
-
-interface EventData {
-  id: string;
-  title: string;
-  date: string;
-}
 
 export default function PublicProfile() {
   const params = useParams();
@@ -28,6 +22,7 @@ export default function PublicProfile() {
         throw new Error("No username provided");
       }
 
+      console.log("Fetching profile for username:", username);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -46,37 +41,13 @@ export default function PublicProfile() {
 
       console.log("Raw profile data:", data);
 
-      // Parse social_media JSON and ensure it matches SocialMedia type
-      const defaultSocialMedia: SocialMedia = {
+      // Ensure social_media has the correct structure
+      const socialMedia = {
         x: null,
         linkedin: null,
         instagram: null,
         threads: null,
-      };
-
-      let socialMedia: SocialMedia;
-      if (data.social_media && typeof data.social_media === 'object' && !Array.isArray(data.social_media)) {
-        const socialMediaData = data.social_media as Record<string, unknown>;
-        socialMedia = {
-          x: (socialMediaData.x as string) ?? null,
-          linkedin: (socialMediaData.linkedin as string) ?? null,
-          instagram: (socialMediaData.instagram as string) ?? null,
-          threads: (socialMediaData.threads as string) ?? null,
-        };
-      } else {
-        socialMedia = defaultSocialMedia;
-      }
-
-      // Format events with type checking
-      const formatEvents = (events: any[] | null): EventData[] => {
-        if (!events || !Array.isArray(events)) {
-          return [];
-        }
-        return events.map(event => ({
-          id: String(event?.id || ''),
-          title: String(event?.title || ''),
-          date: String(event?.date || '')
-        }));
+        ...(typeof data.social_media === 'object' ? data.social_media : {})
       };
 
       const profileData: ProfileData = {
@@ -91,8 +62,16 @@ export default function PublicProfile() {
         interests: Array.isArray(data.interests) ? data.interests : [],
         show_upcoming_events: data.show_upcoming_events ?? true,
         show_past_events: data.show_past_events ?? true,
-        past_events: formatEvents(data.past_events),
-        upcoming_events: formatEvents(data.upcoming_events)
+        past_events: Array.isArray(data.past_events) ? data.past_events.map(event => ({
+          id: String(event?.id || ''),
+          title: String(event?.title || ''),
+          date: String(event?.date || '')
+        })) : [],
+        upcoming_events: Array.isArray(data.upcoming_events) ? data.upcoming_events.map(event => ({
+          id: String(event?.id || ''),
+          title: String(event?.title || ''),
+          date: String(event?.date || '')
+        })) : []
       };
 
       console.log("Processed profile data:", profileData);
@@ -100,8 +79,9 @@ export default function PublicProfile() {
     },
     retry: 1,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
   });
+
+  console.log("Component state:", { isLoading, error, profile });
 
   if (isLoading) {
     return (
@@ -114,7 +94,7 @@ export default function PublicProfile() {
   }
 
   if (error) {
-    console.error("Error loading profile:", error);
+    console.error("Error in component:", error);
     toast.error(error instanceof Error ? error.message : "Error loading profile");
     return (
       <div className="container mx-auto px-4 py-8">

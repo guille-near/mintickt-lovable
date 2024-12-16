@@ -5,11 +5,12 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AppRoutes from "./AppRoutes";
 
 function App() {
+  console.log("App - Initializing");
   return (
     <WalletContextProvider>
       <Router>
         <SidebarProvider>
-          <div className="flex min-h-screen w-full">
+          <div className="flex min-h-screen w-full bg-background">
             <AppRoutes />
           </div>
           <Toaster />
