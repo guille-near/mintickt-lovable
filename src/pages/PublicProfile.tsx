@@ -12,10 +12,10 @@ const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
   
   const params = useParams();
-  console.log('🎯 [PublicProfile] URL params:', params);
+  const username = params.username?.replace('@', '');
   
-  const username = params.username;
-  console.log('🎯 [PublicProfile] Username from params:', username);
+  console.log('🎯 [PublicProfile] URL params:', params);
+  console.log('🎯 [PublicProfile] Extracted username:', username);
 
   const { data: profile, isLoading, error } = useProfileQuery(username);
 
