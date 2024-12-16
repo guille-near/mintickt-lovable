@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { X, Linkedin, Instagram, AtSign, EyeOff } from "lucide-react";
 import { ProfileData, INTEREST_OPTIONS } from "./types";
 import { format } from "date-fns";
+import { WalletButton } from "../WalletButton";
 
 interface ProfileFormProps {
   profile: ProfileData;
@@ -53,6 +54,19 @@ export function ProfileForm({
             placeholder="username"
             className="w-full pl-7"
           />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <Label>Wallet Address</Label>
+        <div className="flex items-center space-x-2">
+          <Input
+            value={profile.wallet_address || ''}
+            readOnly
+            placeholder="Connect your wallet to see address"
+            className="flex-1"
+          />
+          <WalletButton />
         </div>
       </div>
 
