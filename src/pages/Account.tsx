@@ -92,6 +92,7 @@ export default function Account() {
 
     try {
       setIsUpdating(true);
+      console.log('Updating profile with data:', formData);
 
       const { error } = await supabase
         .from('profiles')
@@ -102,7 +103,10 @@ export default function Account() {
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating profile:', error);
+        throw error;
+      }
 
       toast.success("Profile updated successfully");
       await refetch();
