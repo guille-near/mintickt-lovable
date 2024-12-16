@@ -20,9 +20,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { ThemeToggle } from "@/components/ThemeToggle"
+import { useProfile } from "@/components/account/useProfile"
 
 const navigationItems = [
   {
@@ -36,6 +37,7 @@ export function DiscoverSidebar() {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { state } = useSidebar();
+  const { data: profile } = useProfile(user?.id);
 
   return (
     <Sidebar variant="floating" collapsible="icon">
@@ -104,6 +106,7 @@ export function DiscoverSidebar() {
           <DropdownMenuTrigger asChild>
             <button className="focus:outline-none w-full p-2 flex group-data-[collapsible=icon]:justify-center">
               <Avatar className="h-8 w-8">
+                <AvatarImage src={profile?.avatar_url || undefined} />
                 <AvatarFallback>
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
