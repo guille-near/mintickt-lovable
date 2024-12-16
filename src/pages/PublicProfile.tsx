@@ -1,59 +1,99 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ProfileData, SocialMediaLinks, Event } from "@/components/account/types";
+import { SimpleHeader } from "@/components/SimpleHeader";
 import { ProfileHeader } from "@/components/public-profile/ProfileHeader";
 import { ProfileInterests } from "@/components/public-profile/ProfileInterests";
 import { ProfileSocialLinks } from "@/components/public-profile/ProfileSocialLinks";
 import { EventsList } from "@/components/public-profile/EventsList";
 import { LoadingState } from "@/components/public-profile/LoadingState";
 import { ErrorState } from "@/components/public-profile/ErrorState";
-import { Json } from "@/integrations/supabase/types";
+
+interface SocialMedia {
+  x: string | null;
+  linkedin: string | null;
+  instagram: string | null;
+  threads: string | null;
+}
+
+interface Event {
+  id: string;
+  title: string;
+  date: string;
+  // ... add other event properties as needed
+}
+
+interface Profile {
+  username: string;
+  avatar_url: string | null;
+  bio: string | null;
+  social_media: SocialMedia;
+  interests: string[];
+  show_upcoming_events: boolean;
+  show_past_events: boolean;
+  upcoming_events: Event[];
+  past_events: Event[];
+}
 
 export default function PublicProfile() {
-  const params = useParams<{ username: string }>();
-  const rawUsername = params.username || '';
-  const username = rawUsername.replace('@', '');
+  const { username } = useParams<{ username: string }>();
   
-  console.log('🔍 [PublicProfile] Attempting to fetch profile for username:', username);
-
-  const fetchProfile = async () => {
-    console.log('📡 [PublicProfile] Executing Supabase query for username:', username);
-    
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('username', username)
-      .single();
-    
-    console.log('📦 [PublicProfile] Supabase response:', { data, error });
-
-    if (error) {
-      console.error('❌ [PublicProfile] Supabase error:', error);
-      throw error;
-    }
-
-    if (!data) {
-      console.error('❌ [PublicProfile] No profile found for username:', username);
-      throw new Error('Profile not found');
-    }
-
-    return data;
-  };
+  console.log('🔍 [PublicProfile] Component mounted with username:', username);
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
-    queryFn: fetchProfile,
-    enabled: Boolean(username),
-    retry: 1
+    queryFn: async () => {
+      console.log('📡 [PublicProfile] Starting profile fetch for username:', username);
+
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', username)
+        .single();
+
+      console.log('📦 [PublicProfile] Supabase response:', { profileData, profileError });
+
+      if (profileError) {
+        console.error('❌ [PublicProfile] Error loading profile:', profileError);
+        throw new Error(profileError.message);
+      }
+
+      if (!profileData) {
+        console.error('❌ [PublicProfile] No profile found');
+        throw new Error('Profile not found');
+      }
+
+      // Parse the social media JSON
+      const socialMedia = profileData.social_media as SocialMedia;
+      
+      // Parse events arrays
+      const parseEvents = (events: any[]): Event[] => {
+        return events.map(event => ({
+          id: event.id,
+          title: event.title,
+          date: event.date,
+          // ... map other event properties
+        }));
+      };
+
+      const parsedProfile: Profile = {
+        username: profileData.username,
+        avatar_url: profileData.avatar_url,
+        bio: profileData.bio,
+        social_media: socialMedia,
+        interests: profileData.interests || [],
+        show_upcoming_events: profileData.show_upcoming_events,
+        show_past_events: profileData.show_past_events,
+        upcoming_events: parseEvents(profileData.upcoming_events || []),
+        past_events: parseEvents(profileData.past_events || []),
+      };
+
+      console.log('✅ [PublicProfile] Profile parsed successfully:', parsedProfile);
+      return parsedProfile;
+    },
   });
 
-  console.log('🎯 [PublicProfile] Component state:', { 
-    username,
-    isLoading, 
-    hasError: Boolean(error), 
-    hasProfile: Boolean(profile) 
-  });
+  console.log('🔄 [PublicProfile] Current state:', { profile, isLoading, error });
 
   if (isLoading) {
     console.log('⏳ [PublicProfile] Loading state');
@@ -62,74 +102,40 @@ export default function PublicProfile() {
 
   if (error || !profile) {
     console.error('❌ [PublicProfile] Error state:', error);
-    return <ErrorState username={rawUsername} />;
+    return <ErrorState error={error as Error} />;
   }
 
-  // Parse social media data
-  let socialMedia: SocialMediaLinks;
-  try {
-    const rawSocialMedia = typeof profile.social_media === 'string' 
-      ? JSON.parse(profile.social_media)
-      : profile.social_media || {};
-
-    socialMedia = {
-      x: rawSocialMedia?.x ?? null,
-      linkedin: rawSocialMedia?.linkedin ?? null,
-      instagram: rawSocialMedia?.instagram ?? null,
-      threads: rawSocialMedia?.threads ?? null
-    };
-  } catch (e) {
-    console.error('Error parsing social_media:', e);
-    socialMedia = {
-      x: null,
-      linkedin: null,
-      instagram: null,
-      threads: null
-    };
-  }
-
-  // Parse events arrays
-  const parseEvents = (events: Json[] | null): Event[] => {
-    if (!Array.isArray(events)) return [];
-    return events.map((event: any) => ({
-      id: event.id || '',
-      title: event.title || '',
-      date: event.date || ''
-    }));
-  };
-
-  // Transform profile data
-  const transformedProfile: ProfileData = {
-    id: profile.id,
-    username: profile.username,
-    bio: profile.bio,
-    email: profile.email,
-    wallet_address: profile.wallet_address,
-    avatar_url: profile.avatar_url,
-    created_at: profile.created_at,
-    social_media: socialMedia,
-    interests: Array.isArray(profile.interests) ? profile.interests : [],
-    show_upcoming_events: profile.show_upcoming_events ?? true,
-    show_past_events: profile.show_past_events ?? true,
-    past_events: parseEvents(profile.past_events),
-    upcoming_events: parseEvents(profile.upcoming_events)
-  };
-
-  console.log('✅ [PublicProfile] Rendering profile:', transformedProfile);
+  console.log('✨ [PublicProfile] Rendering profile:', profile);
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <ProfileHeader profile={transformedProfile} />
-        <ProfileInterests interests={transformedProfile.interests} />
-        <ProfileSocialLinks socialMedia={transformedProfile.social_media} />
-        
-        {transformedProfile.show_upcoming_events && transformedProfile.upcoming_events?.length > 0 && (
-          <EventsList title="Upcoming Events" events={transformedProfile.upcoming_events} />
-        )}
-        {transformedProfile.show_past_events && transformedProfile.past_events?.length > 0 && (
-          <EventsList title="Past Events" events={transformedProfile.past_events} />
-        )}
+    <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
+      <SimpleHeader />
+      <div className="flex-1 container mx-auto px-4 py-8 space-y-8">
+        <ProfileHeader
+          username={profile.username}
+          avatarUrl={profile.avatar_url}
+          bio={profile.bio}
+        />
+        <div className="grid gap-8 md:grid-cols-2">
+          <div className="space-y-8">
+            <ProfileSocialLinks socialMedia={profile.social_media} />
+            <ProfileInterests interests={profile.interests} />
+          </div>
+          <div className="space-y-8">
+            {profile.show_upcoming_events && (
+              <EventsList
+                title="Upcoming Events"
+                events={profile.upcoming_events}
+              />
+            )}
+            {profile.show_past_events && (
+              <EventsList
+                title="Past Events"
+                events={profile.past_events}
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
