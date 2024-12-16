@@ -15,6 +15,12 @@ interface EventData {
   date: string;
 }
 
+interface JsonEvent {
+  id?: Json;
+  title?: Json;
+  date?: Json;
+}
+
 export default function PublicProfile() {
   const params = useParams();
   const username = params.username?.replace('@', '');
@@ -73,17 +79,11 @@ export default function PublicProfile() {
       const formatEvents = (events: Json[] | null): EventData[] => {
         if (!events) return [];
         return events.map(event => {
-          if (typeof event === 'object' && event !== null) {
-            return {
-              id: String(event.id || ''),
-              title: String(event.title || ''),
-              date: String(event.date || ''),
-            };
-          }
+          const jsonEvent = event as JsonEvent;
           return {
-            id: '',
-            title: '',
-            date: '',
+            id: String(jsonEvent.id || ''),
+            title: String(jsonEvent.title || ''),
+            date: String(jsonEvent.date || ''),
           };
         });
       };
