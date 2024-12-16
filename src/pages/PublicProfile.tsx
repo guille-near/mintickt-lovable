@@ -10,18 +10,23 @@ import { format } from "date-fns";
 import { ProfileData, Event, SocialMediaLinks } from "@/components/account/types";
 
 export default function PublicProfile() {
-  const { username } = useParams();
+  const params = useParams();
+  const username = params["*"] || params.username; // Handle both /@:username and /profile/:username formats
+
+  console.log('Buscando perfil para username:', username);
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
     queryFn: async () => {
-      console.log('Fetching profile for username:', username);
+      console.log('Iniciando búsqueda de perfil para username:', username);
       
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('username', username)
         .single();
+
+      console.log('Respuesta de Supabase:', { profile, error });
 
       if (error) throw error;
 
@@ -78,7 +83,11 @@ export default function PublicProfile() {
         upcoming_events: upcomingEvents
       } as ProfileData;
     },
-    enabled: !!username
+    enabled: !!username,
+    retry: 1,
+    meta: {
+      errorMessage: "No se pudo cargar el perfil. Por favor, intenta de nuevo."
+    }
   });
 
   if (isLoading) {
