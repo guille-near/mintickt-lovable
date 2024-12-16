@@ -6,8 +6,6 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
-  BackpackWalletAdapter,
-  GlowWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 
 interface Props {
@@ -21,8 +19,6 @@ export const WalletContextProvider: FC<Props> = ({ children }) => {
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
-      new BackpackWalletAdapter(),
-      new GlowWalletAdapter(),
     ],
     []
   );
