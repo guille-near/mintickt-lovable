@@ -19,43 +19,39 @@ export function ProfileHeader({ username, bio, avatarUrl, userId, walletAddress 
   const profileUrl = window.location.origin + "/@" + username;
 
   return (
-    <div className="flex flex-col space-y-4">
-      <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-        <div className="relative">
-          <Avatar className="h-24 w-24">
-            <AvatarImage src={avatarUrl || undefined} alt={username || 'User'} />
-            <AvatarFallback>
-              <User2 className="h-12 w-12" />
-            </AvatarFallback>
-          </Avatar>
-          {walletAddress && (
-            <div className="absolute -bottom-2 -right-2 h-8 w-8">
-              <img
-                src="/solana-badge.svg"
-                alt="Solana Wallet Connected"
-                className="w-full h-full"
-              />
-            </div>
-          )}
-        </div>
-        
-        <div className="space-y-2 flex-grow">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold">@{username}</h1>
+    <div className="flex flex-col items-center space-y-6">
+      <div className="relative">
+        <Avatar className="h-32 w-32">
+          <AvatarImage src={avatarUrl || undefined} alt={username || 'User'} />
+          <AvatarFallback>
+            <User2 className="h-16 w-16" />
+          </AvatarFallback>
+        </Avatar>
+        {walletAddress && (
+          <div className="absolute -bottom-2 -right-2 h-8 w-8">
+            <img
+              src="/solana-badge.svg"
+              alt="Solana Wallet Connected"
+              className="w-full h-full"
+            />
           </div>
-          {bio && (
-            <p className="text-muted-foreground max-w-2xl">{bio}</p>
-          )}
-        </div>
+        )}
+      </div>
 
-        <div className="flex items-center gap-2 self-start md:self-center">
-          <QRCodeDialog profileUrl={profileUrl} />
-          {isOwnProfile && (
-            <Button variant="default" asChild>
-              <Link to="/account">Edit Profile</Link>
-            </Button>
-          )}
-        </div>
+      <div className="text-center space-y-3">
+        <h1 className="text-2xl font-bold">@{username}</h1>
+        {bio && (
+          <p className="text-muted-foreground max-w-2xl text-center">{bio}</p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <QRCodeDialog profileUrl={profileUrl} />
+        {isOwnProfile && (
+          <Button variant="default" asChild>
+            <Link to="/account">Edit Profile</Link>
+          </Button>
+        )}
       </div>
     </div>
   );

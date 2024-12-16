@@ -1,4 +1,4 @@
-import { Link2 } from "lucide-react";
+import { Link2, Twitter, Instagram, Linkedin } from "lucide-react";
 import { SocialMediaLinks } from "@/components/account/types";
 
 interface ProfileSocialLinksProps {
@@ -8,10 +8,22 @@ interface ProfileSocialLinksProps {
 export function ProfileSocialLinks({ socialMedia }: ProfileSocialLinksProps) {
   if (!socialMedia || !Object.values(socialMedia).some(link => link)) return null;
 
+  const getIconForPlatform = (platform: string) => {
+    switch (platform) {
+      case 'x':
+        return <Twitter className="h-5 w-5" />;
+      case 'instagram':
+        return <Instagram className="h-5 w-5" />;
+      case 'linkedin':
+        return <Linkedin className="h-5 w-5" />;
+      default:
+        return <Link2 className="h-5 w-5" />;
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Connect</h2>
-      <div className="flex flex-wrap gap-4">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="flex gap-6">
         {Object.entries(socialMedia).map(([platform, url]) => {
           if (!url) return null;
           return (
@@ -20,10 +32,10 @@ export function ProfileSocialLinks({ socialMedia }: ProfileSocialLinksProps) {
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              title={platform.charAt(0).toUpperCase() + platform.slice(1)}
             >
-              <Link2 className="h-4 w-4" />
-              {platform.charAt(0).toUpperCase() + platform.slice(1)}
+              {getIconForPlatform(platform)}
             </a>
           );
         })}
