@@ -3,14 +3,15 @@ import { Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { EventTickets, IDL } from "../programs/event-tickets/types";
 
-// Reemplaza esto con tu Program ID real una vez que despliegues el programa
-const PROGRAM_ID = new PublicKey("your_program_id");
+// Using a temporary program ID for development
+// This should be replaced with your actual deployed program ID later
+const PROGRAM_ID = new PublicKey("11111111111111111111111111111111");
 
 export class EventTicketsClient {
   program: Program<EventTickets>;
   
   constructor(provider: anchor.AnchorProvider) {
-    // Inicializar el programa con el IDL
+    // Initialize the program with the IDL
     this.program = new Program(IDL, PROGRAM_ID, provider);
   }
 
