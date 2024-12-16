@@ -17,10 +17,12 @@ export default function EventDetails() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
+  console.log('🔍 [EventDetails] Component mounted with eventId:', eventId);
+
   const { data: event, isLoading: eventLoading, error: eventError } = useQuery({
     queryKey: ['event', eventId],
     queryFn: async () => {
-      console.log('Iniciando búsqueda de evento con ID:', eventId);
+      console.log('📡 [EventDetails] Starting event fetch for ID:', eventId);
 
       const { data: eventData, error: eventError } = await supabase
         .from('events')
@@ -34,56 +36,62 @@ export default function EventDetails() {
         .eq('id', eventId)
         .single();
 
-      console.log('Respuesta de Supabase:', { eventData, eventError });
+      console.log('📦 [EventDetails] Supabase response:', { eventData, eventError });
 
       if (eventError) {
-        console.error('Error al cargar el evento:', eventError);
+        console.error('❌ [EventDetails] Error loading event:', eventError);
         throw new Error(eventError.message);
       }
 
       if (!eventData) {
-        console.error('No se encontró el evento');
-        throw new Error('Evento no encontrado');
+        console.error('❌ [EventDetails] No event found');
+        throw new Error('Event not found');
       }
 
-      console.log('Evento cargado exitosamente:', eventData);
+      console.log('✅ [EventDetails] Event loaded successfully:', eventData);
       return eventData;
     },
     retry: 1,
     retryDelay: 1000,
     meta: {
-      errorMessage: "No se pudo cargar el evento. Por favor, intenta de nuevo."
+      errorMessage: "Could not load the event. Please try again."
     }
   });
 
+  console.log('🔄 [EventDetails] Current state:', { event, eventLoading, eventError });
+
   if (eventLoading) {
+    console.log('⏳ [EventDetails] Loading state');
     return (
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
-          <p className="text-primary font-yrsa">Cargando detalles del evento...</p>
+          <p className="text-primary font-yrsa">Loading event details...</p>
         </div>
       </div>
     );
   }
 
   if (eventError || !event) {
+    console.error('❌ [EventDetails] Error state:', eventError);
     return (
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
-          <p className="text-primary font-yrsa">Error al cargar los detalles del evento. Por favor, intenta de nuevo.</p>
+          <p className="text-primary font-yrsa">Error loading event details. Please try again.</p>
           {eventError && <p className="text-red-400 mt-2 font-yrsa">{(eventError as Error).message}</p>}
           <Button 
             onClick={() => navigate('/discover')} 
             className="mt-4"
           >
-            Volver a Eventos
+            Back to Events
           </Button>
         </div>
       </div>
     );
   }
+
+  console.log('✨ [EventDetails] Rendering event:', event);
 
   return (
     <div className="flex flex-col min-h-screen dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
