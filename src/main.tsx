@@ -4,6 +4,7 @@ import App from './App.tsx';
 import './index.css';
 import { ThemeProvider } from '@/contexts/ThemeProvider';
 import { WalletContextProvider } from '@/contexts/WalletContextProvider';
+import { AuthProvider } from '@/contexts/AuthProvider';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -19,7 +20,9 @@ createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <WalletContextProvider>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </WalletContextProvider>
     </ThemeProvider>
   </QueryClientProvider>
