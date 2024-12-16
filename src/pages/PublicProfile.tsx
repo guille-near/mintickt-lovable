@@ -35,10 +35,13 @@ export default function PublicProfile() {
   const { username } = useParams<{ username: string }>()
   const { user } = useAuthState()
 
+  console.log("PublicProfile - Rendering with username param:", username);
+  console.log("PublicProfile - Current auth user:", user);
+
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
     queryFn: async () => {
-      console.log("Fetching profile for username:", username);
+      console.log("PublicProfile - Starting profile fetch for username:", username);
       
       const { data: profiles, error } = await supabase
         .from('profiles')
@@ -46,18 +49,20 @@ export default function PublicProfile() {
         .ilike('username', username || '')
         .limit(1);
 
+      console.log("PublicProfile - Supabase query result:", { profiles, error });
+
       if (error) {
-        console.error("Error fetching profile:", error);
+        console.error("PublicProfile - Error fetching profile:", error);
         throw error;
       }
 
       if (!profiles || profiles.length === 0) {
-        console.log("No profile found for username:", username);
+        console.log("PublicProfile - No profile found for username:", username);
         return null;
       }
 
       const profileData = profiles[0];
-      console.log("Found profile:", profileData);
+      console.log("PublicProfile - Raw profile data:", profileData);
 
       // Parse social_media JSON if it exists
       const socialMedia = profileData.social_media ? 
@@ -68,6 +73,8 @@ export default function PublicProfile() {
           instagram: null,
           threads: null,
         };
+
+      console.log("PublicProfile - Parsed social media:", socialMedia);
 
       // Convert the raw data to match ProfileData type
       const formattedProfile: ProfileData = {
@@ -94,12 +101,16 @@ export default function PublicProfile() {
         })),
       };
 
+      console.log("PublicProfile - Formatted profile data:", formattedProfile);
       return formattedProfile;
     },
     enabled: !!username,
   });
 
+  console.log("PublicProfile - Current state:", { isLoading, error, profile });
+
   if (isLoading) {
+    console.log("PublicProfile - Showing loading state");
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center">
@@ -110,6 +121,7 @@ export default function PublicProfile() {
   }
 
   if (error) {
+    console.error("PublicProfile - Rendering error state:", error);
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center text-red-500">
@@ -120,6 +132,7 @@ export default function PublicProfile() {
   }
 
   if (!profile) {
+    console.log("PublicProfile - Rendering not found state");
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
@@ -132,6 +145,7 @@ export default function PublicProfile() {
     );
   }
 
+  console.log("PublicProfile - Rendering profile content");
   const socialMediaLinks = [
     { platform: "x", url: profile.social_media.x, icon: <Twitter /> },
     { platform: "linkedin", url: profile.social_media.linkedin, icon: <Linkedin /> },
