@@ -1,155 +1,62 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ProfileData, Event, SocialMediaLinks, ProfileDbData } from "./types";
-import { Json } from "@/integrations/supabase/types";
+import { ProfileData } from "./types";
+import { convertToDbProfile, convertFromDbProfile } from "./profileConverters";
+import { fetchProfile, createProfile, updateProfile } from "./profileApi";
 
-const convertToDbProfile = (profile: Partial<ProfileData>): Partial<ProfileDbData> => {
-  return {
-    ...profile,
-    social_media: profile.social_media as unknown as Json,
-    past_events: profile.past_events?.map(event => ({
-      id: event.id,
-      title: event.title,
-      date: event.date
-    })) as unknown as Json[],
-    upcoming_events: profile.upcoming_events?.map(event => ({
-      id: event.id,
-      title: event.title,
-      date: event.date
-    })) as unknown as Json[]
-  };
-};
+export const useProfile = (userId: string | undefined) => {
+  const queryClient = useQueryClient();
 
-const convertFromDbProfile = (profile: ProfileDbData): ProfileData => {
-  // Parse social_media to ensure correct structure
-  let socialMedia: SocialMediaLinks;
-  try {
-    const rawSocialMedia = typeof profile.social_media === 'string' 
-      ? JSON.parse(profile.social_media)
-      : profile.social_media || {};
-
-    socialMedia = {
-      x: rawSocialMedia.x ?? null,
-      linkedin: rawSocialMedia.linkedin ?? null,
-      instagram: rawSocialMedia.instagram ?? null,
-      threads: rawSocialMedia.threads ?? null
-    };
-  } catch (e) {
-    console.error('❌ Error parsing social_media:', e);
-    socialMedia = {
-      x: null,
-      linkedin: null,
-      instagram: null,
-      threads: null
-    };
-  }
-
-  // Parse events arrays and ensure they match Event type
-  const pastEvents = (profile.past_events || []).map((event: any): Event => ({
-    id: event.id || '',
-    title: event.title || '',
-    date: event.date || ''
-  }));
-
-  const upcomingEvents = (profile.upcoming_events || []).map((event: any): Event => ({
-    id: event.id || '',
-    title: event.title || '',
-    date: event.date || ''
-  }));
-
-  return {
-    id: profile.id,
-    email: profile.email,
-    username: profile.username,
-    bio: profile.bio,
-    wallet_address: profile.wallet_address,
-    avatar_url: profile.avatar_url,
-    created_at: profile.created_at,
-    social_media: socialMedia,
-    interests: Array.isArray(profile.interests) ? [...profile.interests] : [],
-    show_upcoming_events: profile.show_upcoming_events ?? true,
-    show_past_events: profile.show_past_events ?? true,
-    past_events: pastEvents,
-    upcoming_events: upcomingEvents
-  };
-};
-
-export function useProfile(userId: string | undefined) {
-  return useQuery({
+  const { data: profile, isLoading, error } = useQuery({
     queryKey: ['profile', userId],
     queryFn: async () => {
-      console.log('🔍 Fetching profile for userId:', userId);
-      
       if (!userId) {
-        console.log('❌ No user ID provided');
         throw new Error('No user ID provided');
       }
 
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      console.log('📦 Profile fetch result:', { profile, error });
-
-      if (error) {
-        if (error.code === 'PGRST116') {
-          console.log('🆕 Profile not found, creating new profile');
-          const { data: userData } = await supabase.auth.getUser();
-          if (!userData.user) {
-            console.log('❌ No authenticated user found');
+      try {
+        const profile = await fetchProfile(userId);
+        return profile ? convertFromDbProfile(profile) : null;
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('No rows returned')) {
+          const userData = await supabase.auth.getUser();
+          if (!userData.data.user) {
             throw new Error('No authenticated user found');
           }
 
-          const newProfile: ProfileDbData = {
-            id: userId,
-            email: userData.user.email || '',
-            username: null,
-            bio: null,
-            wallet_address: null,
-            avatar_url: null,
-            social_media: {
-              x: null,
-              linkedin: null,
-              instagram: null,
-              threads: null
-            } as Json,
-            interests: [],
-            show_upcoming_events: true,
-            show_past_events: true,
-            past_events: [],
-            upcoming_events: [],
-            created_at: new Date().toISOString()
-          };
-
-          const { data: createdProfile, error: createError } = await supabase
-            .from('profiles')
-            .insert([newProfile])
-            .select()
-            .single();
-
-          console.log('📦 Profile creation result:', { createdProfile, createError });
-
-          if (createError) {
-            console.error('❌ Error creating profile:', createError);
-            toast.error('Error creating profile');
-            throw createError;
-          }
-
+          const newProfile = await createProfile(userId, userData.data.user.email || '');
           return convertFromDbProfile(newProfile);
         }
 
         console.error('❌ Error fetching profile:', error);
         throw error;
       }
-
-      const typedProfile = convertFromDbProfile(profile as ProfileDbData);
-      console.log('✅ Returning formatted profile:', typedProfile);
-      return typedProfile;
     },
     enabled: !!userId,
-    retry: 1,
   });
-}
+
+  const { mutate: updateProfileData, isPending: isUpdating } = useMutation({
+    mutationFn: async (newProfile: Partial<ProfileData>) => {
+      if (!userId) throw new Error('No user ID provided');
+      const dbProfile = convertToDbProfile(newProfile);
+      const updatedProfile = await updateProfile(userId, dbProfile);
+      return convertFromDbProfile(updatedProfile);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile', userId] });
+      toast.success('Profile updated successfully');
+    },
+    onError: (error) => {
+      console.error('❌ Error updating profile:', error);
+      toast.error('Failed to update profile');
+    },
+  });
+
+  return {
+    data: profile,
+    isLoading,
+    error,
+    updateProfile: updateProfileData,
+    isUpdating,
+  };
+};
