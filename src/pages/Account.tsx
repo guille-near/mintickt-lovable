@@ -17,6 +17,15 @@ export default function Account() {
     bio: '',
     email: '',
     wallet_address: null,
+    social_media: {
+      x: null,
+      linkedin: null,
+      instagram: null,
+      threads: null
+    },
+    interests: [],
+    show_upcoming_events: true,
+    show_past_events: true
   });
 
   useEffect(() => {
@@ -26,6 +35,15 @@ export default function Account() {
         bio: profile.bio || '',
         email: profile.email,
         wallet_address: profile.wallet_address,
+        social_media: profile.social_media || {
+          x: null,
+          linkedin: null,
+          instagram: null,
+          threads: null
+        },
+        interests: profile.interests || [],
+        show_upcoming_events: profile.show_upcoming_events,
+        show_past_events: profile.show_past_events
       });
     }
   }, [profile]);
@@ -72,7 +90,7 @@ export default function Account() {
     );
   }
 
-  const handleProfileChange = (field: keyof ProfileFormData, value: string) => {
+  const handleProfileChange = (field: keyof ProfileFormData, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -100,6 +118,10 @@ export default function Account() {
           username: formData.username || null,
           bio: formData.bio || null,
           email: formData.email,
+          social_media: formData.social_media,
+          interests: formData.interests,
+          show_upcoming_events: formData.show_upcoming_events,
+          show_past_events: formData.show_past_events
         })
         .eq('id', user.id);
 
@@ -133,6 +155,8 @@ export default function Account() {
             onProfileChange={handleProfileChange}
             onSubmit={onSubmit}
             isLoading={isUpdating}
+            pastEvents={profile?.pastEvents}
+            upcomingEvents={profile?.upcomingEvents}
           />
         </div>
       </div>
