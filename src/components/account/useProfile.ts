@@ -66,7 +66,7 @@ export function useProfile(userId: string | undefined) {
             throw createError;
           }
 
-          return createdProfile as ProfileData;
+          return createdProfile as unknown as ProfileData;
         }
 
         console.error('Error fetching profile:', error);
