@@ -6,7 +6,10 @@ import { AccountHeader } from "@/components/account/AccountHeader";
 import { useProfile } from "@/components/account/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { ProfileFormData, SocialMediaLinks, Event } from "@/components/account/types";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
+import type { ProfileFormData, SocialMediaLinks } from "@/components/account/types";
 import type { Json } from "@/integrations/supabase/types";
 
 export default function Account() {
@@ -145,7 +148,17 @@ export default function Account() {
   return (
     <AuthenticatedLayout>
       <div className="container mx-auto py-6">
-        <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold">Account Settings</h1>
+          {profile?.username && (
+            <Button variant="outline" size="sm" asChild className="text-muted-foreground">
+              <Link to={`/@${profile.username}`}>
+                <ExternalLink className="mr-2 h-4 w-4" />
+                See my profile
+              </Link>
+            </Button>
+          )}
+        </div>
         <div className="max-w-2xl space-y-8">
           <AccountHeader
             profileId={user?.id}
