@@ -44,7 +44,6 @@ export interface ProfileDbData {
   past_events: Record<string, string>[];
 }
 
-// Using ProfileData as the base for form data
 export type ProfileFormData = Omit<ProfileData, 'id' | 'created_at' | 'avatar_url' | 'upcoming_events' | 'past_events'>;
 
 export const INTEREST_OPTIONS = [
