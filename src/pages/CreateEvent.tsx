@@ -10,6 +10,7 @@ import { EventForm, FormData } from "@/components/create-event/EventForm";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthProvider";
+import { Database } from "@/integrations/supabase/types";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -54,13 +55,13 @@ export default function CreateEvent() {
       }
 
       // Get the profile for the current user
-      const { data: profiles, error: profileError } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id, username')
-        .eq('id', user.id)  // Changed from wallet_address to id
+        .eq('id', user.id)
         .single();
 
-      if (profileError || !profiles) {
+      if (profileError || !profile) {
         console.error('Error getting profile:', profileError);
         toast({
           title: "Error",
@@ -112,9 +113,9 @@ export default function CreateEvent() {
           price: formData.ticketType === 'free' ? 0 : parseFloat(formData.price || "0"),
           total_tickets: parseInt(formData.totalTickets || "0"),
           remaining_tickets: parseInt(formData.totalTickets || "0"),
-          creator_id: profiles.id,
+          creator_id: profile.id,
           is_free: formData.ticketType === 'free',
-          organizer_name: profiles.username || 'Anonymous',
+          organizer_name: profile.username || 'Anonymous',
         })
         .select()
         .single();

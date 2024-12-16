@@ -2,103 +2,103 @@ import { Json } from './base';
 
 export interface EventsTable {
   Row: {
-    additional_info: Json | null
-    age_restriction: string | null
-    cancellation_policy: string | null
-    category: string | null
-    created_at: string
-    creator_id: string
-    date: string
-    description: string | null
-    event_type: string | null
     id: string
-    image_url: string | null
-    is_free: boolean
-    location: string | null
-    max_tickets_per_user: number | null
-    nft_attributes: Json | null
-    nft_collection_name: string | null
-    nft_description: string | null
-    nft_metadata_uri: string | null
-    nft_symbol: string | null
-    organizer_name: string
-    price: number | null
-    registration_deadline: string | null
-    remaining_tickets: number
-    royalties_percentage: number | null
-    status: string | null
-    tags: string[] | null
     title: string
+    description: string | null
+    date: string
+    location: string | null
+    image_url: string | null
+    price: number | null
     total_tickets: number
-    virtual_event_url: string | null
-    visibility: string | null
+    remaining_tickets: number
+    creator_id: string
+    created_at: string
+    is_free: boolean
+    organizer_name: string
+    category: string | null
+    tags: string[] | null
     website_url: string | null
+    virtual_event_url: string | null
+    max_tickets_per_user: number | null
+    event_type: string | null
+    status: string | null
+    visibility: string | null
+    registration_deadline: string | null
+    cancellation_policy: string | null
+    age_restriction: string | null
+    additional_info: Json | null
+    nft_symbol: string | null
+    nft_collection_name: string | null
+    nft_metadata_uri: string | null
+    royalties_percentage: number | null
+    nft_description: string | null
+    nft_attributes: Json | null
   }
   Insert: {
-    additional_info?: Json | null
-    age_restriction?: string | null
-    cancellation_policy?: string | null
-    category?: string | null
-    created_at?: string
-    creator_id: string
-    date: string
-    description?: string | null
-    event_type?: string | null
     id?: string
-    image_url?: string | null
-    is_free?: boolean
-    location?: string | null
-    max_tickets_per_user?: number | null
-    nft_attributes?: Json | null
-    nft_collection_name?: string | null
-    nft_description?: string | null
-    nft_metadata_uri?: string | null
-    nft_symbol?: string | null
-    organizer_name?: string
-    price?: number | null
-    registration_deadline?: string | null
-    remaining_tickets: number
-    royalties_percentage?: number | null
-    status?: string | null
-    tags?: string[] | null
     title: string
+    description?: string | null
+    date: string
+    location?: string | null
+    image_url?: string | null
+    price?: number | null
     total_tickets: number
-    virtual_event_url?: string | null
-    visibility?: string | null
+    remaining_tickets: number
+    creator_id: string
+    created_at?: string
+    is_free?: boolean
+    organizer_name?: string
+    category?: string | null
+    tags?: string[] | null
     website_url?: string | null
+    virtual_event_url?: string | null
+    max_tickets_per_user?: number | null
+    event_type?: string | null
+    status?: string | null
+    visibility?: string | null
+    registration_deadline?: string | null
+    cancellation_policy?: string | null
+    age_restriction?: string | null
+    additional_info?: Json | null
+    nft_symbol?: string | null
+    nft_collection_name?: string | null
+    nft_metadata_uri?: string | null
+    royalties_percentage?: number | null
+    nft_description?: string | null
+    nft_attributes?: Json | null
   }
   Update: {
-    additional_info?: Json | null
-    age_restriction?: string | null
-    cancellation_policy?: string | null
-    category?: string | null
-    created_at?: string
-    creator_id?: string
-    date?: string
-    description?: string | null
-    event_type?: string | null
     id?: string
-    image_url?: string | null
-    is_free?: boolean
-    location?: string | null
-    max_tickets_per_user?: number | null
-    nft_attributes?: Json | null
-    nft_collection_name?: string | null
-    nft_description?: string | null
-    nft_metadata_uri?: string | null
-    nft_symbol?: string | null
-    organizer_name?: string
-    price?: number | null
-    registration_deadline?: string | null
-    remaining_tickets?: number
-    royalties_percentage?: number | null
-    status?: string | null
-    tags?: string[] | null
     title?: string
+    description?: string | null
+    date?: string
+    location?: string | null
+    image_url?: string | null
+    price?: number | null
     total_tickets?: number
-    virtual_event_url?: string | null
-    visibility?: string | null
+    remaining_tickets?: number
+    creator_id?: string
+    created_at?: string
+    is_free?: boolean
+    organizer_name?: string
+    category?: string | null
+    tags?: string[] | null
     website_url?: string | null
+    virtual_event_url?: string | null
+    max_tickets_per_user?: number | null
+    event_type?: string | null
+    status?: string | null
+    visibility?: string | null
+    registration_deadline?: string | null
+    cancellation_policy?: string | null
+    age_restriction?: string | null
+    additional_info?: Json | null
+    nft_symbol?: string | null
+    nft_collection_name?: string | null
+    nft_metadata_uri?: string | null
+    royalties_percentage?: number | null
+    nft_description?: string | null
+    nft_attributes?: Json | null
   }
   Relationships: [
     {
