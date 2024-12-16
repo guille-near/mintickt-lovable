@@ -7,6 +7,8 @@ export interface SocialMedia {
   threads: string | null;
 }
 
+export type ProfileFormData = ProfileData;
+
 export interface ProfileData {
   id: string;
   username: string | null;
@@ -40,3 +42,16 @@ export interface UpdateProfileData {
   show_upcoming_events?: boolean;
   show_past_events?: boolean;
 }
+
+export const INTEREST_OPTIONS = [
+  "Music",
+  "Sports",
+  "Technology",
+  "Art",
+  "Food",
+  "Fashion",
+  "Gaming",
+  "Education",
+  "Business",
+  "Entertainment"
+];

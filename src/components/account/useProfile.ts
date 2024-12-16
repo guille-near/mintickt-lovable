@@ -5,7 +5,7 @@ import type { ProfileData, UpdateProfileData } from "./types";
 export const useProfile = (userId: string) => {
   const queryClient = useQueryClient();
 
-  const { data: profile, isLoading, error } = useQuery({
+  const { data: profile, isLoading, error, refetch } = useQuery({
     queryKey: ["profile", userId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -19,7 +19,8 @@ export const useProfile = (userId: string) => {
       // Convert the raw data to match ProfileData type
       const profileData: ProfileData = {
         ...data,
-        social_media: data.social_media as unknown as ProfileData["social_media"],
+        social_media: data.social_media as ProfileData["social_media"],
+        interests: data.interests || [],
         past_events: (data.past_events || []).map((event: any) => ({
           id: event.id,
           title: event.title,
@@ -40,7 +41,7 @@ export const useProfile = (userId: string) => {
     mutationFn: async (updates: UpdateProfileData) => {
       const { data, error } = await supabase
         .from("profiles")
-        .update(updates)
+        .update(updates as any)
         .eq("id", userId)
         .select()
         .single();
@@ -58,5 +59,6 @@ export const useProfile = (userId: string) => {
     isLoading,
     error,
     updateProfile,
+    refetch,
   };
 };

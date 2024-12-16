@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Account from "./pages/Account";
@@ -16,7 +16,7 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/discover" element={<DiscoverEvents />} />
         <Route path="/@:username" element={<PublicProfile />} />
-        <Route element={<AuthenticatedLayout />}>
+        <Route element={<AuthenticatedLayout><Outlet /></AuthenticatedLayout>}>
           <Route path="/account" element={<Account />} />
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/event/:id" element={<EventDetails />} />

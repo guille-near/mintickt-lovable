@@ -37,7 +37,7 @@ export function DiscoverSidebar() {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { state } = useSidebar();
-  const { data: profile } = useProfile(user?.id);
+  const { profile } = useProfile(user?.id || '');
 
   return (
     <Sidebar variant="floating" collapsible="icon">
