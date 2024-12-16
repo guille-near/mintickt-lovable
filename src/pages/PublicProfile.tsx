@@ -114,8 +114,8 @@ export default function PublicProfile() {
       <div className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <ProfileHeader
-            username={profile.username || ''}
-            bio={profile.bio || ''}
+            username={profile.username}
+            bio={profile.bio}
             avatarUrl={profile.avatar_url}
           />
 
@@ -131,7 +131,6 @@ export default function PublicProfile() {
             <EventsList
               title="Upcoming Events"
               events={profile.upcoming_events}
-              emptyMessage="No upcoming events"
             />
           )}
 
@@ -139,7 +138,6 @@ export default function PublicProfile() {
             <EventsList
               title="Past Events"
               events={profile.past_events}
-              emptyMessage="No past events"
             />
           )}
         </div>
