@@ -2,11 +2,16 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ProfileData } from "@/components/account/types";
 import { useAuthState } from "@/hooks/useAuthState";
 
 interface ProfileHeaderProps {
-  profile: ProfileData;
+  profile: {
+    id: string;
+    username: string | null;
+    bio: string | null;
+    avatar_url: string | null;
+    wallet_address: string | null;
+  };
 }
 
 function ShareQRCode() {

@@ -15,12 +15,7 @@ interface ProfileData {
   bio: string | null;
   wallet_address: string | null;
   created_at: string;
-  social_media: {
-    x: string | null;
-    linkedin: string | null;
-    instagram: string | null;
-    threads: string | null;
-  };
+  social_media: Record<string, string | null>;
   interests: string[];
   show_upcoming_events: boolean;
   show_past_events: boolean;
@@ -97,12 +92,7 @@ export default function PublicProfile() {
 
   return (
     <div className="container mx-auto py-8 space-y-8">
-      <ProfileHeader
-        username={profile.username || ""}
-        bio={profile.bio}
-        avatarUrl={profile.avatar_url}
-        walletAddress={profile.wallet_address}
-      />
+      <ProfileHeader profile={profile} />
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="space-y-8">
@@ -111,14 +101,14 @@ export default function PublicProfile() {
         </div>
         
         <div className="md:col-span-2 space-y-8">
-          {profile.show_upcoming_events && profile.upcoming_events.length > 0 && (
+          {profile.show_upcoming_events && profile.upcoming_events && profile.upcoming_events.length > 0 && (
             <ProfileEvents
               title="Upcoming Events"
               events={profile.upcoming_events}
             />
           )}
           
-          {profile.show_past_events && profile.past_events.length > 0 && (
+          {profile.show_past_events && profile.past_events && profile.past_events.length > 0 && (
             <ProfileEvents
               title="Past Events"
               events={profile.past_events}
