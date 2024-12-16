@@ -1,8 +1,9 @@
-import { createRoot } from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import App from './App.tsx'
-import './index.css'
-import { ThemeProvider } from '@/contexts/ThemeProvider'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import { ThemeProvider } from '@/contexts/ThemeProvider';
+import { WalletContextProvider } from '@/contexts/WalletContextProvider';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -12,12 +13,14 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
-})
+});
 
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
-      <App />
+      <WalletContextProvider>
+        <App />
+      </WalletContextProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
