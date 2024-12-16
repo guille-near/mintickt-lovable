@@ -11,12 +11,12 @@ const convertToDbProfile = (profile: Partial<ProfileData>): Partial<ProfileDbDat
       id: event.id,
       title: event.title,
       date: event.date
-    })) as Record<string, string>[],
+    })),
     upcoming_events: profile.upcoming_events?.map(event => ({
       id: event.id,
       title: event.title,
       date: event.date
-    })) as Record<string, string>[]
+    }))
   };
 };
 
@@ -109,7 +109,7 @@ export function useProfile(userId: string | undefined) {
             threads: null
           };
 
-          const newProfile: ProfileData = {
+          const newProfile = {
             id: userId,
             email: userData.user.email || '',
             username: null,
@@ -127,7 +127,7 @@ export function useProfile(userId: string | undefined) {
 
           const { data: createdProfile, error: createError } = await supabase
             .from('profiles')
-            .insert([convertToDbProfile(newProfile)])
+            .insert([newProfile])
             .select()
             .single();
 
