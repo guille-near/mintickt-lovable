@@ -20,8 +20,23 @@ export interface Event {
   date: string;
 }
 
-export interface ProfileData extends Omit<ProfileFormData, 'social_media'> {
-  social_media: ProfileFormData['social_media'] | null;
+export interface ProfileData {
+  id: string;
+  username: string | null;
+  bio: string | null;
+  email: string;
+  wallet_address: string | null;
+  avatar_url: string | null;
+  created_at: string;
+  social_media: {
+    x: string | null;
+    linkedin: string | null;
+    instagram: string | null;
+    threads: string | null;
+  } | null;
+  interests: string[] | null;
+  show_upcoming_events: boolean | null;
+  show_past_events: boolean | null;
   pastEvents?: Event[];
   upcomingEvents?: Event[];
 }

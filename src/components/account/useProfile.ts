@@ -36,7 +36,7 @@ export function useProfile(userId: string | undefined) {
 
           const newProfile = {
             id: userId,
-            email: userData.user.email,
+            email: userData.user.email || '',
             username: null,
             bio: null,
             wallet_address: null,
@@ -49,8 +49,9 @@ export function useProfile(userId: string | undefined) {
             },
             interests: [],
             show_upcoming_events: true,
-            show_past_events: true
-          };
+            show_past_events: true,
+            created_at: new Date().toISOString()
+          } satisfies Omit<ProfileData, 'pastEvents' | 'upcomingEvents'>;
 
           const { data: createdProfile, error: createError } = await supabase
             .from('profiles')
@@ -64,7 +65,12 @@ export function useProfile(userId: string | undefined) {
             throw createError;
           }
 
-          return createdProfile as ProfileData;
+          return {
+            ...createdProfile,
+            social_media: newProfile.social_media,
+            pastEvents: [],
+            upcomingEvents: []
+          } as ProfileData;
         }
 
         console.error('Error fetching profile:', error);
@@ -84,8 +90,17 @@ export function useProfile(userId: string | undefined) {
       const pastEvents = events.filter(event => new Date(event.date) < now);
       const upcomingEvents = events.filter(event => new Date(event.date) >= now);
 
+      // Ensure social_media has the correct structure
+      const social_media = profile.social_media ? {
+        x: profile.social_media.x || null,
+        linkedin: profile.social_media.linkedin || null,
+        instagram: profile.social_media.instagram || null,
+        threads: profile.social_media.threads || null
+      } : null;
+
       return {
         ...profile,
+        social_media,
         pastEvents,
         upcomingEvents
       } as ProfileData;
