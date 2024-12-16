@@ -37,16 +37,8 @@ export interface ProfileData {
   interests: string[] | null;
   show_upcoming_events: boolean | null;
   show_past_events: boolean | null;
-  pastEvents?: Event[];
-  upcomingEvents?: Event[];
-  tickets?: Array<{
-    event_id: string;
-    events: {
-      id: string;
-      title: string;
-      date: string;
-    } | null;
-  }>;
+  past_events: Event[];
+  upcoming_events: Event[];
 }
 
 export const INTEREST_OPTIONS = [

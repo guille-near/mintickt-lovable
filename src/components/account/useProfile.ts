@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ProfileData, Event } from "./types";
+import { ProfileData } from "./types";
 
 export function useProfile(userId: string | undefined) {
   return useQuery({
@@ -13,17 +13,7 @@ export function useProfile(userId: string | undefined) {
 
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select(`
-          *,
-          tickets(
-            event_id,
-            events(
-              id,
-              title,
-              date
-            )
-          )
-        `)
+        .select('*')
         .eq('id', userId)
         .single();
 
@@ -50,6 +40,8 @@ export function useProfile(userId: string | undefined) {
             interests: [],
             show_upcoming_events: true,
             show_past_events: true,
+            past_events: [],
+            upcoming_events: [],
             created_at: new Date().toISOString()
           };
 
@@ -65,32 +57,14 @@ export function useProfile(userId: string | undefined) {
             throw createError;
           }
 
-          return {
-            ...createdProfile,
-            social_media: newProfile.social_media,
-            pastEvents: [],
-            upcomingEvents: []
-          } as ProfileData;
+          return createdProfile as ProfileData;
         }
 
         console.error('Error fetching profile:', error);
         throw error;
       }
 
-      // Process user events
-      const now = new Date();
-      const events = profile.tickets
-        ?.filter(ticket => ticket.events)
-        .map(ticket => ({
-          id: ticket.events!.id,
-          title: ticket.events!.title,
-          date: ticket.events!.date
-        })) || [];
-
-      const pastEvents = events.filter(event => new Date(event.date) < now);
-      const upcomingEvents = events.filter(event => new Date(event.date) >= now);
-
-      // Ensure social_media has the correct structure and type
+      // Ensure social_media has the correct structure
       const social_media = {
         x: profile.social_media?.x ?? null,
         linkedin: profile.social_media?.linkedin ?? null,
@@ -98,11 +72,18 @@ export function useProfile(userId: string | undefined) {
         threads: profile.social_media?.threads ?? null
       };
 
+      // Parse events arrays
+      const past_events = profile.past_events || [];
+      const upcoming_events = profile.upcoming_events || [];
+
       const typedProfile: ProfileData = {
         ...profile,
         social_media,
-        pastEvents,
-        upcomingEvents
+        past_events,
+        upcoming_events,
+        interests: profile.interests || [],
+        show_upcoming_events: profile.show_upcoming_events ?? true,
+        show_past_events: profile.show_past_events ?? true
       };
 
       return typedProfile;
