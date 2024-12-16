@@ -74,11 +74,21 @@ export function useProfile(userId: string | undefined) {
       }
 
       // Parse social_media to ensure correct structure
+      let parsedSocialMedia;
+      try {
+        parsedSocialMedia = typeof profile.social_media === 'string' 
+          ? JSON.parse(profile.social_media)
+          : profile.social_media || {};
+      } catch (e) {
+        console.error('Error parsing social_media:', e);
+        parsedSocialMedia = {};
+      }
+
       const social_media = {
-        x: profile.social_media?.x ?? null,
-        linkedin: profile.social_media?.linkedin ?? null,
-        instagram: profile.social_media?.instagram ?? null,
-        threads: profile.social_media?.threads ?? null
+        x: parsedSocialMedia?.x ?? null,
+        linkedin: parsedSocialMedia?.linkedin ?? null,
+        instagram: parsedSocialMedia?.instagram ?? null,
+        threads: parsedSocialMedia?.threads ?? null
       };
 
       // Parse events arrays and ensure they match Event type
