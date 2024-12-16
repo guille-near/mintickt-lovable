@@ -1,7 +1,6 @@
 import Footer from "./Footer"
 import { DiscoverSidebar } from "./discover/DiscoverSidebar"
 import { SidebarProvider, SidebarTrigger } from "./ui/sidebar"
-import { Button } from "./ui/button"
 
 interface AuthenticatedLayoutProps {
   children: React.ReactNode;
@@ -14,11 +13,9 @@ const AuthenticatedLayout = ({ children }: AuthenticatedLayoutProps) => {
         <DiscoverSidebar />
         <div className="flex-1 flex flex-col">
           <div className="p-4 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
-            <Button variant="ghost" size="icon">
-              <div className="flex items-center justify-center">
-                <SidebarTrigger />
-              </div>
-            </Button>
+            <div className="flex items-center justify-center w-10 h-10">
+              <SidebarTrigger />
+            </div>
           </div>
           <main className="flex-1">
             {children}
