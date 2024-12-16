@@ -7,7 +7,6 @@ import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinks } from "@/components/profile/SocialLinks";
 import { ProfileInterests } from "@/components/profile/ProfileInterests";
 import { ProfileEvents } from "@/components/profile/ProfileEvents";
-import { Json } from "@/integrations/supabase/types";
 
 interface EventData {
   id: string;
@@ -24,8 +23,6 @@ export default function PublicProfile() {
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
     queryFn: async () => {
-      console.log("Fetching profile for username:", username);
-      
       if (!username) {
         console.error("No username provided");
         throw new Error("No username provided");
@@ -33,66 +30,40 @@ export default function PublicProfile() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select(`
-          id,
-          username,
-          email,
-          avatar_url,
-          bio,
-          wallet_address,
-          created_at,
-          social_media,
-          interests,
-          show_upcoming_events,
-          show_past_events,
-          past_events,
-          upcoming_events
-        `)
+        .select('*')
         .eq('username', username)
         .single();
 
-      console.log("Supabase response:", { data, error });
-
       if (error) {
-        console.error("Error fetching profile:", error);
+        console.error("Supabase error:", error);
         throw error;
       }
 
       if (!data) {
-        console.error("No profile data found");
+        console.error("No profile found for username:", username);
         throw new Error("Profile not found");
       }
 
-      // Parse social_media JSON if it exists
-      const socialMedia = data.social_media ? 
-        (typeof data.social_media === 'string' ? JSON.parse(data.social_media) : data.social_media) : 
-        {
-          x: null,
-          linkedin: null,
-          instagram: null,
-          threads: null,
-        };
+      console.log("Raw profile data:", data);
 
-      console.log("Past events raw data:", data.past_events);
-      console.log("Upcoming events raw data:", data.upcoming_events);
+      // Parse social_media JSON if it exists
+      const socialMedia = data.social_media || {
+        x: null,
+        linkedin: null,
+        instagram: null,
+        threads: null,
+      };
 
       // Format events with type checking
       const formatEvents = (events: any[] | null): EventData[] => {
-        console.log("Formatting events:", events);
-        if (!Array.isArray(events)) {
-          console.log("Events is not an array, returning empty array");
+        if (!events || !Array.isArray(events)) {
           return [];
         }
-        return events.map(event => {
-          console.log("Processing event:", event);
-          const formattedEvent = {
-            id: String(event?.id || ''),
-            title: String(event?.title || ''),
-            date: String(event?.date || '')
-          };
-          console.log("Formatted event:", formattedEvent);
-          return formattedEvent;
-        });
+        return events.map(event => ({
+          id: String(event?.id || ''),
+          title: String(event?.title || ''),
+          date: String(event?.date || '')
+        }));
       };
 
       const profileData: ProfileData = {
@@ -111,7 +82,7 @@ export default function PublicProfile() {
         upcoming_events: formatEvents(data.upcoming_events)
       };
 
-      console.log("Final processed profile data:", profileData);
+      console.log("Processed profile data:", profileData);
       return profileData;
     },
     retry: 1,
@@ -119,25 +90,23 @@ export default function PublicProfile() {
     gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
   });
 
-  console.log("Query state:", { isLoading, error, profile });
-
-  if (error) {
-    console.error("Query error:", error);
-    toast.error(error instanceof Error ? error.message : "Error loading profile");
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-red-500">
-          {error instanceof Error ? error.message : "Error loading profile"}
-        </div>
-      </div>
-    );
-  }
-
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    console.error("Error loading profile:", error);
+    toast.error(error instanceof Error ? error.message : "Error loading profile");
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center text-red-500">
+          {error instanceof Error ? error.message : "Error loading profile"}
         </div>
       </div>
     );
