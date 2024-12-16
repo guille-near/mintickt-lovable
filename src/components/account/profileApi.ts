@@ -17,6 +17,8 @@ export const createProfile = async (userId: string, email: string): Promise<Prof
   const newProfile: ProfileDbData = {
     id: userId,
     email: email,
+    first_name: null,
+    last_name: null,
     username: null,
     bio: null,
     wallet_address: null,

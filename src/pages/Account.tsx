@@ -18,6 +18,8 @@ export default function Account() {
   const { data: profile, isLoading: profileLoading, error, refetch } = useProfile(user?.id);
   const [formData, setFormData] = useState<ProfileFormData>({
     username: null,
+    first_name: null,
+    last_name: null,
     bio: null,
     email: '',
     wallet_address: null,
@@ -43,6 +45,8 @@ export default function Account() {
 
       setFormData({
         username: profile.username || null,
+        first_name: profile.first_name || null,
+        last_name: profile.last_name || null,
         bio: profile.bio || null,
         email: profile.email,
         wallet_address: profile.wallet_address,
@@ -121,6 +125,8 @@ export default function Account() {
         .from('profiles')
         .update({
           username: formData.username,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
           bio: formData.bio,
           email: formData.email,
           social_media: formData.social_media as unknown as Json,
