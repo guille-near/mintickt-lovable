@@ -9,18 +9,21 @@ import { ProfileInterests } from "@/components/public-profile/ProfileInterests";
 import { EventsList } from "@/components/public-profile/EventsList";
 import { Event } from "@/components/account/types";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
+import { Json } from "@/integrations/supabase/types";
+
+interface SocialMedia {
+  x: string | null;
+  threads: string | null;
+  linkedin: string | null;
+  instagram: string | null;
+}
 
 interface Profile {
   id: string;
   username: string | null;
   bio: string | null;
   avatar_url: string | null;
-  social_media: {
-    x: string | null;
-    threads: string | null;
-    linkedin: string | null;
-    instagram: string | null;
-  };
+  social_media: SocialMedia;
   interests: string[];
   upcoming_events: Event[];
   past_events: Event[];
@@ -73,7 +76,21 @@ const PublicProfile = () => {
       throw new Error('Profile not found');
     }
 
-    return data as Profile;
+    // Convert the database response to match our Profile interface
+    const profile: Profile = {
+      id: data.id,
+      username: data.username,
+      bio: data.bio,
+      avatar_url: data.avatar_url,
+      social_media: data.social_media as SocialMedia,
+      interests: data.interests || [],
+      upcoming_events: data.upcoming_events as Event[] || [],
+      past_events: data.past_events as Event[] || [],
+      show_upcoming_events: data.show_upcoming_events,
+      show_past_events: data.show_past_events
+    };
+
+    return profile;
   };
 
   const {
@@ -117,9 +134,9 @@ const PublicProfile = () => {
       <div className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <ProfileHeader
-            username={profile.username}
-            bio={profile.bio}
-            avatarUrl={profile.avatar_url}
+            username={profile.username || ''}
+            bio={profile.bio || ''}
+            avatarUrl={profile.avatar_url || ''}
           />
 
           <ProfileSocialLinks socialMedia={profile.social_media} />
