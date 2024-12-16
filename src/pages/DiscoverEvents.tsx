@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { DesktopEventCard } from "@/components/event-card/DesktopEventCard";
-import { MobileEventCard } from "@/components/event-card/MobileEventCard";
+import { EventCard } from "@/components/EventCard";
 import { supabase } from "@/integrations/supabase/client";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
+import { Tables } from "@/integrations/supabase/types";
+
+type Event = Tables<"events">;
 
 export default function DiscoverEvents() {
   const navigate = useNavigate();
@@ -30,8 +32,13 @@ export default function DiscoverEvents() {
       }
 
       const { data, error } = await query;
-      if (error) throw error;
-      return data;
+      
+      if (error) {
+        console.error('Error fetching events:', error);
+        throw error;
+      }
+      
+      return data as Event[];
     },
   });
 
@@ -61,36 +68,24 @@ export default function DiscoverEvents() {
             ))}
           </div>
         ) : (
-          <>
-            {/* Desktop View */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {events?.map((event) => (
-                <DesktopEventCard
-                  key={event.id}
-                  title={event.title}
-                  date={event.date}
-                  image={event.image_url || '/placeholder.svg'}
-                  location={event.location}
-                  price={event.price}
-                  onClick={() => navigate(`/event/${event.id}`)}
-                />
-              ))}
-            </div>
-
-            {/* Mobile View */}
-            <div className="space-y-4 md:hidden">
-              {events?.map((event) => (
-                <MobileEventCard
-                  key={event.id}
-                  title={event.title}
-                  date={event.date}
-                  image={event.image_url || '/placeholder.svg'}
-                  location={event.location}
-                  onClick={() => navigate(`/event/${event.id}`)}
-                />
-              ))}
-            </div>
-          </>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {events?.map((event) => (
+              <EventCard
+                key={event.id}
+                id={event.id}
+                title={event.title}
+                date={event.date}
+                image={event.image_url || '/placeholder.svg'}
+                location={event.location}
+                price={event.price ? Number(event.price) : undefined}
+              />
+            ))}
+            {events?.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <p className="text-muted-foreground">No events found</p>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </AuthenticatedLayout>
