@@ -13,27 +13,14 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 
 export default function EventDetails() {
-  const { id } = useParams<{ id: string }>();
+  const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
   const { data: event, isLoading: eventLoading, error: eventError } = useQuery({
-    queryKey: ['event', id],
+    queryKey: ['event', eventId],
     queryFn: async () => {
-      // Validación inicial del ID
-      if (!id) {
-        console.error('No se proporcionó ID de evento');
-        throw new Error('ID de evento no proporcionado');
-      }
-
-      // Validar formato UUID
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(id)) {
-        console.error('Formato de ID inválido:', id);
-        throw new Error('Formato de ID inválido');
-      }
-
-      console.log('Iniciando búsqueda de evento con ID:', id);
+      console.log('Iniciando búsqueda de evento con ID:', eventId);
 
       const { data: eventData, error: eventError } = await supabase
         .from('events')
@@ -44,7 +31,7 @@ export default function EventDetails() {
             avatar_url
           )
         `)
-        .eq('id', id)
+        .eq('id', eventId)
         .single();
 
       console.log('Respuesta de Supabase:', { eventData, eventError });
@@ -64,9 +51,8 @@ export default function EventDetails() {
     },
     retry: 1,
     retryDelay: 1000,
-    onError: (error) => {
-      console.error('Error en la consulta:', error);
-      toast.error("No se pudo cargar el evento. Por favor, intenta de nuevo.");
+    meta: {
+      errorMessage: "No se pudo cargar el evento. Por favor, intenta de nuevo."
     }
   });
 
