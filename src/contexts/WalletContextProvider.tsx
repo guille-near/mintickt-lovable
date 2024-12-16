@@ -10,12 +10,18 @@ interface Props {
 }
 
 export const WalletContextProvider: FC<Props> = ({ children }) => {
-  const url = useMemo(() => clusterApiUrl('devnet'), []);
-  const phantom = useMemo(() => new PhantomWalletAdapter(), []);
+  // You can also provide a custom RPC endpoint
+  const endpoint = useMemo(() => clusterApiUrl('devnet'), []);
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+    ],
+    []
+  );
 
   return (
-    <ConnectionProvider endpoint={url}>
-      <WalletProvider wallets={[phantom]} autoConnect>
+    <ConnectionProvider endpoint={endpoint}>
+      <WalletProvider wallets={wallets} autoConnect={false}>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
