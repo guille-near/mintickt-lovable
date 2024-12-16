@@ -27,76 +27,54 @@ interface Profile {
 
 const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
-  const { username: rawUsername } = useParams();
-  const username = rawUsername?.replace('@', '');
+  const params = useParams<{ username: string }>();
+  const username = params.username?.replace('@', '');
   
-  console.log('🎯 [PublicProfile] Username param:', username);
+  console.log('🎯 [PublicProfile] Username from params:', username);
 
-  const fetchProfile = async () => {
-    console.log('🎯 [PublicProfile] Fetching profile for username:', username);
-    
-    if (!username) {
-      throw new Error('Username is required');
-    }
+  const { data: profile, isLoading, error } = useQuery({
+    queryKey: ['public-profile', username],
+    queryFn: async () => {
+      console.log('🎯 [PublicProfile] Fetching profile for username:', username);
+      
+      if (!username) {
+        throw new Error('Username is required');
+      }
 
-    const { data, error } = await supabase
-      .from('profiles')
-      .select(`
-        id,
-        username,
-        bio,
-        avatar_url,
-        social_media,
-        interests,
-        upcoming_events,
-        past_events,
-        show_upcoming_events,
-        show_past_events,
-        email,
-        created_at,
-        wallet_address
-      `)
-      .eq('username', username)
-      .single();
+      const { data, error } = await supabase
+        .from('profiles')
+        .select(`
+          id,
+          username,
+          bio,
+          avatar_url,
+          social_media,
+          interests,
+          upcoming_events,
+          past_events,
+          show_upcoming_events,
+          show_past_events,
+          email,
+          created_at,
+          wallet_address
+        `)
+        .eq('username', username)
+        .single();
 
-    console.log('🎯 [PublicProfile] Supabase response:', { data, error });
+      console.log('🎯 [PublicProfile] Supabase response:', { data, error });
 
-    if (error) {
-      console.error('🎯 [PublicProfile] Error fetching profile:', error);
-      throw error;
-    }
+      if (error) {
+        console.error('🎯 [PublicProfile] Error fetching profile:', error);
+        throw error;
+      }
 
-    if (!data) {
-      console.error('🎯 [PublicProfile] No profile found');
-      throw new Error('Profile not found');
-    }
+      if (!data) {
+        console.error('🎯 [PublicProfile] No profile found');
+        throw new Error('Profile not found');
+      }
 
-    const convertedProfile = convertFromDbProfile(data);
-    const profile: Profile = {
-      id: convertedProfile.id,
-      username: convertedProfile.username,
-      bio: convertedProfile.bio,
-      avatar_url: convertedProfile.avatar_url,
-      social_media: convertedProfile.social_media,
-      interests: convertedProfile.interests,
-      upcoming_events: convertedProfile.upcoming_events,
-      past_events: convertedProfile.past_events,
-      show_upcoming_events: convertedProfile.show_upcoming_events,
-      show_past_events: convertedProfile.show_past_events
-    };
-
-    console.log('🎯 [PublicProfile] Processed profile:', profile);
-    return profile;
-  };
-
-  const {
-    data: profile,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['profile', username],
-    queryFn: fetchProfile,
-    retry: false,
+      return convertFromDbProfile(data);
+    },
     enabled: !!username,
   });
 
@@ -142,9 +120,9 @@ const PublicProfile = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <ProfileHeader
-            username={profile.username || ''}
-            bio={profile.bio || ''}
-            avatarUrl={profile.avatar_url || ''}
+            username={profile.username}
+            bio={profile.bio}
+            avatarUrl={profile.avatar_url}
           />
 
           <ProfileSocialLinks socialMedia={profile.social_media} />
