@@ -1,6 +1,6 @@
 export interface ProfileFormData {
-  username: string;
-  bio: string;
+  username: string | null;
+  bio: string | null;
   email: string;
   wallet_address: string | null;
   social_media: {
@@ -12,6 +12,18 @@ export interface ProfileFormData {
   interests: string[];
   show_upcoming_events: boolean;
   show_past_events: boolean;
+}
+
+export interface Event {
+  id: string;
+  title: string;
+  date: string;
+}
+
+export interface ProfileData extends Omit<ProfileFormData, 'social_media'> {
+  social_media: ProfileFormData['social_media'] | null;
+  pastEvents?: Event[];
+  upcomingEvents?: Event[];
 }
 
 export const INTEREST_OPTIONS = [

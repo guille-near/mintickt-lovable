@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ProfileData, Event } from "./types";
 
 export function useProfile(userId: string | undefined) {
   return useQuery({
@@ -63,7 +64,7 @@ export function useProfile(userId: string | undefined) {
             throw createError;
           }
 
-          return createdProfile;
+          return createdProfile as ProfileData;
         }
 
         console.error('Error fetching profile:', error);
@@ -78,7 +79,7 @@ export function useProfile(userId: string | undefined) {
           id: ticket.events.id,
           title: ticket.events.title,
           date: ticket.events.date
-        }));
+        })) as Event[];
 
       const pastEvents = events.filter(event => new Date(event.date) < now);
       const upcomingEvents = events.filter(event => new Date(event.date) >= now);
@@ -87,7 +88,7 @@ export function useProfile(userId: string | undefined) {
         ...profile,
         pastEvents,
         upcomingEvents
-      };
+      } as ProfileData;
     },
     enabled: !!userId,
     retry: 1,

@@ -13,8 +13,8 @@ export default function Account() {
   const [isUpdating, setIsUpdating] = useState(false);
   const { data: profile, isLoading: profileLoading, error, refetch } = useProfile(user?.id);
   const [formData, setFormData] = useState<ProfileFormData>({
-    username: '',
-    bio: '',
+    username: null,
+    bio: null,
     email: '',
     wallet_address: null,
     social_media: {
@@ -31,8 +31,8 @@ export default function Account() {
   useEffect(() => {
     if (profile) {
       setFormData({
-        username: profile.username || '',
-        bio: profile.bio || '',
+        username: profile.username || null,
+        bio: profile.bio || null,
         email: profile.email,
         wallet_address: profile.wallet_address,
         social_media: profile.social_media || {
@@ -42,8 +42,8 @@ export default function Account() {
           threads: null
         },
         interests: profile.interests || [],
-        show_upcoming_events: profile.show_upcoming_events,
-        show_past_events: profile.show_past_events
+        show_upcoming_events: profile.show_upcoming_events ?? true,
+        show_past_events: profile.show_past_events ?? true
       });
     }
   }, [profile]);
@@ -110,13 +110,12 @@ export default function Account() {
 
     try {
       setIsUpdating(true);
-      console.log('Updating profile with data:', formData);
 
       const { error } = await supabase
         .from('profiles')
         .update({
-          username: formData.username || null,
-          bio: formData.bio || null,
+          username: formData.username,
+          bio: formData.bio,
           email: formData.email,
           social_media: formData.social_media,
           interests: formData.interests,
@@ -146,7 +145,7 @@ export default function Account() {
         <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
         <div className="max-w-2xl space-y-8">
           <AccountHeader
-            profileId={user.id}
+            profileId={user?.id}
             avatarUrl={profile?.avatar_url}
             onAvatarUpdate={handleAvatarUpdate}
           />
