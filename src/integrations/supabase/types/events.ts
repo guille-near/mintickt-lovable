@@ -1,3 +1,5 @@
+import { Json } from './base';
+
 export interface EventsTable {
   Row: {
     additional_info: Json | null

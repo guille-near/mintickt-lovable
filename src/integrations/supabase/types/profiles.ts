@@ -1,3 +1,5 @@
+import { Json } from './base';
+
 export interface ProfilesTable {
   Row: {
     avatar_url: string | null

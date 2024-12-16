@@ -1,3 +1,8 @@
+import { EventUpdatesTable } from './event-updates';
+import { EventsTable } from './events';
+import { ProfilesTable } from './profiles';
+import { TicketsTable } from './tickets';
+
 export type Json =
   | string
   | number
