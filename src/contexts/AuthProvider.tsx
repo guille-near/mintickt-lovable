@@ -61,6 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         navigate("/discover");
+      } else if (_event === 'SIGNED_OUT') {
+        // Clear local state and redirect to home
+        setSession(null);
+        setUser(null);
+        navigate("/");
       }
     });
 
@@ -146,11 +151,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("Sign out error:", error);
-        toast.error(error.message);
+        toast.error("Error signing out. Please try again.");
         return;
       }
-      navigate("/");
+      
+      // Clear local state
+      setSession(null);
+      setUser(null);
+      
+      // Show success message and redirect
       toast.success("Successfully signed out!");
+      navigate("/");
     } catch (error: any) {
       console.error("Sign out error:", error);
       toast.error("An unexpected error occurred while signing out.");
