@@ -53,7 +53,7 @@ export default function PublicProfile() {
 
       console.log("Raw profile data:", data);
 
-      // Parse social_media JSON and ensure it matches SocialMedia type
+      // Parse and validate social media data
       const defaultSocialMedia: SocialMedia = {
         x: null,
         linkedin: null,
@@ -63,10 +63,12 @@ export default function PublicProfile() {
 
       let socialMedia: SocialMedia;
       try {
-        const parsedSocialMedia = typeof data.social_media === 'object' ? data.social_media : {};
+        const rawSocialMedia = data.social_media as Record<string, string | null>;
         socialMedia = {
-          ...defaultSocialMedia,
-          ...parsedSocialMedia,
+          x: rawSocialMedia?.x ?? null,
+          linkedin: rawSocialMedia?.linkedin ?? null,
+          instagram: rawSocialMedia?.instagram ?? null,
+          threads: rawSocialMedia?.threads ?? null,
         };
       } catch (e) {
         console.error("Error parsing social media:", e);
