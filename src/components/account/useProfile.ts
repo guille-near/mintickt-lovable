@@ -70,7 +70,7 @@ export function useProfile(userId: string | undefined) {
         throw error;
       }
 
-      // Procesar los eventos del usuario
+      // Process user events
       const now = new Date();
       const events = profile.tickets
         .filter(ticket => ticket.events)
