@@ -13,40 +13,34 @@ export default function PublicProfile() {
   const params = useParams();
   const username = params.username?.replace('@', ''); // Remove @ if present
 
-  console.log("PublicProfile - Looking for username:", username);
-
-  const { data: profile, isLoading, error } = useQuery({
+  const { data: profile, isLoading } = useQuery({
     queryKey: ['public-profile', username],
     queryFn: async () => {
       if (!username) {
-        console.error("PublicProfile - No username provided");
         toast.error("No username provided");
         throw new Error("No username provided");
       }
 
-      const { data: profiles, error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('username', username)
         .single();
 
-      console.log("PublicProfile - Query result:", { profiles, error });
-
       if (error) {
-        console.error("PublicProfile - Supabase error:", error);
+        console.error("Error fetching profile:", error);
         toast.error("Error loading profile");
         throw error;
       }
 
-      if (!profiles) {
-        console.log("PublicProfile - No profile found");
+      if (!data) {
         toast.error("Profile not found");
         return null;
       }
 
       // Parse social_media JSON if it exists
-      const socialMedia = profiles.social_media ? 
-        (typeof profiles.social_media === 'string' ? JSON.parse(profiles.social_media) : profiles.social_media) : 
+      const socialMedia = data.social_media ? 
+        (typeof data.social_media === 'string' ? JSON.parse(data.social_media) : data.social_media) : 
         {
           x: null,
           linkedin: null,
@@ -55,22 +49,24 @@ export default function PublicProfile() {
         };
 
       return {
-        id: profiles.id,
-        username: profiles.username,
-        email: profiles.email,
-        avatar_url: profiles.avatar_url,
-        bio: profiles.bio,
-        wallet_address: profiles.wallet_address,
-        created_at: profiles.created_at,
+        id: data.id,
+        username: data.username,
+        email: data.email,
+        avatar_url: data.avatar_url,
+        bio: data.bio,
+        wallet_address: data.wallet_address,
+        created_at: data.created_at,
         social_media: socialMedia,
-        interests: profiles.interests || [],
-        show_upcoming_events: profiles.show_upcoming_events ?? true,
-        show_past_events: profiles.show_past_events ?? true,
-        past_events: profiles.past_events || [],
-        upcoming_events: profiles.upcoming_events || [],
+        interests: data.interests || [],
+        show_upcoming_events: data.show_upcoming_events ?? true,
+        show_past_events: data.show_past_events ?? true,
+        past_events: data.past_events || [],
+        upcoming_events: data.upcoming_events || [],
       } as ProfileData;
     },
-    enabled: !!username,
+    retry: false,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
   });
 
   if (isLoading) {
@@ -78,16 +74,6 @@ export default function PublicProfile() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-red-500">
-          Error loading profile. Please try again later.
         </div>
       </div>
     );
@@ -113,14 +99,14 @@ export default function PublicProfile() {
         <SocialLinks socialMedia={profile.social_media} />
         <ProfileInterests interests={profile.interests} />
         
-        {profile.show_upcoming_events && (
+        {profile.show_upcoming_events && profile.upcoming_events?.length > 0 && (
           <ProfileEvents 
             title="Upcoming Events" 
             events={profile.upcoming_events} 
           />
         )}
         
-        {profile.show_past_events && (
+        {profile.show_past_events && profile.past_events?.length > 0 && (
           <ProfileEvents 
             title="Past Events" 
             events={profile.past_events} 
