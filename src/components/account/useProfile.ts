@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { ProfileData } from "./types";
 import { convertToDbProfile, convertFromDbProfile } from "./profileConverters";
 import { fetchProfile, createProfile, updateProfile } from "./profileApi";
@@ -7,7 +8,7 @@ import { fetchProfile, createProfile, updateProfile } from "./profileApi";
 export const useProfile = (userId: string | undefined) => {
   const queryClient = useQueryClient();
 
-  const { data: profile, isLoading, error } = useQuery({
+  const { data: profile, isLoading, error, refetch } = useQuery({
     queryKey: ['profile', userId],
     queryFn: async () => {
       if (!userId) {
@@ -58,5 +59,6 @@ export const useProfile = (userId: string | undefined) => {
     error,
     updateProfile: updateProfileData,
     isUpdating,
+    refetch
   };
 };

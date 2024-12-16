@@ -39,7 +39,13 @@ export const convertToDbProfile = (profile: Partial<ProfileData>): Partial<Profi
 };
 
 export const convertFromDbProfile = (profile: ProfileDbData): ProfileData => {
-  const socialMedia = profile.social_media as SocialMediaLinks;
+  const socialMediaJson = profile.social_media as { [key: string]: string | null };
+  const socialMedia: SocialMediaLinks = {
+    x: socialMediaJson?.x || null,
+    linkedin: socialMediaJson?.linkedin || null,
+    instagram: socialMediaJson?.instagram || null,
+    threads: socialMediaJson?.threads || null
+  };
   
   return {
     id: profile.id,
