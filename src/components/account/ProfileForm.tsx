@@ -48,7 +48,7 @@ export function ProfileForm({
           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">@</span>
           <Input
             id="username"
-            value={profile.username}
+            value={profile.username || ''}
             onChange={(e) => onProfileChange('username', e.target.value)}
             placeholder="username"
             className="w-full pl-7"
@@ -62,7 +62,7 @@ export function ProfileForm({
           <div className="flex items-center space-x-2">
             <X className="w-5 h-5" />
             <Input
-              value={profile.social_media.x || ''}
+              value={profile.social_media?.x || ''}
               onChange={(e) => handleSocialMediaChange("x", e.target.value)}
               placeholder="X (Twitter) URL"
             />
@@ -70,7 +70,7 @@ export function ProfileForm({
           <div className="flex items-center space-x-2">
             <Linkedin className="w-5 h-5" />
             <Input
-              value={profile.social_media.linkedin || ''}
+              value={profile.social_media?.linkedin || ''}
               onChange={(e) => handleSocialMediaChange("linkedin", e.target.value)}
               placeholder="LinkedIn URL"
             />
@@ -78,7 +78,7 @@ export function ProfileForm({
           <div className="flex items-center space-x-2">
             <Instagram className="w-5 h-5" />
             <Input
-              value={profile.social_media.instagram || ''}
+              value={profile.social_media?.instagram || ''}
               onChange={(e) => handleSocialMediaChange("instagram", e.target.value)}
               placeholder="Instagram URL"
             />
@@ -86,7 +86,7 @@ export function ProfileForm({
           <div className="flex items-center space-x-2">
             <AtSign className="w-5 h-5" />
             <Input
-              value={profile.social_media.threads || ''}
+              value={profile.social_media?.threads || ''}
               onChange={(e) => handleSocialMediaChange("threads", e.target.value)}
               placeholder="Threads URL"
             />
@@ -121,7 +121,7 @@ export function ProfileForm({
         </div>
       </div>
 
-      {upcomingEvents.length > 0 && (
+      {upcomingEvents && upcomingEvents.length > 0 && (
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <Label>Upcoming Events</Label>
@@ -134,12 +134,14 @@ export function ProfileForm({
               <EyeOff className={`w-4 h-4 ${profile.show_upcoming_events ? 'text-gray-400' : 'text-primary'}`} />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {upcomingEvents.map((event) => (
               <Card key={event.id}>
                 <CardContent className="p-4">
                   <h3 className="font-semibold">{event.title}</h3>
-                  <p className="text-sm">{format(new Date(event.date), 'MM/dd/yyyy')}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {format(new Date(event.date), 'MMM dd, yyyy')}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -147,7 +149,7 @@ export function ProfileForm({
         </div>
       )}
 
-      {pastEvents.length > 0 && (
+      {pastEvents && pastEvents.length > 0 && (
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <Label>Past Events</Label>
@@ -160,12 +162,14 @@ export function ProfileForm({
               <EyeOff className={`w-4 h-4 ${profile.show_past_events ? 'text-gray-400' : 'text-primary'}`} />
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {pastEvents.map((event) => (
               <Card key={event.id}>
                 <CardContent className="p-4">
                   <h3 className="font-semibold">{event.title}</h3>
-                  <p className="text-sm">{format(new Date(event.date), 'MM/dd/yyyy')}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {format(new Date(event.date), 'MMM dd, yyyy')}
+                  </p>
                 </CardContent>
               </Card>
             ))}

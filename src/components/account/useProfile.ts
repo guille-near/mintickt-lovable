@@ -51,7 +51,7 @@ export function useProfile(userId: string | undefined) {
             show_upcoming_events: true,
             show_past_events: true,
             created_at: new Date().toISOString()
-          } satisfies Omit<ProfileData, 'pastEvents' | 'upcomingEvents'>;
+          };
 
           const { data: createdProfile, error: createError } = await supabase
             .from('profiles')
@@ -85,7 +85,7 @@ export function useProfile(userId: string | undefined) {
           id: ticket.events.id,
           title: ticket.events.title,
           date: ticket.events.date
-        })) as Event[] || [];
+        })) || [];
 
       const pastEvents = events.filter(event => new Date(event.date) < now);
       const upcomingEvents = events.filter(event => new Date(event.date) >= now);
