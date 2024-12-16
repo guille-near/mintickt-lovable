@@ -8,7 +8,6 @@ export function useAuthState() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,22 +15,29 @@ export function useAuthState() {
     
     async function getInitialSession() {
       try {
+        console.log("Getting initial session...");
         setIsLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log("Initial session:", session?.user?.email);
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Error getting session:", error);
+          throw error;
+        }
+
+        console.log("Initial session retrieved:", session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
-        
-        if (session && isInitialLoad) {
+
+        if (session?.user) {
+          console.log("User is authenticated, checking profile...");
           await handleProfileCreation(session.user);
-          navigate("/discover");
         }
       } catch (error) {
-        console.error("Error getting initial session:", error);
+        console.error("Error in getInitialSession:", error);
         toast.error("Error loading user session");
       } finally {
+        console.log("Initial session load complete");
         setIsLoading(false);
-        setIsInitialLoad(false);
       }
     }
 
@@ -39,16 +45,17 @@ export function useAuthState() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log("Auth state changed:", _event, session?.user?.email);
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session?.user?.email);
+      
       setSession(session);
       setUser(session?.user ?? null);
       
-      if (session && _event === 'SIGNED_IN') {
+      if (session?.user && event === 'SIGNED_IN') {
         console.log("User signed in, creating profile if needed");
         await handleProfileCreation(session.user);
         navigate("/discover");
-      } else if (_event === 'SIGNED_OUT') {
+      } else if (event === 'SIGNED_OUT') {
         console.log("User signed out, clearing state");
         setSession(null);
         setUser(null);
@@ -60,12 +67,14 @@ export function useAuthState() {
       console.log("Cleaning up auth state subscription");
       subscription.unsubscribe();
     };
-  }, [navigate, isInitialLoad]);
+  }, [navigate]);
 
-  return { session, user, isLoading, setSession, setUser };
+  return { session, user, isLoading };
 }
 
 async function handleProfileCreation(user: User) {
+  console.log("Checking if profile exists for user:", user.email);
+  
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('*')
@@ -73,6 +82,7 @@ async function handleProfileCreation(user: User) {
     .single();
 
   if (profileError && profileError.code === 'PGRST116') {
+    console.log("Profile not found, creating new profile");
     const { error: createError } = await supabase
       .from('profiles')
       .insert([{ 
@@ -83,6 +93,10 @@ async function handleProfileCreation(user: User) {
     if (createError) {
       console.error('Error creating profile:', createError);
       toast.error('Error setting up your profile');
+    } else {
+      console.log("Profile created successfully");
     }
+  } else {
+    console.log("Profile already exists");
   }
 }

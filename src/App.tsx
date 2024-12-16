@@ -19,6 +19,8 @@ const queryClient = new QueryClient();
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { session, isLoading } = useAuth();
 
+  console.log("PrivateRoute - isLoading:", isLoading, "session:", session?.user?.email);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -27,12 +29,20 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return session ? children : <Navigate to="/auth" />;
+  if (!session) {
+    console.log("No session found, redirecting to /auth");
+    return <Navigate to="/auth" />;
+  }
+
+  console.log("Session valid, rendering protected route");
+  return children;
 }
 
 function AuthRoute({ children }: { children: React.ReactNode }) {
   const { session, isLoading } = useAuth();
 
+  console.log("AuthRoute - isLoading:", isLoading, "session:", session?.user?.email);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -41,7 +51,13 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return !session ? children : <Navigate to="/discover" />;
+  if (session) {
+    console.log("Session found, redirecting to /discover");
+    return <Navigate to="/discover" />;
+  }
+
+  console.log("No session, rendering auth route");
+  return children;
 }
 
 const AppRoutes = () => (
