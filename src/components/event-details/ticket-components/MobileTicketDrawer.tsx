@@ -7,6 +7,7 @@ interface MobileTicketDrawerProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   ticketPrice: number;
+  eventId: string;
   ticketQuantity: number;
   onDecrease: () => void;
   onIncrease: () => void;
@@ -16,6 +17,7 @@ export const MobileTicketDrawer = ({
   isOpen,
   onOpenChange,
   ticketPrice,
+  eventId,
   ticketQuantity,
   onDecrease,
   onIncrease,
@@ -43,6 +45,7 @@ export const MobileTicketDrawer = ({
           <div className="px-4 pb-8">
             <TicketControls
               ticketPrice={ticketPrice}
+              eventId={eventId}
               ticketQuantity={ticketQuantity}
               onDecrease={onDecrease}
               onIncrease={onIncrease}

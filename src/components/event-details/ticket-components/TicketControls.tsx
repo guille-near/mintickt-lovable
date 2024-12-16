@@ -1,10 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Minus, Plus } from "lucide-react";
+import { useNFTTickets } from "@/hooks/use-nft-tickets";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletButton } from "@/components/WalletButton";
 
 interface TicketControlsProps {
   ticketPrice: number;
   ticketQuantity: number;
+  eventId: string;
   onDecrease: () => void;
   onIncrease: () => void;
   onClose?: () => void;
@@ -13,10 +17,19 @@ interface TicketControlsProps {
 export const TicketControls = ({
   ticketPrice,
   ticketQuantity,
+  eventId,
   onDecrease,
   onIncrease,
   onClose,
 }: TicketControlsProps) => {
+  const { connected } = useWallet();
+  const { purchaseTicket, isLoading } = useNFTTickets(eventId);
+
+  const handlePurchase = async () => {
+    await purchaseTicket(ticketPrice * ticketQuantity);
+    onClose?.();
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -59,12 +72,17 @@ export const TicketControls = ({
           {(ticketPrice * ticketQuantity).toFixed(2)} SOL
         </div>
       </div>
-      <Button 
-        className="w-full"
-        onClick={onClose}
-      >
-        Buy
-      </Button>
+      {!connected ? (
+        <WalletButton />
+      ) : (
+        <Button 
+          className="w-full"
+          onClick={handlePurchase}
+          disabled={isLoading}
+        >
+          {isLoading ? "Processing..." : "Buy"}
+        </Button>
+      )}
     </div>
   );
 };

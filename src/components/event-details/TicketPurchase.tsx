@@ -6,9 +6,10 @@ import { DesktopTicketDialog } from "./ticket-components/DesktopTicketDialog";
 interface TicketPurchaseProps {
   ticketPrice: number;
   eventTitle: string;
+  eventId: string;
 }
 
-export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps) => {
+export const TicketPurchase = ({ ticketPrice, eventTitle, eventId }: TicketPurchaseProps) => {
   const [ticketQuantity, setTicketQuantity] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -35,6 +36,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
         isOpen={isOpen}
         onOpenChange={handleOpenChange}
         ticketPrice={ticketPrice}
+        eventId={eventId}
         ticketQuantity={ticketQuantity}
         onDecrease={decreaseQuantity}
         onIncrease={increaseQuantity}
@@ -47,6 +49,7 @@ export const TicketPurchase = ({ ticketPrice, eventTitle }: TicketPurchaseProps)
       isOpen={isOpen}
       onOpenChange={handleOpenChange}
       ticketPrice={ticketPrice}
+      eventId={eventId}
       eventTitle={eventTitle}
       ticketQuantity={ticketQuantity}
       onDecrease={decreaseQuantity}

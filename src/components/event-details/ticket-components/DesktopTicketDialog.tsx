@@ -1,13 +1,14 @@
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Minus, Plus, X } from "lucide-react";
+import { X } from "lucide-react";
+import { TicketControls } from "./TicketControls";
 
 interface DesktopTicketDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   ticketPrice: number;
+  eventId: string;
   eventTitle: string;
   ticketQuantity: number;
   onDecrease: () => void;
@@ -18,6 +19,7 @@ export const DesktopTicketDialog = ({
   isOpen,
   onOpenChange,
   ticketPrice,
+  eventId,
   eventTitle,
   ticketQuantity,
   onDecrease,
@@ -47,59 +49,15 @@ export const DesktopTicketDialog = ({
             </AlertDialogDescription>
           </CardHeader>
           <CardContent className="pb-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <Label className="text-sm">Price per ticket</Label>
-                <div className="text-lg font-semibold">{ticketPrice} SOL</div>
-              </div>
-              <div>
-                <Label className="text-sm">Quantity</Label>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDecrease();
-                    }}
-                    disabled={ticketQuantity <= 1}
-                  >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <span className="text-lg font-semibold min-w-[2ch] text-center">
-                    {ticketQuantity}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onIncrease();
-                    }}
-                    disabled={ticketQuantity >= 10}
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-              <div>
-                <Label className="text-sm">Total</Label>
-                <div className="text-lg font-semibold">
-                  {(ticketPrice * ticketQuantity).toFixed(2)} SOL
-                </div>
-              </div>
-            </div>
+            <TicketControls
+              ticketPrice={ticketPrice}
+              eventId={eventId}
+              ticketQuantity={ticketQuantity}
+              onDecrease={onDecrease}
+              onIncrease={onIncrease}
+              onClose={() => onOpenChange(false)}
+            />
           </CardContent>
-          <CardFooter>
-            <Button 
-              className="w-full h-9 text-sm"
-              onClick={() => onOpenChange(false)}
-            >
-              Buy
-            </Button>
-          </CardFooter>
         </Card>
       </AlertDialogContent>
     </AlertDialog>
