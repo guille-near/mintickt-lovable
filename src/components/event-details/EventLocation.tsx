@@ -11,7 +11,7 @@ export const EventLocation = ({ location, mapUrl }: EventLocationProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Event Location</CardTitle>
+        <CardTitle className="font-yrsa">Event Location</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
