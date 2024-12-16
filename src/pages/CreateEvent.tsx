@@ -54,7 +54,6 @@ export default function CreateEvent() {
         return;
       }
 
-      // Get the profile for the current user
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id, username')
@@ -73,7 +72,6 @@ export default function CreateEvent() {
 
       let imageUrl = formData.giphyUrl;
 
-      // If there's a file to upload, handle it first
       if (formData.image) {
         const fileExt = formData.image.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
@@ -93,7 +91,6 @@ export default function CreateEvent() {
           return;
         }
 
-        // Get the public URL for the uploaded image
         const { data: { publicUrl } } = supabase.storage
           .from('event-images')
           .getPublicUrl(filePath);
@@ -101,7 +98,6 @@ export default function CreateEvent() {
         imageUrl = publicUrl;
       }
 
-      // Create the event
       const { data: event, error } = await supabase
         .from('events')
         .insert({
@@ -135,7 +131,6 @@ export default function CreateEvent() {
         description: "Event created successfully",
       });
 
-      // Navigate to the event details page
       navigate(`/event/${event.id}`);
     } catch (error) {
       console.error('Error:', error);

@@ -1,32 +1,32 @@
 export interface EventUpdatesTable {
   Row: {
-    created_at: string
-    event_id: string
-    id: string
-    message: string
-    title: string
-  }
+    id: string;
+    event_id: string;
+    title: string;
+    message: string;
+    created_at: string;
+  };
   Insert: {
-    created_at?: string
-    event_id: string
-    id?: string
-    message: string
-    title: string
-  }
+    id?: string;
+    event_id: string;
+    title: string;
+    message: string;
+    created_at?: string;
+  };
   Update: {
-    created_at?: string
-    event_id?: string
-    id?: string
-    message?: string
-    title?: string
-  }
+    id?: string;
+    event_id?: string;
+    title?: string;
+    message?: string;
+    created_at?: string;
+  };
   Relationships: [
     {
-      foreignKeyName: "event_updates_event_id_fkey"
-      columns: ["event_id"]
-      isOneToOne: false
-      referencedRelation: "events"
-      referencedColumns: ["id"]
+      foreignKeyName: "event_updates_event_id_fkey";
+      columns: ["event_id"];
+      isOneToOne: false;
+      referencedRelation: "events";
+      referencedColumns: ["id"];
     }
-  ]
+  ];
 }
