@@ -33,7 +33,7 @@ interface ProfileData {
 
 export default function PublicProfile() {
   const { username } = useParams();
-  console.log("PublicProfile - Rendering for username:", username);
+  console.log("PublicProfile - Rendering with username:", username);
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ["public-profile", username],
@@ -47,16 +47,21 @@ export default function PublicProfile() {
         .eq("username", username)
         .single();
 
+      console.log("Supabase response:", { data, error });
+
       if (error) {
         console.error("Error fetching profile:", error);
         throw error;
       }
 
-      console.log("Raw profile data:", data);
       return data as ProfileData;
     },
     enabled: !!username,
   });
+
+  console.log("Profile data:", profile);
+  console.log("Loading:", isLoading);
+  console.log("Error:", error);
 
   if (isLoading) {
     return (
