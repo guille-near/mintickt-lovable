@@ -21,9 +21,18 @@ export const EventHeader = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-3 mb-4">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={organizerAvatar || ''} alt={organizerName} />
-          <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+        <Avatar className="h-10 w-10 border border-border">
+          {organizerAvatar ? (
+            <AvatarImage 
+              src={organizerAvatar} 
+              alt={organizerName}
+              className="object-cover"
+            />
+          ) : (
+            <AvatarFallback>
+              <User className="h-5 w-5" />
+            </AvatarFallback>
+          )}
         </Avatar>
         <div>
           <p className="text-sm text-muted-foreground">Hosted by</p>
