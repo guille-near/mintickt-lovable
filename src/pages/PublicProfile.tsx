@@ -10,9 +10,7 @@ import { LoadingState } from "@/components/public-profile/LoadingState";
 import { ErrorState } from "@/components/public-profile/ErrorState";
 
 export default function PublicProfile() {
-  const params = useParams();
-  // Extract username from either /@:username or /profile/:username format
-  const username = params["*"] || params.username;
+  const { username } = useParams<{ username: string }>();
 
   console.log('Attempting to load profile for username:', username);
 
@@ -26,10 +24,14 @@ export default function PublicProfile() {
         throw new Error('No username provided');
       }
 
+      // Remove @ from username if present
+      const cleanUsername = username.startsWith('@') ? username.slice(1) : username;
+      console.log('Querying for cleaned username:', cleanUsername);
+
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('username', username)
+        .eq('username', cleanUsername)
         .single();
 
       console.log('Supabase response:', { profile, error });
@@ -40,7 +42,7 @@ export default function PublicProfile() {
       }
 
       if (!profile) {
-        console.error('No profile found for username:', username);
+        console.error('No profile found for username:', cleanUsername);
         throw new Error('Profile not found');
       }
 
