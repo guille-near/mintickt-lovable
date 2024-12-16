@@ -7,6 +7,7 @@ import { useProfile } from "@/components/account/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { ProfileFormData, SocialMediaLinks } from "@/components/account/types";
+import type { Json } from "@/integrations/supabase/types";
 
 export default function Account() {
   const { user, isLoading: authLoading } = useAuth();
