@@ -6,7 +6,7 @@ import { AccountHeader } from "@/components/account/AccountHeader";
 import { useProfile } from "@/components/account/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { ProfileFormData, SocialMediaLinks } from "@/components/account/types";
+import type { ProfileFormData, SocialMediaLinks, Event } from "@/components/account/types";
 import type { Json } from "@/integrations/supabase/types";
 
 export default function Account() {
@@ -44,7 +44,7 @@ export default function Account() {
         email: profile.email,
         wallet_address: profile.wallet_address,
         social_media: socialMedia,
-        interests: profile.interests || [],
+        interests: [...(profile.interests || [])],
         show_upcoming_events: profile.show_upcoming_events ?? true,
         show_past_events: profile.show_past_events ?? true
       });
@@ -157,8 +157,8 @@ export default function Account() {
             onProfileChange={handleProfileChange}
             onSubmit={onSubmit}
             isLoading={isUpdating}
-            pastEvents={profile?.past_events}
-            upcomingEvents={profile?.upcoming_events}
+            pastEvents={[...(profile?.past_events || [])]}
+            upcomingEvents={[...(profile?.upcoming_events || [])]}
           />
         </div>
       </div>

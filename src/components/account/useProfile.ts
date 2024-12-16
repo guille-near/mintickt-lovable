@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ProfileData, Event, SocialMediaLinks, ProfileDbData } from "./types";
+import { Json } from "@/integrations/supabase/types";
 
 const convertToDbProfile = (profile: Partial<ProfileData>): Partial<ProfileDbData> => {
   return {
@@ -66,7 +67,7 @@ const convertFromDbProfile = (profile: ProfileDbData): ProfileData => {
     avatar_url: profile.avatar_url,
     created_at: profile.created_at,
     social_media: socialMedia,
-    interests: profile.interests || [],
+    interests: Array.isArray(profile.interests) ? [...profile.interests] : [],
     show_upcoming_events: profile.show_upcoming_events ?? true,
     show_past_events: profile.show_past_events ?? true,
     past_events: pastEvents,
@@ -102,28 +103,26 @@ export function useProfile(userId: string | undefined) {
             throw new Error('No authenticated user found');
           }
 
-          const defaultSocialMedia: SocialMediaLinks = {
-            x: null,
-            linkedin: null,
-            instagram: null,
-            threads: null
-          };
-
-          const newProfile = {
+          const newProfile: ProfileDbData = {
             id: userId,
             email: userData.user.email || '',
             username: null,
             bio: null,
             wallet_address: null,
             avatar_url: null,
-            social_media: defaultSocialMedia,
+            social_media: {
+              x: null,
+              linkedin: null,
+              instagram: null,
+              threads: null
+            } as Json,
             interests: [],
             show_upcoming_events: true,
             show_past_events: true,
             past_events: [],
             upcoming_events: [],
             created_at: new Date().toISOString()
-          } as const;
+          };
 
           const { data: createdProfile, error: createError } = await supabase
             .from('profiles')
@@ -139,7 +138,7 @@ export function useProfile(userId: string | undefined) {
             throw createError;
           }
 
-          return newProfile;
+          return convertFromDbProfile(newProfile);
         }
 
         console.error('❌ Error fetching profile:', error);
