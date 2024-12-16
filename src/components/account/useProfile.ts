@@ -91,12 +91,12 @@ export function useProfile(userId: string | undefined) {
       const upcomingEvents = events.filter(event => new Date(event.date) >= now);
 
       // Ensure social_media has the correct structure
-      const social_media = profile.social_media && typeof profile.social_media === 'object' ? {
-        x: (profile.social_media as any).x || null,
-        linkedin: (profile.social_media as any).linkedin || null,
-        instagram: (profile.social_media as any).instagram || null,
-        threads: (profile.social_media as any).threads || null
-      } : null;
+      const social_media = profile.social_media || {
+        x: null,
+        linkedin: null,
+        instagram: null,
+        threads: null
+      };
 
       return {
         ...profile,

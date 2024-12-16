@@ -33,7 +33,7 @@ export interface ProfileData {
     linkedin: string | null;
     instagram: string | null;
     threads: string | null;
-  } | null;
+  };
   interests: string[] | null;
   show_upcoming_events: boolean | null;
   show_past_events: boolean | null;
