@@ -22,9 +22,11 @@ export default function Account() {
   });
 
   const { data: profile, isLoading, error, refetch } = useQuery({
-    queryKey: ['profile'],
+    queryKey: ['profile', user?.id],
     queryFn: async () => {
-      if (!user) throw new Error('No user found');
+      if (!user?.id) {
+        throw new Error('No user found');
+      }
 
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -37,6 +39,10 @@ export default function Account() {
         throw error;
       }
 
+      if (!profile) {
+        throw new Error('Profile not found');
+      }
+
       setFormData({
         username: profile.username || '',
         bio: profile.bio || '',
@@ -46,8 +52,8 @@ export default function Account() {
 
       return profile;
     },
-    enabled: !!user,
-    retry: false,
+    enabled: !!user?.id,
+    retry: 1,
   });
 
   const handleProfileChange = (field: string, value: string) => {
@@ -65,7 +71,10 @@ export default function Account() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user?.id) {
+      toast.error('You must be logged in to update your profile');
+      return;
+    }
 
     try {
       setIsUpdating(true);
@@ -81,7 +90,7 @@ export default function Account() {
         .eq('id', user.id);
 
       if (error) {
-        if (error.code === '23505') { // Unique constraint violation
+        if (error.code === '23505') {
           toast({
             title: "Error",
             description: "This email or username is already in use. Please use a different one.",
@@ -110,6 +119,18 @@ export default function Account() {
     }
   };
 
+  if (!user) {
+    return (
+      <AuthenticatedLayout>
+        <div className="container mx-auto py-6">
+          <div className="text-center">
+            <p className="text-red-500">Please log in to view your profile.</p>
+          </div>
+        </div>
+      </AuthenticatedLayout>
+    );
+  }
+
   if (isLoading) {
     return (
       <AuthenticatedLayout>
@@ -126,8 +147,14 @@ export default function Account() {
     return (
       <AuthenticatedLayout>
         <div className="container mx-auto py-6">
-          <div className="text-center">
+          <div className="text-center space-y-4">
             <p className="text-red-500">Error loading profile. Please try again later.</p>
+            <button 
+              onClick={() => refetch()} 
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Retry
+            </button>
           </div>
         </div>
       </AuthenticatedLayout>
