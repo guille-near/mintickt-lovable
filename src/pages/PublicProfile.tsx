@@ -55,12 +55,13 @@ export default function PublicProfile() {
       };
 
       let socialMedia: SocialMedia;
-      if (data.social_media && typeof data.social_media === 'object') {
+      if (data.social_media && typeof data.social_media === 'object' && !Array.isArray(data.social_media)) {
+        const socialMediaData = data.social_media as Record<string, unknown>;
         socialMedia = {
-          x: data.social_media.x ?? null,
-          linkedin: data.social_media.linkedin ?? null,
-          instagram: data.social_media.instagram ?? null,
-          threads: data.social_media.threads ?? null,
+          x: (socialMediaData.x as string) ?? null,
+          linkedin: (socialMediaData.linkedin as string) ?? null,
+          instagram: (socialMediaData.instagram as string) ?? null,
+          threads: (socialMediaData.threads as string) ?? null,
         };
       } else {
         socialMedia = defaultSocialMedia;
@@ -87,7 +88,7 @@ export default function PublicProfile() {
         wallet_address: data.wallet_address,
         created_at: data.created_at,
         social_media: socialMedia,
-        interests: data.interests || [],
+        interests: Array.isArray(data.interests) ? data.interests : [],
         show_upcoming_events: data.show_upcoming_events ?? true,
         show_past_events: data.show_past_events ?? true,
         past_events: formatEvents(data.past_events),
