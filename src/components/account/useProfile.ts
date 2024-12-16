@@ -8,10 +8,10 @@ export function useProfile(userId: string | undefined) {
   return useQuery({
     queryKey: ['profile', userId],
     queryFn: async () => {
-      console.log('Fetching profile for userId:', userId);
+      console.log('🔍 Fetching profile for userId:', userId);
       
       if (!userId) {
-        console.log('No user ID provided');
+        console.log('❌ No user ID provided');
         throw new Error('No user ID provided');
       }
 
@@ -21,25 +21,25 @@ export function useProfile(userId: string | undefined) {
         .eq('id', userId)
         .single();
 
-      console.log('Profile fetch result:', { profile, error });
+      console.log('📦 Profile fetch result:', { profile, error });
 
       if (error) {
         if (error.code === 'PGRST116') {
-          console.log('Profile not found, creating new profile');
+          console.log('🆕 Profile not found, creating new profile');
           const { data: userData } = await supabase.auth.getUser();
           if (!userData.user) {
-            console.log('No authenticated user found');
+            console.log('❌ No authenticated user found');
             throw new Error('No authenticated user found');
           }
 
-          const defaultSocialMedia = {
+          const defaultSocialMedia: SocialMediaLinks = {
             x: null,
             linkedin: null,
             instagram: null,
             threads: null
           };
 
-          const newProfile = {
+          const newProfile: ProfileData = {
             id: userId,
             email: userData.user.email || '',
             username: null,
@@ -61,23 +61,18 @@ export function useProfile(userId: string | undefined) {
             .select()
             .single();
 
-          console.log('Profile creation result:', { createdProfile, createError });
+          console.log('📦 Profile creation result:', { createdProfile, createError });
 
           if (createError) {
-            console.error('Error creating profile:', createError);
+            console.error('❌ Error creating profile:', createError);
             toast.error('Error creating profile');
             throw createError;
           }
 
-          return {
-            ...createdProfile,
-            social_media: defaultSocialMedia,
-            past_events: [],
-            upcoming_events: []
-          } as ProfileData;
+          return newProfile;
         }
 
-        console.error('Error fetching profile:', error);
+        console.error('❌ Error fetching profile:', error);
         throw error;
       }
 
@@ -95,7 +90,7 @@ export function useProfile(userId: string | undefined) {
           threads: rawSocialMedia.threads ?? null
         };
       } catch (e) {
-        console.error('Error parsing social_media:', e);
+        console.error('❌ Error parsing social_media:', e);
         socialMedia = {
           x: null,
           linkedin: null,
@@ -119,9 +114,9 @@ export function useProfile(userId: string | undefined) {
 
       const typedProfile: ProfileData = {
         id: profile.id,
+        email: profile.email,
         username: profile.username,
         bio: profile.bio,
-        email: profile.email,
         wallet_address: profile.wallet_address,
         avatar_url: profile.avatar_url,
         created_at: profile.created_at,
@@ -133,7 +128,7 @@ export function useProfile(userId: string | undefined) {
         upcoming_events: upcomingEvents
       };
 
-      console.log('Returning formatted profile:', typedProfile);
+      console.log('✅ Returning formatted profile:', typedProfile);
       return typedProfile;
     },
     enabled: !!userId,
