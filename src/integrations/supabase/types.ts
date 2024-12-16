@@ -103,8 +103,10 @@ export type Database = {
           bio: string | null
           created_at: string
           email: string
+          first_name: string | null
           id: string
           interests: string[] | null
+          last_name: string | null
           past_events: Json[] | null
           show_past_events: boolean | null
           show_upcoming_events: boolean | null
@@ -118,8 +120,10 @@ export type Database = {
           bio?: string | null
           created_at?: string
           email: string
+          first_name?: string | null
           id?: string
           interests?: string[] | null
+          last_name?: string | null
           past_events?: Json[] | null
           show_past_events?: boolean | null
           show_upcoming_events?: boolean | null
@@ -133,8 +137,10 @@ export type Database = {
           bio?: string | null
           created_at?: string
           email?: string
+          first_name?: string | null
           id?: string
           interests?: string[] | null
+          last_name?: string | null
           past_events?: Json[] | null
           show_past_events?: boolean | null
           show_upcoming_events?: boolean | null
