@@ -39,10 +39,19 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      <Avatar className="w-24 h-24 sm:w-32 sm:h-32">
-        <AvatarImage src={profile.avatar_url || undefined} alt="Profile picture" />
-        <AvatarFallback>{profile.username?.slice(0, 2).toUpperCase()}</AvatarFallback>
-      </Avatar>
+      <div className="relative">
+        <Avatar className="w-24 h-24 sm:w-32 sm:h-32">
+          <AvatarImage src={profile.avatar_url || undefined} alt="Profile picture" />
+          <AvatarFallback>{profile.username?.slice(0, 2).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        {profile.wallet_address && (
+          <img 
+            src="/solana-badge.svg" 
+            alt="Solana Verified"
+            className="absolute -bottom-2 -right-2 w-8 h-8"
+          />
+        )}
+      </div>
       <h2 className="text-xl sm:text-2xl font-semibold">@{profile.username}</h2>
       {profile.bio && <p className="text-center text-muted-foreground">{profile.bio}</p>}
 

@@ -1,56 +1,48 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { X, Linkedin, Instagram, AtSign, EyeOff } from "lucide-react";
 import { ProfileData, INTEREST_OPTIONS } from "./types";
 import { format } from "date-fns";
-import { WalletButton } from "../WalletButton";
 
 interface ProfileFormProps {
   profile: ProfileData;
-  onProfileChange: (field: keyof ProfileData, value: any) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  isLoading: boolean;
-  pastEvents?: Array<{ id: string; title: string; date: string }>;
-  upcomingEvents?: Array<{ id: string; title: string; date: string }>;
+  onSubmit: (data: Partial<ProfileData>) => void;
 }
 
-export function ProfileForm({ 
-  profile, 
-  onProfileChange, 
-  onSubmit, 
-  isLoading,
-  pastEvents = [],
-  upcomingEvents = []
-}: ProfileFormProps) {
-  const handleSocialMediaChange = (platform: keyof typeof profile.social_media, value: string) => {
-    onProfileChange('social_media', {
-      ...profile.social_media,
-      [platform]: value
-    });
-  };
+export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
+  const { register, handleSubmit, watch, setValue } = useForm({
+    defaultValues: {
+      username: profile.username || "",
+      bio: profile.bio || "",
+      social_media: profile.social_media || {
+        x: null,
+        linkedin: null,
+        instagram: null,
+        threads: null,
+      },
+      interests: profile.interests || [],
+      show_upcoming_events: profile.show_upcoming_events,
+      show_past_events: profile.show_past_events,
+    },
+  });
 
-  const handleInterestToggle = (interest: string) => {
-    const newInterests = profile.interests.includes(interest)
-      ? profile.interests.filter(i => i !== interest)
-      : [...profile.interests, interest];
-    onProfileChange('interests', newInterests);
-  };
+  console.log("Setting form data with profile:", profile);
+
+  const interests = watch("interests");
+  const social_media = watch("social_media");
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="space-y-4">
-        <Label htmlFor="username">Username</Label>
+        <Label>Username</Label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">@</span>
+          <span className="absolute left-2 top-2 text-gray-500">@</span>
           <Input
-            id="username"
-            value={profile.username || ''}
-            onChange={(e) => onProfileChange('username', e.target.value)}
+            {...register("username")}
             placeholder="username"
             className="w-full pl-7"
           />
@@ -58,142 +50,107 @@ export function ProfileForm({
       </div>
 
       <div className="space-y-4">
-        <Label>Wallet Address</Label>
-        <div className="flex items-center space-x-2">
-          <Input
-            value={profile.wallet_address || ''}
-            readOnly
-            placeholder="Connect your wallet to see address"
-            className="flex-1"
-          />
-          <WalletButton />
-        </div>
+        <Label>Bio</Label>
+        <Textarea
+          {...register("bio")}
+          placeholder="Tell us about yourself"
+          className="min-h-[100px]"
+        />
       </div>
 
       <div className="space-y-4">
-        <Label>Social Media URLs</Label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Label>Social Media</Label>
+        <div className="space-y-2">
           <div className="flex items-center space-x-2">
-            <X className="w-5 h-5" />
+            <AtSign className="w-5 h-5" />
             <Input
-              value={profile.social_media?.x || ''}
-              onChange={(e) => handleSocialMediaChange("x", e.target.value)}
-              placeholder="X (Twitter) URL"
+              {...register("social_media.x")}
+              placeholder="X (Twitter) profile URL"
             />
           </div>
           <div className="flex items-center space-x-2">
             <Linkedin className="w-5 h-5" />
             <Input
-              value={profile.social_media?.linkedin || ''}
-              onChange={(e) => handleSocialMediaChange("linkedin", e.target.value)}
-              placeholder="LinkedIn URL"
+              {...register("social_media.linkedin")}
+              placeholder="LinkedIn profile URL"
             />
           </div>
           <div className="flex items-center space-x-2">
             <Instagram className="w-5 h-5" />
             <Input
-              value={profile.social_media?.instagram || ''}
-              onChange={(e) => handleSocialMediaChange("instagram", e.target.value)}
-              placeholder="Instagram URL"
+              {...register("social_media.instagram")}
+              placeholder="Instagram profile URL"
             />
           </div>
           <div className="flex items-center space-x-2">
             <AtSign className="w-5 h-5" />
             <Input
-              value={profile.social_media?.threads || ''}
-              onChange={(e) => handleSocialMediaChange("threads", e.target.value)}
-              placeholder="Threads URL"
+              {...register("social_media.threads")}
+              placeholder="Threads profile URL"
             />
           </div>
         </div>
       </div>
 
       <div className="space-y-4">
-        <Label htmlFor="bio">Bio</Label>
-        <textarea
-          id="bio"
-          className="min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          placeholder="Tell us about yourself"
-          value={profile.bio || ''}
-          onChange={(e) => onProfileChange('bio', e.target.value)}
-        />
-      </div>
-
-      <div className="space-y-2">
         <Label>Interests</Label>
         <div className="flex flex-wrap gap-2">
-          {INTEREST_OPTIONS.map((interest) => (
-            <Badge
-              key={interest}
-              variant={profile.interests.includes(interest) ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => handleInterestToggle(interest)}
-            >
-              {interest}
-            </Badge>
-          ))}
+          {INTEREST_OPTIONS.map((interest) => {
+            const isSelected = interests.includes(interest);
+            return (
+              <Badge
+                key={interest}
+                variant={isSelected ? "default" : "outline"}
+                className="cursor-pointer"
+                onClick={() => {
+                  if (isSelected) {
+                    setValue(
+                      "interests",
+                      interests.filter((i) => i !== interest)
+                    );
+                  } else {
+                    setValue("interests", [...interests, interest]);
+                  }
+                }}
+              >
+                {interest}
+                {isSelected && (
+                  <X className="w-3 h-3 ml-1" onClick={() => {}} />
+                )}
+              </Badge>
+            );
+          })}
         </div>
       </div>
 
-      {upcomingEvents && upcomingEvents.length > 0 && (
+      <div className="space-y-4">
+        <Label>Event Display Settings</Label>
         <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <Label>Upcoming Events</Label>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="show-upcoming-events"
-                checked={profile.show_upcoming_events}
-                onCheckedChange={(checked) => onProfileChange('show_upcoming_events', checked)}
-              />
-              <EyeOff className={`w-4 h-4 ${profile.show_upcoming_events ? 'text-gray-400' : 'text-primary'}`} />
-            </div>
+          <div className="flex items-center space-x-2">
+            <Input
+              type="checkbox"
+              {...register("show_upcoming_events")}
+              className="w-4 h-4"
+            />
+            <span>Show upcoming events on my profile</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {upcomingEvents.map((event) => (
-              <Card key={event.id}>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold">{event.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(event.date), 'MMM dd, yyyy')}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="flex items-center space-x-2">
+            <Input
+              type="checkbox"
+              {...register("show_past_events")}
+              className="w-4 h-4"
+            />
+            <span>Show past events on my profile</span>
           </div>
         </div>
-      )}
+      </div>
 
-      {pastEvents && pastEvents.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <Label>Past Events</Label>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="show-past-events"
-                checked={profile.show_past_events}
-                onCheckedChange={(checked) => onProfileChange('show_past_events', checked)}
-              />
-              <EyeOff className={`w-4 h-4 ${profile.show_past_events ? 'text-gray-400' : 'text-primary'}`} />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {pastEvents.map((event) => (
-              <Card key={event.id}>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold">{event.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(event.date), 'MMM dd, yyyy')}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <Button type="submit" disabled={isLoading} className="w-full">
-        {isLoading ? "Saving..." : "Save Profile"}
-      </Button>
+      <button
+        type="submit"
+        className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
+      >
+        Save Changes
+      </button>
     </form>
   );
 }
