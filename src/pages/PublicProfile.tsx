@@ -20,6 +20,11 @@ export default function PublicProfile() {
     queryFn: async () => {
       console.log('📡 [PublicProfile] Starting profile fetch for username:', username);
 
+      if (!username) {
+        console.error('❌ [PublicProfile] No username provided');
+        throw new Error('Username is required');
+      }
+
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -42,6 +47,7 @@ export default function PublicProfile() {
       console.log('✅ [PublicProfile] Profile parsed successfully:', parsedProfile);
       return parsedProfile;
     },
+    retry: false,
   });
 
   console.log('🔄 [PublicProfile] Current state:', { profile, isLoading, error });
