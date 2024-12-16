@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { ProfileData } from "@/components/account/types";
+import type { ProfileData, SocialMedia } from "@/components/account/types";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinks } from "@/components/profile/SocialLinks";
 import { ProfileInterests } from "@/components/profile/ProfileInterests";
@@ -46,13 +46,25 @@ export default function PublicProfile() {
 
       console.log("Raw profile data:", data);
 
-      // Parse social_media JSON if it exists
-      const socialMedia = data.social_media || {
+      // Parse social_media JSON and ensure it matches SocialMedia type
+      const defaultSocialMedia: SocialMedia = {
         x: null,
         linkedin: null,
         instagram: null,
         threads: null,
       };
+
+      let socialMedia: SocialMedia;
+      if (data.social_media && typeof data.social_media === 'object') {
+        socialMedia = {
+          x: data.social_media.x ?? null,
+          linkedin: data.social_media.linkedin ?? null,
+          instagram: data.social_media.instagram ?? null,
+          threads: data.social_media.threads ?? null,
+        };
+      } else {
+        socialMedia = defaultSocialMedia;
+      }
 
       // Format events with type checking
       const formatEvents = (events: any[] | null): EventData[] => {
