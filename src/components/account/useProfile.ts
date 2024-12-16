@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ProfileData, Event } from "./types";
+import { ProfileData, Event, SocialMediaLinks } from "./types";
 
 export function useProfile(userId: string | undefined) {
   return useQuery({
@@ -31,6 +31,13 @@ export function useProfile(userId: string | undefined) {
             throw new Error('No authenticated user found');
           }
 
+          const defaultSocialMedia: SocialMediaLinks = {
+            x: null,
+            linkedin: null,
+            instagram: null,
+            threads: null
+          };
+
           const newProfile = {
             id: userId,
             email: userData.user.email || '',
@@ -38,12 +45,7 @@ export function useProfile(userId: string | undefined) {
             bio: null,
             wallet_address: null,
             avatar_url: null,
-            social_media: {
-              x: null,
-              linkedin: null,
-              instagram: null,
-              threads: null
-            },
+            social_media: defaultSocialMedia,
             interests: [],
             show_upcoming_events: true,
             show_past_events: true,
@@ -74,44 +76,55 @@ export function useProfile(userId: string | undefined) {
       }
 
       // Parse social_media to ensure correct structure
-      let parsedSocialMedia;
+      let socialMedia: SocialMediaLinks;
       try {
-        parsedSocialMedia = typeof profile.social_media === 'string' 
+        const rawSocialMedia = typeof profile.social_media === 'string' 
           ? JSON.parse(profile.social_media)
           : profile.social_media || {};
+
+        socialMedia = {
+          x: rawSocialMedia.x ?? null,
+          linkedin: rawSocialMedia.linkedin ?? null,
+          instagram: rawSocialMedia.instagram ?? null,
+          threads: rawSocialMedia.threads ?? null
+        };
       } catch (e) {
         console.error('Error parsing social_media:', e);
-        parsedSocialMedia = {};
+        socialMedia = {
+          x: null,
+          linkedin: null,
+          instagram: null,
+          threads: null
+        };
       }
 
-      const social_media = {
-        x: parsedSocialMedia?.x ?? null,
-        linkedin: parsedSocialMedia?.linkedin ?? null,
-        instagram: parsedSocialMedia?.instagram ?? null,
-        threads: parsedSocialMedia?.threads ?? null
-      };
-
       // Parse events arrays and ensure they match Event type
-      const past_events = (profile.past_events || []).map((event: any): Event => ({
+      const pastEvents = (profile.past_events || []).map((event: any): Event => ({
         id: event.id,
         title: event.title,
         date: event.date
       }));
 
-      const upcoming_events = (profile.upcoming_events || []).map((event: any): Event => ({
+      const upcomingEvents = (profile.upcoming_events || []).map((event: any): Event => ({
         id: event.id,
         title: event.title,
         date: event.date
       }));
 
       const typedProfile: ProfileData = {
-        ...profile,
-        social_media,
-        past_events,
-        upcoming_events,
+        id: profile.id,
+        username: profile.username,
+        bio: profile.bio,
+        email: profile.email,
+        wallet_address: profile.wallet_address,
+        avatar_url: profile.avatar_url,
+        created_at: profile.created_at,
+        social_media: socialMedia,
         interests: profile.interests || [],
         show_upcoming_events: profile.show_upcoming_events ?? true,
-        show_past_events: profile.show_past_events ?? true
+        show_past_events: profile.show_past_events ?? true,
+        past_events: pastEvents,
+        upcoming_events: upcomingEvents
       };
 
       console.log('Returning formatted profile:', typedProfile);
