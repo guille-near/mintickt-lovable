@@ -18,8 +18,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { session, user, isLoading } = useAuthState();
   const { signIn, signUp, signOut } = useAuthOperations();
 
-  console.log("AuthProvider render - isLoading:", isLoading, "user:", user?.email);
-
   return (
     <AuthContext.Provider value={{ session, user, signIn, signUp, signOut, isLoading }}>
       {children}

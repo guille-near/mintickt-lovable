@@ -19,8 +19,6 @@ const queryClient = new QueryClient();
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { session, isLoading } = useAuth();
 
-  console.log("PrivateRoute render - isLoading:", isLoading, "session:", session?.user?.email);
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -30,7 +28,6 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!session) {
-    console.log("No session found, redirecting to /auth");
     return <Navigate to="/auth" replace />;
   }
 
@@ -39,8 +36,6 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 
 function AuthRoute({ children }: { children: React.ReactNode }) {
   const { session, isLoading } = useAuth();
-
-  console.log("AuthRoute render - isLoading:", isLoading, "session:", session?.user?.email);
 
   if (isLoading) {
     return (
@@ -51,7 +46,6 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (session) {
-    console.log("Session found, redirecting to /discover");
     return <Navigate to="/discover" replace />;
   }
 
@@ -61,6 +55,7 @@ function AuthRoute({ children }: { children: React.ReactNode }) {
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Index />} />
+    <Route path="/event/:id" element={<EventDetails />} />
     <Route
       path="/auth"
       element={
@@ -77,7 +72,6 @@ const AppRoutes = () => (
         </PrivateRoute>
       }
     />
-    <Route path="/event/:id" element={<EventDetails />} />
     <Route
       path="/create"
       element={
