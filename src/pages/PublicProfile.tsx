@@ -11,13 +11,12 @@ import { useProfileQuery } from "@/components/public-profile/useProfileQuery";
 const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
   
-  const params = useParams();
-  const username = params.username?.replace('@', '');
+  const { username } = useParams();
+  const cleanUsername = username?.replace('@', '');
   
-  console.log('🎯 [PublicProfile] URL params:', params);
-  console.log('🎯 [PublicProfile] Extracted username:', username);
+  console.log('🎯 [PublicProfile] URL params:', { username, cleanUsername });
 
-  const { data: profile, isLoading, error } = useProfileQuery(username);
+  const { data: profile, isLoading, error } = useProfileQuery(cleanUsername);
 
   console.log('🎯 [PublicProfile] Query state:', {
     isLoading,
@@ -26,7 +25,7 @@ const PublicProfile = () => {
     profile
   });
 
-  if (!username) {
+  if (!cleanUsername) {
     console.log('🎯 [PublicProfile] Rendering: No username provided');
     return (
       <ProfileContainer>
@@ -48,7 +47,7 @@ const PublicProfile = () => {
     console.log('🎯 [PublicProfile] Rendering: Error state', { error });
     return (
       <ProfileContainer>
-        <ErrorState username={username} />
+        <ErrorState username={cleanUsername} />
       </ProfileContainer>
     );
   }
