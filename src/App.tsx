@@ -9,6 +9,19 @@ import PublicProfile from "./pages/PublicProfile";
 
 function App() {
   console.log('🎯 [App] Rendering routes');
+  
+  // Add more detailed logging
+  console.log('🎯 [App] Current pathname:', window.location.pathname);
+  console.log('🎯 [App] Available routes:', [
+    '/',
+    '/auth',
+    '/account',
+    '/create-event',
+    '/event/:eventId',
+    '/discover',
+    '/profile/@:username'
+  ]);
+
   return (
     <Router>
       <Routes>
