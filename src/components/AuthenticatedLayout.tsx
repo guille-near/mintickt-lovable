@@ -8,7 +8,7 @@ interface AuthenticatedLayoutProps {
 
 const AuthenticatedLayout = ({ children }: AuthenticatedLayoutProps) => {
   return (
-    <>
+    <div className="flex-1 flex">
       <DiscoverSidebar />
       <div className="flex-1 flex flex-col">
         <div className="p-4 border-b bg-background/80 backdrop-blur-sm sticky top-0 z-10">
@@ -21,7 +21,7 @@ const AuthenticatedLayout = ({ children }: AuthenticatedLayoutProps) => {
         </main>
         <Footer />
       </div>
-    </>
+    </div>
   );
 };
 
