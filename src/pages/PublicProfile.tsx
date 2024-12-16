@@ -2,11 +2,23 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { ProfileData } from "@/components/account/types";
+import type { ProfileData, SocialMedia } from "@/components/account/types";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinks } from "@/components/profile/SocialLinks";
 import { ProfileInterests } from "@/components/profile/ProfileInterests";
 import { ProfileEvents } from "@/components/profile/ProfileEvents";
+
+interface EventData {
+  id: string;
+  title: string;
+  date: string;
+}
+
+interface RawEvent {
+  id?: string | null;
+  title?: string | null;
+  date?: string | null;
+}
 
 export default function PublicProfile() {
   const params = useParams();
@@ -41,13 +53,35 @@ export default function PublicProfile() {
 
       console.log("Raw profile data:", data);
 
-      // Ensure social_media has the correct structure
-      const socialMedia = {
+      // Parse social_media JSON and ensure it matches SocialMedia type
+      const defaultSocialMedia: SocialMedia = {
         x: null,
         linkedin: null,
         instagram: null,
         threads: null,
-        ...(typeof data.social_media === 'object' ? data.social_media : {})
+      };
+
+      let socialMedia: SocialMedia;
+      try {
+        const parsedSocialMedia = typeof data.social_media === 'object' ? data.social_media : {};
+        socialMedia = {
+          ...defaultSocialMedia,
+          ...parsedSocialMedia,
+        };
+      } catch (e) {
+        console.error("Error parsing social media:", e);
+        socialMedia = defaultSocialMedia;
+      }
+
+      // Helper function to safely parse events
+      const parseEvents = (events: any[]): EventData[] => {
+        if (!Array.isArray(events)) return [];
+        
+        return events.map((event: RawEvent) => ({
+          id: String(event?.id || ''),
+          title: String(event?.title || ''),
+          date: String(event?.date || '')
+        }));
       };
 
       const profileData: ProfileData = {
@@ -62,16 +96,8 @@ export default function PublicProfile() {
         interests: Array.isArray(data.interests) ? data.interests : [],
         show_upcoming_events: data.show_upcoming_events ?? true,
         show_past_events: data.show_past_events ?? true,
-        past_events: Array.isArray(data.past_events) ? data.past_events.map(event => ({
-          id: String(event?.id || ''),
-          title: String(event?.title || ''),
-          date: String(event?.date || '')
-        })) : [],
-        upcoming_events: Array.isArray(data.upcoming_events) ? data.upcoming_events.map(event => ({
-          id: String(event?.id || ''),
-          title: String(event?.title || ''),
-          date: String(event?.date || '')
-        })) : []
+        past_events: parseEvents(data.past_events || []),
+        upcoming_events: parseEvents(data.upcoming_events || [])
       };
 
       console.log("Processed profile data:", profileData);
