@@ -5,6 +5,7 @@ import { User } from "@supabase/supabase-js";
 export function useAuthOperations() {
   const signIn = async (email: string, password: string) => {
     try {
+      console.log("Attempting to sign in with email:", email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -23,6 +24,7 @@ export function useAuthOperations() {
       }
 
       if (data?.user) {
+        console.log("Sign in successful for user:", data.user.email);
         await handleProfileCreation(data.user);
         toast.success("Successfully signed in!");
       }
@@ -34,6 +36,7 @@ export function useAuthOperations() {
 
   const signUp = async (email: string, password: string) => {
     try {
+      console.log("Attempting to sign up with email:", email);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -46,6 +49,7 @@ export function useAuthOperations() {
       }
 
       if (data.user) {
+        console.log("Sign up successful for user:", data.user.email);
         toast.success("Registration successful! Please check your email to confirm your account.");
       }
     } catch (error: any) {
@@ -56,6 +60,7 @@ export function useAuthOperations() {
 
   const signOut = async () => {
     try {
+      console.log("Attempting to sign out");
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("Sign out error:", error);
@@ -63,6 +68,7 @@ export function useAuthOperations() {
         return;
       }
       
+      console.log("Sign out successful");
       toast.success("Successfully signed out!");
     } catch (error: any) {
       console.error("Sign out error:", error);

@@ -11,7 +11,9 @@ export function useAuthState() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("Setting up auth state");
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Initial session:", session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       if (session && isInitialLoad) {
@@ -23,20 +25,26 @@ export function useAuthState() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log("Auth state changed:", _event, session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session && _event === 'SIGNED_IN') {
+        console.log("User signed in, creating profile if needed");
         await handleProfileCreation(session.user);
         navigate("/discover");
       } else if (_event === 'SIGNED_OUT') {
+        console.log("User signed out, clearing state");
         setSession(null);
         setUser(null);
         navigate("/");
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log("Cleaning up auth state subscription");
+      subscription.unsubscribe();
+    };
   }, [navigate, isInitialLoad]);
 
   return { session, user, setSession, setUser };
