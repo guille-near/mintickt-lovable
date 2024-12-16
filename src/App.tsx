@@ -1,28 +1,30 @@
-import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Account from "./pages/Account";
-import CreateEvent from "./pages/CreateEvent";
-import EventDetails from "./pages/EventDetails";
-import DiscoverEvents from "./pages/DiscoverEvents";
-import PublicProfile from "./pages/PublicProfile";
-import AuthenticatedLayout from "./components/AuthenticatedLayout";
+import { BrowserRouter as Router } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "@/contexts/ThemeProvider";
+import { AuthProvider } from "@/contexts/AuthProvider";
+import { WalletContextProvider } from "@/contexts/WalletContextProvider";
+import { Toaster } from "@/components/ui/sonner";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppRoutes from "./AppRoutes";
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/discover" element={<DiscoverEvents />} />
-        <Route path="/@:username" element={<PublicProfile />} />
-        <Route element={<AuthenticatedLayout><Outlet /></AuthenticatedLayout>}>
-          <Route path="/account" element={<Account />} />
-          <Route path="/create-event" element={<CreateEvent />} />
-          <Route path="/event/:id" element={<EventDetails />} />
-        </Route>
-      </Routes>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <WalletContextProvider>
+          <AuthProvider>
+            <SidebarProvider>
+              <Router>
+                <AppRoutes />
+                <Toaster />
+              </Router>
+            </SidebarProvider>
+          </AuthProvider>
+        </WalletContextProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
