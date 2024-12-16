@@ -9,9 +9,23 @@ import { toast } from "sonner";
 import type { ProfileData } from "@/components/account/types";
 
 export default function Account() {
+  console.log("Account component rendering");
   const { user, isLoading: authLoading } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
-  const { profile, isLoading: profileLoading, error, updateProfile } = useProfile(user?.id || '');
+  
+  console.log("Current user:", user);
+  
+  const { 
+    profile, 
+    isLoading: profileLoading, 
+    error: profileError, 
+    updateProfile 
+  } = useProfile(user?.id || '');
+
+  console.log("Profile data:", profile);
+  console.log("Profile loading:", profileLoading);
+  console.log("Profile error:", profileError);
+
   const [formData, setFormData] = useState<ProfileData>({
     id: user?.id || '',
     username: null,
@@ -35,11 +49,13 @@ export default function Account() {
 
   useEffect(() => {
     if (profile) {
+      console.log("Setting form data with profile:", profile);
       setFormData(profile);
     }
   }, [profile]);
 
   if (authLoading || profileLoading) {
+    console.log("Loading state active");
     return (
       <AuthenticatedLayout>
         <div className="flex items-center justify-center h-[50vh]">
@@ -50,6 +66,7 @@ export default function Account() {
   }
 
   if (!user) {
+    console.log("No user found");
     return (
       <AuthenticatedLayout>
         <div className="text-center">
@@ -59,17 +76,19 @@ export default function Account() {
     );
   }
 
-  if (error) {
+  if (profileError) {
+    console.error("Profile error:", profileError);
     return (
       <AuthenticatedLayout>
         <div className="text-center space-y-4">
-          <p className="text-red-500">Error loading profile</p>
+          <p className="text-red-500">Error loading profile: {profileError.message}</p>
         </div>
       </AuthenticatedLayout>
     );
   }
 
   const handleProfileChange = (field: keyof ProfileData, value: any) => {
+    console.log("Profile change:", field, value);
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -80,6 +99,7 @@ export default function Account() {
     if (!profile) return;
     
     try {
+      console.log("Updating avatar with URL:", url);
       const { error } = await supabase
         .from('profiles')
         .update({ avatar_url: url })
@@ -93,7 +113,7 @@ export default function Account() {
       }));
       
       toast.success("Avatar updated successfully");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating avatar:', error);
       toast.error("Error updating avatar");
     }
@@ -107,6 +127,7 @@ export default function Account() {
     }
 
     try {
+      console.log("Submitting profile update:", formData);
       setIsUpdating(true);
       await updateProfile.mutateAsync({
         username: formData.username,

@@ -3,11 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ProfileData, UpdateProfileData, SocialMedia } from "./types";
 
 export const useProfile = (userId: string) => {
+  console.log("useProfile hook called with userId:", userId);
   const queryClient = useQueryClient();
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ["profile", userId],
     queryFn: async () => {
+      console.log("Fetching profile data for userId:", userId);
       if (!userId) throw new Error("User ID is required");
       
       const { data, error } = await supabase
@@ -16,7 +18,12 @@ export const useProfile = (userId: string) => {
         .eq("id", userId)
         .single();
 
-      if (error) throw error;
+      console.log("Supabase response:", { data, error });
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        throw error;
+      }
 
       // Parse social_media JSON if it exists, otherwise use default empty object
       const socialMedia = data.social_media ? 
@@ -53,6 +60,7 @@ export const useProfile = (userId: string) => {
         })),
       };
 
+      console.log("Processed profile data:", profileData);
       return profileData;
     },
     enabled: !!userId,
@@ -60,6 +68,7 @@ export const useProfile = (userId: string) => {
 
   const updateProfile = useMutation({
     mutationFn: async (updates: UpdateProfileData) => {
+      console.log("Updating profile with data:", updates);
       const { data, error } = await supabase
         .from("profiles")
         .update({
@@ -70,10 +79,15 @@ export const useProfile = (userId: string) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error updating profile:", error);
+        throw error;
+      }
+      console.log("Profile update response:", data);
       return data;
     },
     onSuccess: () => {
+      console.log("Profile updated successfully, invalidating queries");
       queryClient.invalidateQueries({ queryKey: ["profile", userId] });
     },
   });
