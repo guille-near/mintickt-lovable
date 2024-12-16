@@ -10,6 +10,11 @@ export default function Account() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    bio: '',
+    email: '',
+  });
 
   const { data: profile, isLoading, error, refetch } = useQuery({
     queryKey: ['profile'],
@@ -49,12 +54,27 @@ export default function Account() {
         return newProfile;
       }
 
+      // Update form data when profile is loaded
+      setFormData({
+        username: profile.username || '',
+        bio: profile.bio || '',
+        email: profile.email,
+      });
+
       return profile;
     },
     retry: false,
   });
 
-  const onSubmit = async (formData: any) => {
+  const handleProfileChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       setIsUpdating(true);
       const { data: { user } } = await supabase.auth.getUser();
@@ -65,7 +85,7 @@ export default function Account() {
         .update({
           username: formData.username,
           bio: formData.bio,
-          avatar_url: formData.avatar_url,
+          email: formData.email,
         })
         .eq('id', user.id);
 
@@ -119,7 +139,8 @@ export default function Account() {
         <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
         <div className="max-w-2xl">
           <ProfileForm
-            profile={profile}
+            profile={formData}
+            onProfileChange={handleProfileChange}
             onSubmit={onSubmit}
             isLoading={isUpdating}
           />
