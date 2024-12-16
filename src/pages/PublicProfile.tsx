@@ -29,6 +29,7 @@ const PublicProfile = () => {
   const params = useParams<{ username: string }>();
   const username = params.username?.replace('@', '');
   console.log('🎯 [PublicProfile] Username param:', username);
+  console.log('🎯 [PublicProfile] Raw params:', params);
 
   const fetchProfile = async () => {
     console.log('🎯 [PublicProfile] Fetching profile for username:', username);
@@ -37,6 +38,8 @@ const PublicProfile = () => {
       console.error('🎯 [PublicProfile] No username provided');
       throw new Error('Username is required');
     }
+
+    console.log('🎯 [PublicProfile] Making Supabase query for username:', username);
 
     const { data, error } = await supabase
       .from('profiles')
@@ -67,6 +70,8 @@ const PublicProfile = () => {
       throw new Error('Profile not found');
     }
 
+    console.log('🎯 [PublicProfile] Raw profile data:', data);
+
     // Convert the database response to match our Profile interface
     const profile: Profile = {
       id: data.id,
@@ -94,6 +99,7 @@ const PublicProfile = () => {
       show_past_events: data.show_past_events ?? true
     };
 
+    console.log('🎯 [PublicProfile] Processed profile data:', profile);
     return profile;
   };
 
@@ -105,7 +111,7 @@ const PublicProfile = () => {
     queryKey: ['profile', username],
     queryFn: fetchProfile,
     retry: false,
-    enabled: !!username, // Only run the query if we have a username
+    enabled: !!username,
   });
 
   console.log('🎯 [PublicProfile] Query state:', {
