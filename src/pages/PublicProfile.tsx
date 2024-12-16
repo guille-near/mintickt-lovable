@@ -7,6 +7,13 @@ import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinks } from "@/components/profile/SocialLinks";
 import { ProfileInterests } from "@/components/profile/ProfileInterests";
 import { ProfileEvents } from "@/components/profile/ProfileEvents";
+import { Json } from "@/integrations/supabase/types";
+
+interface EventData {
+  id: string;
+  title: string;
+  date: string;
+}
 
 export default function PublicProfile() {
   const params = useParams();
@@ -63,13 +70,22 @@ export default function PublicProfile() {
         };
 
       // Ensure past_events and upcoming_events are in the correct format
-      const formatEvents = (events: any[] | null) => {
+      const formatEvents = (events: Json[] | null): EventData[] => {
         if (!events) return [];
-        return events.map(event => ({
-          id: event.id || '',
-          title: event.title || '',
-          date: event.date || '',
-        }));
+        return events.map(event => {
+          if (typeof event === 'object' && event !== null) {
+            return {
+              id: String(event.id || ''),
+              title: String(event.title || ''),
+              date: String(event.date || ''),
+            };
+          }
+          return {
+            id: '',
+            title: '',
+            date: '',
+          };
+        });
       };
 
       const profileData: ProfileData = {
