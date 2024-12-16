@@ -52,7 +52,7 @@ export function ProfileForm({ profile, onProfileChange, onSubmit, isLoading }: P
           />
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label>Wallet Address</Label>
           <WalletButton />
         </div>
