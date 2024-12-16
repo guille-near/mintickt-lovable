@@ -1,3 +1,5 @@
+import { Json } from "@/integrations/supabase/types";
+
 export interface Event {
   id: string;
   title: string;
@@ -35,12 +37,12 @@ export interface ProfileDbData {
   bio: string | null;
   created_at: string;
   wallet_address: string | null;
-  social_media: Record<string, string | null>;
+  social_media: Json;
   interests: string[];
   show_upcoming_events: boolean;
   show_past_events: boolean;
-  upcoming_events: Record<string, string>[];
-  past_events: Record<string, string>[];
+  upcoming_events: Json[];
+  past_events: Json[];
 }
 
 export type ProfileFormData = Omit<ProfileData, 'id' | 'created_at' | 'avatar_url' | 'upcoming_events' | 'past_events'>;

@@ -6,21 +6,21 @@ import { ProfileData, Event, SocialMediaLinks, ProfileDbData } from "./types";
 const convertToDbProfile = (profile: Partial<ProfileData>): Partial<ProfileDbData> => {
   return {
     ...profile,
-    social_media: profile.social_media as unknown as Record<string, string | null>,
+    social_media: profile.social_media as unknown as Json,
     past_events: profile.past_events?.map(event => ({
       id: event.id,
       title: event.title,
       date: event.date
-    })),
+    })) as unknown as Json[],
     upcoming_events: profile.upcoming_events?.map(event => ({
       id: event.id,
       title: event.title,
       date: event.date
-    }))
+    })) as unknown as Json[]
   };
 };
 
-const convertFromDbProfile = (profile: any): ProfileData => {
+const convertFromDbProfile = (profile: ProfileDbData): ProfileData => {
   // Parse social_media to ensure correct structure
   let socialMedia: SocialMediaLinks;
   try {
@@ -123,7 +123,7 @@ export function useProfile(userId: string | undefined) {
             past_events: [],
             upcoming_events: [],
             created_at: new Date().toISOString()
-          };
+          } as const;
 
           const { data: createdProfile, error: createError } = await supabase
             .from('profiles')
@@ -146,7 +146,7 @@ export function useProfile(userId: string | undefined) {
         throw error;
       }
 
-      const typedProfile = convertFromDbProfile(profile);
+      const typedProfile = convertFromDbProfile(profile as ProfileDbData);
       console.log('✅ Returning formatted profile:', typedProfile);
       return typedProfile;
     },
