@@ -7,23 +7,8 @@ import { ProfileHeader } from "@/components/public-profile/ProfileHeader";
 import { ProfileSocialLinks } from "@/components/public-profile/ProfileSocialLinks";
 import { ProfileInterests } from "@/components/public-profile/ProfileInterests";
 import { EventsList } from "@/components/public-profile/EventsList";
-import { Event, SocialMediaLinks } from "@/components/account/types";
 import { convertFromDbProfile } from "@/components/account/profileConverters";
 import { SimpleHeader } from "@/components/SimpleHeader";
-import { Json } from "@/integrations/supabase/types";
-
-interface Profile {
-  id: string;
-  username: string | null;
-  bio: string | null;
-  avatar_url: string | null;
-  social_media: SocialMediaLinks;
-  interests: string[];
-  upcoming_events: Event[];
-  past_events: Event[];
-  show_upcoming_events: boolean;
-  show_past_events: boolean;
-}
 
 const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
@@ -31,37 +16,26 @@ const PublicProfile = () => {
   const username = params.username?.replace('@', '');
   
   console.log('🎯 [PublicProfile] Username from params:', username);
+  console.log('🎯 [PublicProfile] Raw params:', params);
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
     queryFn: async () => {
+      console.log('🎯 [PublicProfile] Starting query function');
       console.log('🎯 [PublicProfile] Fetching profile for username:', username);
       
       if (!username) {
+        console.log('🎯 [PublicProfile] No username provided');
         throw new Error('Username is required');
       }
 
       const { data, error } = await supabase
         .from('profiles')
-        .select(`
-          id,
-          username,
-          bio,
-          avatar_url,
-          social_media,
-          interests,
-          upcoming_events,
-          past_events,
-          show_upcoming_events,
-          show_past_events,
-          email,
-          created_at,
-          wallet_address
-        `)
+        .select('*')
         .eq('username', username)
         .single();
 
-      console.log('🎯 [PublicProfile] Supabase response:', { data, error });
+      console.log('🎯 [PublicProfile] Supabase raw response:', { data, error });
 
       if (error) {
         console.error('🎯 [PublicProfile] Error fetching profile:', error);
@@ -73,7 +47,9 @@ const PublicProfile = () => {
         throw new Error('Profile not found');
       }
 
-      return convertFromDbProfile(data);
+      const convertedProfile = convertFromDbProfile(data);
+      console.log('🎯 [PublicProfile] Converted profile:', convertedProfile);
+      return convertedProfile;
     },
     enabled: !!username,
   });
@@ -81,11 +57,12 @@ const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Query state:', {
     isLoading,
     error,
-    hasProfile: !!profile
+    hasProfile: !!profile,
+    profile
   });
 
   if (!username) {
-    console.log('🎯 [PublicProfile] No username provided');
+    console.log('🎯 [PublicProfile] Rendering: No username provided');
     return (
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
@@ -95,7 +72,7 @@ const PublicProfile = () => {
   }
 
   if (isLoading) {
-    console.log('🎯 [PublicProfile] Rendering loading state');
+    console.log('🎯 [PublicProfile] Rendering: Loading state');
     return (
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
@@ -105,7 +82,7 @@ const PublicProfile = () => {
   }
 
   if (error || !profile) {
-    console.log('🎯 [PublicProfile] Rendering error state');
+    console.log('🎯 [PublicProfile] Rendering: Error state', { error });
     return (
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
@@ -114,6 +91,7 @@ const PublicProfile = () => {
     );
   }
 
+  console.log('🎯 [PublicProfile] Rendering: Success state with profile:', profile);
   return (
     <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
       <SimpleHeader />
