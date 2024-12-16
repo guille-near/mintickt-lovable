@@ -12,9 +12,12 @@ const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
   
   const { username } = useParams();
+  console.log('🎯 [PublicProfile] Raw username from params:', username);
+  
+  // Clean username whether it comes with @ or not
   const cleanUsername = username?.replace('@', '');
   
-  console.log('🎯 [PublicProfile] URL params:', { username, cleanUsername });
+  console.log('🎯 [PublicProfile] Cleaned username:', cleanUsername);
 
   const { data: profile, isLoading, error } = useProfileQuery(cleanUsername);
 
@@ -26,7 +29,7 @@ const PublicProfile = () => {
   });
 
   if (!cleanUsername) {
-    console.log('🎯 [PublicProfile] Rendering: No username provided');
+    console.log('🎯 [PublicProfile] No username provided');
     return (
       <ProfileContainer>
         <ErrorState username="" />
@@ -35,7 +38,7 @@ const PublicProfile = () => {
   }
 
   if (isLoading) {
-    console.log('🎯 [PublicProfile] Rendering: Loading state');
+    console.log('🎯 [PublicProfile] Loading state');
     return (
       <ProfileContainer>
         <LoadingState />
@@ -44,7 +47,7 @@ const PublicProfile = () => {
   }
 
   if (error || !profile) {
-    console.log('🎯 [PublicProfile] Rendering: Error state', { error });
+    console.log('🎯 [PublicProfile] Error state:', error);
     return (
       <ProfileContainer>
         <ErrorState username={cleanUsername} />
@@ -52,7 +55,7 @@ const PublicProfile = () => {
     );
   }
 
-  console.log('🎯 [PublicProfile] Rendering: Success state with profile:', profile);
+  console.log('🎯 [PublicProfile] Rendering profile:', profile);
   return (
     <ProfileContainer>
       <ProfileHeader
@@ -62,7 +65,6 @@ const PublicProfile = () => {
       />
 
       <ProfileSocialLinks socialMedia={profile.social_media} />
-
       <ProfileInterests interests={profile.interests} />
 
       {profile.show_upcoming_events && (

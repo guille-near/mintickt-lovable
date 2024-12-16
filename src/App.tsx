@@ -21,6 +21,8 @@ function App() {
         <Route path="/event/:eventId" element={<EventDetails />} />
         <Route path="/discover" element={<DiscoverEvents />} />
         <Route path="/@:username" element={<PublicProfile />} />
+        {/* Catch-all route for usernames without @ */}
+        <Route path="/:username" element={<PublicProfile />} />
       </Routes>
     </Router>
   );
