@@ -35,20 +35,33 @@ export default function PublicProfile() {
   const { username } = useParams<{ username: string }>()
   const { user } = useAuthState()
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
     queryFn: async () => {
-      const { data, error } = await supabase
+      console.log("Fetching profile for username:", username);
+      
+      const { data: profiles, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('username', username)
-        .single()
+        .ilike('username', username || '')
+        .limit(1);
 
-      if (error) throw error
+      if (error) {
+        console.error("Error fetching profile:", error);
+        throw error;
+      }
+
+      if (!profiles || profiles.length === 0) {
+        console.log("No profile found for username:", username);
+        return null;
+      }
+
+      const profileData = profiles[0];
+      console.log("Found profile:", profileData);
 
       // Parse social_media JSON if it exists
-      const socialMedia = data.social_media ? 
-        (typeof data.social_media === 'string' ? JSON.parse(data.social_media) : data.social_media) : 
+      const socialMedia = profileData.social_media ? 
+        (typeof profileData.social_media === 'string' ? JSON.parse(profileData.social_media) : profileData.social_media) : 
         {
           x: null,
           linkedin: null,
@@ -57,41 +70,66 @@ export default function PublicProfile() {
         };
 
       // Convert the raw data to match ProfileData type
-      const profileData: ProfileData = {
-        id: data.id,
-        username: data.username,
-        email: data.email,
-        avatar_url: data.avatar_url,
-        bio: data.bio,
-        wallet_address: data.wallet_address,
-        created_at: data.created_at,
+      const formattedProfile: ProfileData = {
+        id: profileData.id,
+        username: profileData.username,
+        email: profileData.email,
+        avatar_url: profileData.avatar_url,
+        bio: profileData.bio,
+        wallet_address: profileData.wallet_address,
+        created_at: profileData.created_at,
         social_media: socialMedia as SocialMedia,
-        interests: data.interests || [],
-        show_upcoming_events: data.show_upcoming_events ?? true,
-        show_past_events: data.show_past_events ?? true,
-        past_events: (data.past_events || []).map((event: any) => ({
+        interests: profileData.interests || [],
+        show_upcoming_events: profileData.show_upcoming_events ?? true,
+        show_past_events: profileData.show_past_events ?? true,
+        past_events: (profileData.past_events || []).map((event: any) => ({
           id: event.id,
           title: event.title,
           date: event.date,
         })),
-        upcoming_events: (data.upcoming_events || []).map((event: any) => ({
+        upcoming_events: (profileData.upcoming_events || []).map((event: any) => ({
           id: event.id,
           title: event.title,
           date: event.date,
         })),
-      }
+      };
 
-      return profileData
+      return formattedProfile;
     },
     enabled: !!username,
-  })
+  });
 
   if (isLoading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center text-red-500">
+          Error loading profile. Please try again later.
+        </div>
+      </div>
+    );
   }
 
   if (!profile) {
-    return <div className="container mx-auto px-4 py-8">Profile not found</div>
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold">Profile not found</h2>
+          <p className="text-muted-foreground mt-2">
+            The user @{username} doesn't exist or hasn't set up their profile yet.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const socialMediaLinks = [
@@ -99,14 +137,14 @@ export default function PublicProfile() {
     { platform: "linkedin", url: profile.social_media.linkedin, icon: <Linkedin /> },
     { platform: "instagram", url: profile.social_media.instagram, icon: <Instagram /> },
     { platform: "threads", url: profile.social_media.threads, icon: <AtSign /> },
-  ].filter(link => link.url)
+  ].filter(link => link.url);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <div className="space-y-8">
         <div className="flex flex-col items-center space-y-4">
           <Avatar className="w-24 h-24 sm:w-32 sm:h-32">
-            <AvatarImage src={profile.avatar_url || "/placeholder.svg"} alt="Profile picture" />
+            <AvatarImage src={profile.avatar_url || undefined} alt="Profile picture" />
             <AvatarFallback>{profile.username?.slice(0, 2).toUpperCase()}</AvatarFallback>
           </Avatar>
           <h2 className="text-xl sm:text-2xl font-semibold">@{profile.username}</h2>
@@ -156,7 +194,7 @@ export default function PublicProfile() {
           </div>
         )}
 
-        {profile.upcoming_events && profile.upcoming_events.length > 0 && (
+        {profile.show_upcoming_events && profile.upcoming_events && profile.upcoming_events.length > 0 && (
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Upcoming Events</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -174,7 +212,7 @@ export default function PublicProfile() {
           </div>
         )}
 
-        {profile.past_events && profile.past_events.length > 0 && (
+        {profile.show_past_events && profile.past_events && profile.past_events.length > 0 && (
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Past Events</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -193,5 +231,5 @@ export default function PublicProfile() {
         )}
       </div>
     </div>
-  )
+  );
 }
