@@ -24,33 +24,38 @@ export default function Account() {
   const { data: profile, isLoading, error, refetch } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
-      if (!user?.id) {
-        throw new Error('No user found');
-      }
+      try {
+        if (!user?.id) {
+          throw new Error('No user found');
+        }
 
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
 
-      if (error) {
-        console.error('Error fetching profile:', error);
+        if (error) {
+          console.error('Error fetching profile:', error);
+          throw error;
+        }
+
+        if (!profile) {
+          throw new Error('Profile not found');
+        }
+
+        setFormData({
+          username: profile.username || '',
+          bio: profile.bio || '',
+          email: profile.email,
+          wallet_address: profile.wallet_address || '',
+        });
+
+        return profile;
+      } catch (error) {
+        console.error('Error in profile query:', error);
         throw error;
       }
-
-      if (!profile) {
-        throw new Error('Profile not found');
-      }
-
-      setFormData({
-        username: profile.username || '',
-        bio: profile.bio || '',
-        email: profile.email,
-        wallet_address: profile.wallet_address || '',
-      });
-
-      return profile;
     },
     enabled: !!user?.id,
     retry: 1,
@@ -72,7 +77,11 @@ export default function Account() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user?.id) {
-      toast.error('You must be logged in to update your profile');
+      toast({
+        title: "Error",
+        description: "You must be logged in to update your profile",
+        variant: "destructive",
+      });
       return;
     }
 
