@@ -43,8 +43,9 @@ export function ProfileForm({ profile, onProfileChange, onSubmit, isLoading }: P
           id="wallet_address"
           type="text"
           value={profile.wallet_address || ""}
-          onChange={(e) => onProfileChange("wallet_address", e.target.value)}
-          placeholder="Enter your Solana wallet address"
+          readOnly
+          className="bg-gray-100"
+          placeholder="Connect your wallet using the button above"
         />
       </div>
       <div>
