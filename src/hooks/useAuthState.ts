@@ -7,20 +7,35 @@ import { toast } from "sonner";
 export function useAuthState() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     console.log("Setting up auth state");
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("Initial session:", session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session && isInitialLoad) {
-        navigate("/discover");
+    
+    async function getInitialSession() {
+      try {
+        setIsLoading(true);
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log("Initial session:", session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session && isInitialLoad) {
+          await handleProfileCreation(session.user);
+          navigate("/discover");
+        }
+      } catch (error) {
+        console.error("Error getting initial session:", error);
+        toast.error("Error loading user session");
+      } finally {
+        setIsLoading(false);
+        setIsInitialLoad(false);
       }
-      setIsInitialLoad(false);
-    });
+    }
+
+    getInitialSession();
 
     const {
       data: { subscription },
@@ -47,7 +62,7 @@ export function useAuthState() {
     };
   }, [navigate, isInitialLoad]);
 
-  return { session, user, setSession, setUser };
+  return { session, user, isLoading, setSession, setUser };
 }
 
 async function handleProfileCreation(user: User) {

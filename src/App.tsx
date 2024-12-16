@@ -17,12 +17,30 @@ import { useAuth } from "./contexts/AuthProvider";
 const queryClient = new QueryClient();
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { session } = useAuth();
+  const { session, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return session ? children : <Navigate to="/auth" />;
 }
 
 function AuthRoute({ children }: { children: React.ReactNode }) {
-  const { session } = useAuth();
+  const { session, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return !session ? children : <Navigate to="/discover" />;
 }
 

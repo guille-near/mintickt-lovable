@@ -9,9 +9,9 @@ import { toast } from "sonner";
 import type { ProfileFormData } from "@/components/account/types";
 
 export default function Account() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
-  const { data: profile, isLoading, error, refetch } = useProfile(user?.id);
+  const { data: profile, isLoading: profileLoading, error, refetch } = useProfile(user?.id);
   const [formData, setFormData] = useState<ProfileFormData>({
     username: '',
     bio: '',
@@ -29,6 +29,48 @@ export default function Account() {
       });
     }
   }, [profile]);
+
+  if (authLoading || profileLoading) {
+    return (
+      <AuthenticatedLayout>
+        <div className="container mx-auto py-6">
+          <div className="flex items-center justify-center h-[50vh]">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </div>
+      </AuthenticatedLayout>
+    );
+  }
+
+  if (!user) {
+    return (
+      <AuthenticatedLayout>
+        <div className="container mx-auto py-6">
+          <div className="text-center">
+            <p className="text-red-500">Please log in to view your profile</p>
+          </div>
+        </div>
+      </AuthenticatedLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AuthenticatedLayout>
+        <div className="container mx-auto py-6">
+          <div className="text-center space-y-4">
+            <p className="text-red-500">Error loading profile</p>
+            <button 
+              onClick={() => refetch()} 
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </AuthenticatedLayout>
+    );
+  }
 
   const handleProfileChange = (field: keyof ProfileFormData, value: string) => {
     setFormData(prev => ({
@@ -71,48 +113,6 @@ export default function Account() {
       setIsUpdating(false);
     }
   };
-
-  if (!user) {
-    return (
-      <AuthenticatedLayout>
-        <div className="container mx-auto py-6">
-          <div className="text-center">
-            <p className="text-red-500">Please log in to view your profile</p>
-          </div>
-        </div>
-      </AuthenticatedLayout>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <AuthenticatedLayout>
-        <div className="container mx-auto py-6">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        </div>
-      </AuthenticatedLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <AuthenticatedLayout>
-        <div className="container mx-auto py-6">
-          <div className="text-center space-y-4">
-            <p className="text-red-500">Error loading profile</p>
-            <button 
-              onClick={() => refetch()} 
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      </AuthenticatedLayout>
-    );
-  }
 
   return (
     <AuthenticatedLayout>
