@@ -8,7 +8,7 @@ interface EventCardProps {
   date: string;
   image: string;
   id: string;
-  location?: string;
+  eventLocation?: string;
   price?: number;
 }
 
@@ -17,16 +17,16 @@ export const EventCard = ({
   date, 
   image, 
   id, 
-  location, 
+  eventLocation, 
   price 
 }: EventCardProps) => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const currentLocation = useLocation();
   const isMobile = useIsMobile();
 
   const handleViewDetails = () => {
     // If we're on the discover page, navigate internally
-    if (location.pathname === '/discover') {
+    if (currentLocation.pathname === '/discover') {
       navigate(`/event/${id}`);
     } else {
       // For other pages, open in new tab
@@ -40,7 +40,7 @@ export const EventCard = ({
         title={title}
         date={date}
         image={image}
-        location={location}
+        location={eventLocation}
         onClick={handleViewDetails}
       />
     );
@@ -51,7 +51,7 @@ export const EventCard = ({
       title={title}
       date={date}
       image={image}
-      location={location}
+      location={eventLocation}
       price={price}
       onClick={handleViewDetails}
     />
