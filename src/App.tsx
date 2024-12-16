@@ -17,18 +17,45 @@ import { useAuth } from "./contexts/AuthProvider";
 const queryClient = new QueryClient();
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { session } = useAuth();
-  return session ? children : <Navigate to="/auth" />;
+  const { session, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return children;
 }
 
 function AuthRoute({ children }: { children: React.ReactNode }) {
-  const { session } = useAuth();
-  return !session ? children : <Navigate to="/discover" />;
+  const { session, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (session) {
+    return <Navigate to="/discover" replace />;
+  }
+
+  return children;
 }
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Index />} />
+    <Route path="/event/:id" element={<EventDetails />} />
     <Route
       path="/auth"
       element={
@@ -45,7 +72,6 @@ const AppRoutes = () => (
         </PrivateRoute>
       }
     />
-    <Route path="/event/:id" element={<EventDetails />} />
     <Route
       path="/create"
       element={

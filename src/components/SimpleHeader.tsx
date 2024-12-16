@@ -2,10 +2,55 @@ import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthProvider";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const SimpleHeader = () => {
   const navigate = useNavigate();
   const [hasScrolled, setHasScrolled] = useState(false);
+  const { session } = useAuth();
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) {
+        throw new Error('No user ID provided');
+      }
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // Profile doesn't exist, create it
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert([{ 
+              id: session.user.id, 
+              email: session.user.email 
+            }])
+            .select()
+            .single();
+
+          if (createError) {
+            throw createError;
+          }
+
+          return newProfile;
+        }
+        throw error;
+      }
+
+      return profile;
+    },
+    enabled: !!session?.user?.id
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,14 +72,26 @@ export const SimpleHeader = () => {
           className="h-12 cursor-pointer dark:invert" 
           onClick={() => navigate('/')} 
         />
-        <Button
-          variant="outline"
-          onClick={() => navigate('/auth')}
-          className="flex items-center gap-2"
-        >
-          <LogIn className="w-4 h-4" />
-          Sign In
-        </Button>
+        {session ? (
+          <Avatar 
+            className="h-10 w-10 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => navigate('/account')}
+          >
+            <AvatarImage src={profile?.avatar_url} />
+            <AvatarFallback>
+              <User className="h-5 w-5" />
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <Button
+            variant="outline"
+            onClick={() => navigate('/auth')}
+            className="flex items-center gap-2"
+          >
+            <LogIn className="w-4 h-4" />
+            Sign In
+          </Button>
+        )}
       </div>
     </header>
   );

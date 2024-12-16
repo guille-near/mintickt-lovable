@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ProfileData, Event } from "./types";
 
 export function useProfile(userId: string | undefined) {
   return useQuery({
@@ -17,7 +18,6 @@ export function useProfile(userId: string | undefined) {
         .single();
 
       if (error) {
-        // Si el error es que no se encontró el perfil, creamos uno nuevo
         if (error.code === 'PGRST116') {
           const { data: userData } = await supabase.auth.getUser();
           if (!userData.user) {
@@ -26,11 +26,23 @@ export function useProfile(userId: string | undefined) {
 
           const newProfile = {
             id: userId,
-            email: userData.user.email,
+            email: userData.user.email || '',
             username: null,
             bio: null,
             wallet_address: null,
             avatar_url: null,
+            social_media: {
+              x: null,
+              linkedin: null,
+              instagram: null,
+              threads: null
+            },
+            interests: [],
+            show_upcoming_events: true,
+            show_past_events: true,
+            past_events: [],
+            upcoming_events: [],
+            created_at: new Date().toISOString()
           };
 
           const { data: createdProfile, error: createError } = await supabase
@@ -45,14 +57,45 @@ export function useProfile(userId: string | undefined) {
             throw createError;
           }
 
-          return createdProfile;
+          return createdProfile as ProfileData;
         }
 
         console.error('Error fetching profile:', error);
         throw error;
       }
 
-      return profile;
+      // Parse social_media to ensure correct structure
+      const social_media = {
+        x: profile.social_media?.x ?? null,
+        linkedin: profile.social_media?.linkedin ?? null,
+        instagram: profile.social_media?.instagram ?? null,
+        threads: profile.social_media?.threads ?? null
+      };
+
+      // Parse events arrays and ensure they match Event type
+      const past_events = (profile.past_events || []).map((event: any): Event => ({
+        id: event.id,
+        title: event.title,
+        date: event.date
+      }));
+
+      const upcoming_events = (profile.upcoming_events || []).map((event: any): Event => ({
+        id: event.id,
+        title: event.title,
+        date: event.date
+      }));
+
+      const typedProfile: ProfileData = {
+        ...profile,
+        social_media,
+        past_events,
+        upcoming_events,
+        interests: profile.interests || [],
+        show_upcoming_events: profile.show_upcoming_events ?? true,
+        show_past_events: profile.show_past_events ?? true
+      };
+
+      return typedProfile;
     },
     enabled: !!userId,
     retry: 1,

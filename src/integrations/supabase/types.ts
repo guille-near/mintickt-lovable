@@ -104,6 +104,12 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          interests: string[] | null
+          past_events: Json[] | null
+          show_past_events: boolean | null
+          show_upcoming_events: boolean | null
+          social_media: Json | null
+          upcoming_events: Json[] | null
           username: string | null
           wallet_address: string | null
         }
@@ -113,6 +119,12 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          interests?: string[] | null
+          past_events?: Json[] | null
+          show_past_events?: boolean | null
+          show_upcoming_events?: boolean | null
+          social_media?: Json | null
+          upcoming_events?: Json[] | null
           username?: string | null
           wallet_address?: string | null
         }
@@ -122,6 +134,12 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          interests?: string[] | null
+          past_events?: Json[] | null
+          show_past_events?: boolean | null
+          show_upcoming_events?: boolean | null
+          social_media?: Json | null
+          upcoming_events?: Json[] | null
           username?: string | null
           wallet_address?: string | null
         }
