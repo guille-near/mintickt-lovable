@@ -128,7 +128,7 @@ export default function Account() {
 
   return (
     <AuthenticatedLayout>
-      <div className="container mx-auto py-6">
+      <div>
         <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
         <div className="max-w-2xl space-y-8">
           <AccountHeader

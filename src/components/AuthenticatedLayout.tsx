@@ -17,7 +17,7 @@ const AuthenticatedLayout = ({ children }: AuthenticatedLayoutProps) => {
               <SidebarTrigger />
             </div>
           </div>
-          <main className="flex-1">
+          <main className="flex-1 container mx-auto py-6">
             {children}
           </main>
           <Footer />
