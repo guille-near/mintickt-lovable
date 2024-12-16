@@ -10,6 +10,7 @@ import { Twitter, Linkedin, Instagram, AtSign } from 'lucide-react'
 import { supabase } from "@/integrations/supabase/client"
 import { ProfileData, SocialMedia } from "@/components/account/types"
 import { useAuthState } from "@/hooks/useAuthState"
+import { toast } from "sonner"
 
 function ShareQRCode() {
   return (
@@ -33,11 +34,12 @@ function ShareQRCode() {
 
 export default function PublicProfile() {
   const params = useParams();
-  const username = params.username;
+  const username = params.username?.replace('@', ''); // Remove @ if present
   const { user } = useAuthState();
 
+  console.log("PublicProfile - Component mounted");
   console.log("PublicProfile - Raw params:", params);
-  console.log("PublicProfile - Extracted username:", username);
+  console.log("PublicProfile - Processed username:", username);
   console.log("PublicProfile - Current auth user:", user);
 
   const { data: profile, isLoading, error } = useQuery({
@@ -47,33 +49,35 @@ export default function PublicProfile() {
       
       if (!username) {
         console.error("PublicProfile - No username provided");
+        toast.error("No username provided");
         throw new Error("No username provided");
       }
 
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('*')
-        .ilike('username', username)
-        .limit(1);
+        .eq('username', username)
+        .single();
 
       console.log("PublicProfile - Supabase query result:", { profiles, error });
 
       if (error) {
         console.error("PublicProfile - Error fetching profile:", error);
+        toast.error("Error loading profile");
         throw error;
       }
 
-      if (!profiles || profiles.length === 0) {
+      if (!profiles) {
         console.log("PublicProfile - No profile found for username:", username);
+        toast.error("Profile not found");
         return null;
       }
 
-      const profileData = profiles[0];
-      console.log("PublicProfile - Raw profile data:", profileData);
+      console.log("PublicProfile - Raw profile data:", profiles);
 
       // Parse social_media JSON if it exists
-      const socialMedia = profileData.social_media ? 
-        (typeof profileData.social_media === 'string' ? JSON.parse(profileData.social_media) : profileData.social_media) : 
+      const socialMedia = profiles.social_media ? 
+        (typeof profiles.social_media === 'string' ? JSON.parse(profiles.social_media) : profiles.social_media) : 
         {
           x: null,
           linkedin: null,
@@ -85,23 +89,23 @@ export default function PublicProfile() {
 
       // Convert the raw data to match ProfileData type
       const formattedProfile: ProfileData = {
-        id: profileData.id,
-        username: profileData.username,
-        email: profileData.email,
-        avatar_url: profileData.avatar_url,
-        bio: profileData.bio,
-        wallet_address: profileData.wallet_address,
-        created_at: profileData.created_at,
+        id: profiles.id,
+        username: profiles.username,
+        email: profiles.email,
+        avatar_url: profiles.avatar_url,
+        bio: profiles.bio,
+        wallet_address: profiles.wallet_address,
+        created_at: profiles.created_at,
         social_media: socialMedia as SocialMedia,
-        interests: profileData.interests || [],
-        show_upcoming_events: profileData.show_upcoming_events ?? true,
-        show_past_events: profileData.show_past_events ?? true,
-        past_events: profileData.past_events?.map((event: any) => ({
+        interests: profiles.interests || [],
+        show_upcoming_events: profiles.show_upcoming_events ?? true,
+        show_past_events: profiles.show_past_events ?? true,
+        past_events: profiles.past_events?.map((event: any) => ({
           id: event.id,
           title: event.title,
           date: event.date,
         })) || [],
-        upcoming_events: profileData.upcoming_events?.map((event: any) => ({
+        upcoming_events: profiles.upcoming_events?.map((event: any) => ({
           id: event.id,
           title: event.title,
           date: event.date,

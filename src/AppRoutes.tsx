@@ -9,6 +9,8 @@ import PublicProfile from "./pages/PublicProfile";
 import AuthenticatedLayout from "./components/AuthenticatedLayout";
 
 function AppRoutes() {
+  console.log("AppRoutes - Initializing routes");
+  
   return (
     <Routes>
       <Route path="/" element={<Index />} />
