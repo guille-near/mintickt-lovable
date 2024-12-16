@@ -19,7 +19,7 @@ function App() {
     '/create-event',
     '/event/:eventId',
     '/discover',
-    '/profile/@:username'
+    '/profile/:username'  // Changed from /profile/@:username to /profile/:username
   ]);
 
   return (
@@ -31,7 +31,7 @@ function App() {
         <Route path="/create-event" element={<CreateEvent />} />
         <Route path="/event/:eventId" element={<EventDetails />} />
         <Route path="/discover" element={<DiscoverEvents />} />
-        <Route path="/profile/@:username" element={<PublicProfile />} />
+        <Route path="/profile/:username" element={<PublicProfile />} />
       </Routes>
     </Router>
   );

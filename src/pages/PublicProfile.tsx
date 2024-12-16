@@ -12,11 +12,12 @@ import { SimpleHeader } from "@/components/SimpleHeader";
 
 const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
-  const params = useParams<{ username: string }>();
-  const username = params.username?.replace('@', '');
+  const { username: rawUsername } = useParams<{ username: string }>();
+  // Remove @ if present and handle undefined
+  const username = rawUsername?.startsWith('@') ? rawUsername.slice(1) : rawUsername;
   
   console.log('🎯 [PublicProfile] Username from params:', username);
-  console.log('🎯 [PublicProfile] Raw params:', params);
+  console.log('🎯 [PublicProfile] Raw params:', { rawUsername });
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
