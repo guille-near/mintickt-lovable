@@ -35,12 +35,7 @@ export default function Account() {
         bio: profile.bio || null,
         email: profile.email,
         wallet_address: profile.wallet_address,
-        social_media: profile.social_media || {
-          x: null,
-          linkedin: null,
-          instagram: null,
-          threads: null
-        },
+        social_media: profile.social_media,
         interests: profile.interests || [],
         show_upcoming_events: profile.show_upcoming_events ?? true,
         show_past_events: profile.show_past_events ?? true

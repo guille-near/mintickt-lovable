@@ -32,7 +32,7 @@ export function useProfile(userId: string | undefined) {
             throw new Error('No authenticated user found');
           }
 
-          const defaultSocialMedia: SocialMediaLinks = {
+          const defaultSocialMedia = {
             x: null,
             linkedin: null,
             instagram: null,
@@ -71,7 +71,9 @@ export function useProfile(userId: string | undefined) {
 
           return {
             ...createdProfile,
-            social_media: defaultSocialMedia
+            social_media: defaultSocialMedia,
+            past_events: [],
+            upcoming_events: []
           } as ProfileData;
         }
 
