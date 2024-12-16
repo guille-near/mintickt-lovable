@@ -13,7 +13,7 @@ export function EventsList({ title, events }: EventsListProps) {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">{title}</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {events.map((event) => (
           <Card key={event.id} className="aspect-square w-full">
             <CardContent className="p-4 h-full flex flex-col justify-center">
