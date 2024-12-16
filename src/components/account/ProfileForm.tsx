@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { X, Linkedin, Instagram, AtSign, EyeOff } from "lucide-react";
 import { ProfileFormData, INTEREST_OPTIONS } from "./types";
 import { format } from "date-fns";
+import { WalletButton } from "../WalletButton";
 
 interface ProfileFormProps {
   profile: ProfileFormData;
@@ -42,6 +43,22 @@ export function ProfileForm({
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
+      <div className="space-y-4">
+        <Label>Email</Label>
+        <Input
+          type="email"
+          value={profile.email}
+          onChange={(e) => onProfileChange('email', e.target.value)}
+          placeholder="your@email.com"
+          disabled
+        />
+      </div>
+
+      <div className="space-y-4">
+        <Label>Wallet Connection</Label>
+        <WalletButton />
+      </div>
+
       <div className="space-y-4">
         <Label htmlFor="username">Username</Label>
         <div className="relative">

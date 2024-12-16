@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ProfileData, Event, SocialMediaLinks } from "./types";
+import { Json } from "@/integrations/supabase/types";
 
 export function useProfile(userId: string | undefined) {
   return useQuery({
@@ -31,7 +32,7 @@ export function useProfile(userId: string | undefined) {
             throw new Error('No authenticated user found');
           }
 
-          const defaultSocialMedia: SocialMediaLinks = {
+          const defaultSocialMedia = {
             x: null,
             linkedin: null,
             instagram: null,
@@ -119,7 +120,7 @@ export function useProfile(userId: string | undefined) {
         wallet_address: profile.wallet_address,
         avatar_url: profile.avatar_url,
         created_at: profile.created_at,
-        social_media: socialMedia,
+        social_media: socialMedia as Json,
         interests: profile.interests || [],
         show_upcoming_events: profile.show_upcoming_events ?? true,
         show_past_events: profile.show_past_events ?? true,
