@@ -40,6 +40,8 @@ export const convertFromDbProfile = (profile: any): ProfileData => {
   return {
     id: profile.id,
     email: profile.email,
+    first_name: profile.first_name || null,
+    last_name: profile.last_name || null,
     username: profile.username,
     bio: profile.bio,
     wallet_address: profile.wallet_address,
