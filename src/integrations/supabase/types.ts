@@ -57,10 +57,16 @@ export type Database = {
           is_free: boolean
           location: string | null
           max_tickets_per_user: number | null
+          nft_attributes: Json | null
+          nft_collection_name: string | null
+          nft_description: string | null
+          nft_metadata_uri: string | null
+          nft_symbol: string | null
           organizer_name: string
           price: number | null
           registration_deadline: string | null
           remaining_tickets: number
+          royalties_percentage: number | null
           status: string | null
           tags: string[] | null
           title: string
@@ -84,10 +90,16 @@ export type Database = {
           is_free?: boolean
           location?: string | null
           max_tickets_per_user?: number | null
+          nft_attributes?: Json | null
+          nft_collection_name?: string | null
+          nft_description?: string | null
+          nft_metadata_uri?: string | null
+          nft_symbol?: string | null
           organizer_name?: string
           price?: number | null
           registration_deadline?: string | null
           remaining_tickets: number
+          royalties_percentage?: number | null
           status?: string | null
           tags?: string[] | null
           title: string
@@ -111,10 +123,16 @@ export type Database = {
           is_free?: boolean
           location?: string | null
           max_tickets_per_user?: number | null
+          nft_attributes?: Json | null
+          nft_collection_name?: string | null
+          nft_description?: string | null
+          nft_metadata_uri?: string | null
+          nft_symbol?: string | null
           organizer_name?: string
           price?: number | null
           registration_deadline?: string | null
           remaining_tickets?: number
+          royalties_percentage?: number | null
           status?: string | null
           tags?: string[] | null
           title?: string
