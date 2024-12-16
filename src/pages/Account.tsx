@@ -119,25 +119,16 @@ export default function Account() {
     }
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (data: Partial<ProfileData>) => {
     if (!user?.id) {
       toast.error("You must be logged in to update your profile");
       return;
     }
 
     try {
-      console.log("Submitting profile update:", formData);
+      console.log("Submitting profile update:", data);
       setIsUpdating(true);
-      await updateProfile.mutateAsync({
-        username: formData.username,
-        bio: formData.bio,
-        social_media: formData.social_media,
-        interests: formData.interests,
-        show_upcoming_events: formData.show_upcoming_events,
-        show_past_events: formData.show_past_events
-      });
-
+      await updateProfile.mutateAsync(data);
       toast.success("Profile updated successfully");
     } catch (error: any) {
       console.error('Error updating profile:', error);
@@ -159,11 +150,8 @@ export default function Account() {
           />
           <ProfileForm
             profile={formData}
-            onProfileChange={handleProfileChange}
-            onSubmit={onSubmit}
+            onSubmit={handleSubmit}
             isLoading={isUpdating}
-            pastEvents={profile?.past_events}
-            upcomingEvents={profile?.upcoming_events}
           />
         </div>
       </div>
