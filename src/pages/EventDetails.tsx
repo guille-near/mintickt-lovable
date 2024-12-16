@@ -10,15 +10,19 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Card } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { toast } = useToast();
 
   const { data: event, isLoading: eventLoading, error: eventError } = useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
+      console.log('Fetching event with ID:', id);
+
       if (!id || id === ':id') {
         throw new Error('Invalid event ID');
       }
@@ -37,16 +41,29 @@ export default function EventDetails() {
 
       if (error) {
         console.error('Supabase error:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudo cargar el evento. Por favor, intenta de nuevo.",
+        });
         throw error;
       }
       
       if (!data) {
+        console.error('No event found with ID:', id);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Evento no encontrado.",
+        });
         throw new Error('Event not found');
       }
 
+      console.log('Event data:', data);
       return data;
     },
     enabled: !!id && id !== ':id',
+    retry: 1,
   });
 
   if (eventLoading) {
@@ -54,7 +71,7 @@ export default function EventDetails() {
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
-          <p className="text-primary font-yrsa">Loading event details...</p>
+          <p className="text-primary font-yrsa">Cargando detalles del evento...</p>
         </div>
       </div>
     );
@@ -65,8 +82,14 @@ export default function EventDetails() {
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
-          <p className="text-primary font-yrsa">Error loading event details. Please try again later.</p>
+          <p className="text-primary font-yrsa">Error al cargar los detalles del evento. Por favor, intenta de nuevo.</p>
           {eventError && <p className="text-red-400 mt-2 font-yrsa">{(eventError as Error).message}</p>}
+          <Button 
+            onClick={() => navigate('/discover')} 
+            className="mt-4"
+          >
+            Volver a Eventos
+          </Button>
         </div>
       </div>
     );
