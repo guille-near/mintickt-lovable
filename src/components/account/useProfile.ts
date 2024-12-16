@@ -80,22 +80,22 @@ export function useProfile(userId: string | undefined) {
       // Process user events
       const now = new Date();
       const events = profile.tickets
-        .filter(ticket => ticket.events)
+        ?.filter(ticket => ticket.events)
         .map(ticket => ({
           id: ticket.events.id,
           title: ticket.events.title,
           date: ticket.events.date
-        })) as Event[];
+        })) as Event[] || [];
 
       const pastEvents = events.filter(event => new Date(event.date) < now);
       const upcomingEvents = events.filter(event => new Date(event.date) >= now);
 
       // Ensure social_media has the correct structure
-      const social_media = profile.social_media ? {
-        x: profile.social_media.x || null,
-        linkedin: profile.social_media.linkedin || null,
-        instagram: profile.social_media.instagram || null,
-        threads: profile.social_media.threads || null
+      const social_media = profile.social_media && typeof profile.social_media === 'object' ? {
+        x: (profile.social_media as any).x || null,
+        linkedin: (profile.social_media as any).linkedin || null,
+        instagram: (profile.social_media as any).instagram || null,
+        threads: (profile.social_media as any).threads || null
       } : null;
 
       return {
