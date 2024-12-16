@@ -32,7 +32,7 @@ export function useProfile(userId: string | undefined) {
             throw new Error('No authenticated user found');
           }
 
-          const defaultSocialMedia = {
+          const defaultSocialMedia: SocialMediaLinks = {
             x: null,
             linkedin: null,
             instagram: null,
@@ -69,7 +69,10 @@ export function useProfile(userId: string | undefined) {
             throw createError;
           }
 
-          return createdProfile as unknown as ProfileData;
+          return {
+            ...createdProfile,
+            social_media: defaultSocialMedia
+          } as ProfileData;
         }
 
         console.error('Error fetching profile:', error);
@@ -120,7 +123,7 @@ export function useProfile(userId: string | undefined) {
         wallet_address: profile.wallet_address,
         avatar_url: profile.avatar_url,
         created_at: profile.created_at,
-        social_media: socialMedia as Json,
+        social_media: socialMedia,
         interests: profile.interests || [],
         show_upcoming_events: profile.show_upcoming_events ?? true,
         show_past_events: profile.show_past_events ?? true,

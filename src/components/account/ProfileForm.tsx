@@ -55,11 +55,6 @@ export function ProfileForm({
       </div>
 
       <div className="space-y-4">
-        <Label>Wallet Connection</Label>
-        <WalletButton />
-      </div>
-
-      <div className="space-y-4">
         <Label htmlFor="username">Username</Label>
         <div className="relative">
           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">@</span>
@@ -71,6 +66,11 @@ export function ProfileForm({
             className="w-full pl-7"
           />
         </div>
+      </div>
+
+      <div className="space-y-4">
+        <Label>Wallet Connection</Label>
+        <WalletButton />
       </div>
 
       <div className="space-y-4">
