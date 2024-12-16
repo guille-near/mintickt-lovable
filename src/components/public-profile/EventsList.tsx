@@ -15,8 +15,8 @@ export function EventsList({ title, events }: EventsListProps) {
       <h2 className="text-xl font-semibold">{title}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {events.map((event) => (
-          <Card key={event.id}>
-            <CardContent className="p-4">
+          <Card key={event.id} className="aspect-[4/3]">
+            <CardContent className="p-6 h-full flex flex-col justify-center">
               <h3 className="font-semibold">{event.title}</h3>
               <p className="text-sm text-muted-foreground">
                 {format(new Date(event.date), 'PPP')}
