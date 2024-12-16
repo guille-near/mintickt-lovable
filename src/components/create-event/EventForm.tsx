@@ -20,7 +20,6 @@ export interface FormData {
   ticketType: "free" | "paid";
   price?: string;
   totalTickets?: string;
-  organizerName?: string;
 }
 
 interface EventFormProps {
@@ -132,16 +131,6 @@ export const EventForm = ({ form }: EventFormProps) => {
                   type="number"
                   {...register('totalTickets')}
                   min="1"
-                  className="bg-input text-input-foreground placeholder-muted-foreground border-input"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="organizerName" className="text-foreground">Organizer Name</Label>
-                <Input 
-                  type="text"
-                  {...register('organizerName')}
-                  placeholder="Enter organizer name"
                   className="bg-input text-input-foreground placeholder-muted-foreground border-input"
                 />
               </div>

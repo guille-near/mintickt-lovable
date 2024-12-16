@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { EventForm, FormData } from "@/components/create-event/EventForm";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthProvider";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -22,20 +23,19 @@ const formSchema = z.object({
   ticketType: z.enum(["free", "paid"]),
   price: z.string().optional(),
   totalTickets: z.string().min(1, "Total tickets is required"),
-  organizerName: z.string().min(1, "Organizer name is required"),
 });
 
 export default function CreateEvent() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       ticketType: "free",
       image: null,
-      organizerName: "",
       totalTickets: "100",
     },
   });
@@ -44,8 +44,6 @@ export default function CreateEvent() {
     try {
       setIsSubmitting(true);
 
-      // Get the current user's profile
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
           title: "Error",
@@ -55,10 +53,10 @@ export default function CreateEvent() {
         return;
       }
 
-      // Get the profile ID for the current user
+      // Get the profile for the current user
       const { data: profiles, error: profileError } = await supabase
         .from('profiles')
-        .select('id')
+        .select('id, username')
         .eq('wallet_address', user.id)
         .single();
 
@@ -116,7 +114,7 @@ export default function CreateEvent() {
           remaining_tickets: parseInt(formData.totalTickets || "0"),
           creator_id: profiles.id,
           is_free: formData.ticketType === 'free',
-          organizer_name: formData.organizerName,
+          organizer_name: profiles.username || 'Anonymous',
         })
         .select()
         .single();
