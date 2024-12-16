@@ -1,9 +1,8 @@
-import React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ProfileData } from "@/components/account/types";
 import { toast } from "sonner";
+import type { ProfileData } from "@/components/account/types";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SocialLinks } from "@/components/profile/SocialLinks";
 import { ProfileInterests } from "@/components/profile/ProfileInterests";
@@ -11,31 +10,46 @@ import { ProfileEvents } from "@/components/profile/ProfileEvents";
 
 export default function PublicProfile() {
   const params = useParams();
-  const username = params.username?.replace('@', ''); // Remove @ if present
+  const username = params.username?.replace('@', '');
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
     queryFn: async () => {
+      console.log("Fetching profile for username:", username);
+      
       if (!username) {
-        toast.error("No username provided");
         throw new Error("No username provided");
       }
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          id,
+          username,
+          email,
+          avatar_url,
+          bio,
+          wallet_address,
+          created_at,
+          social_media,
+          interests,
+          show_upcoming_events,
+          show_past_events,
+          past_events,
+          upcoming_events
+        `)
         .eq('username', username)
         .single();
 
+      console.log("Supabase response:", { data, error });
+
       if (error) {
         console.error("Error fetching profile:", error);
-        toast.error("Error loading profile");
         throw error;
       }
 
       if (!data) {
-        toast.error("Profile not found");
-        return null;
+        throw new Error("Profile not found");
       }
 
       // Parse social_media JSON if it exists
@@ -48,7 +62,7 @@ export default function PublicProfile() {
           threads: null,
         };
 
-      return {
+      const profileData: ProfileData = {
         id: data.id,
         username: data.username,
         email: data.email,
@@ -62,12 +76,26 @@ export default function PublicProfile() {
         show_past_events: data.show_past_events ?? true,
         past_events: data.past_events || [],
         upcoming_events: data.upcoming_events || [],
-      } as ProfileData;
+      };
+
+      console.log("Processed profile data:", profileData);
+      return profileData;
     },
-    retry: false,
+    retry: 1,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     gcTime: 1000 * 60 * 10, // Keep unused data for 10 minutes
   });
+
+  if (error) {
+    console.error("Query error:", error);
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center text-red-500">
+          {error instanceof Error ? error.message : "Error loading profile"}
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -82,21 +110,24 @@ export default function PublicProfile() {
   if (!profile) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold">Profile not found</h2>
-          <p className="text-muted-foreground mt-2">
-            The user @{username} doesn't exist or hasn't set up their profile yet.
-          </p>
+        <div className="text-center text-red-500">
+          Profile not found
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <div className="space-y-8">
-        <ProfileHeader profile={profile} />
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto space-y-8">
+        <ProfileHeader
+          username={profile.username || ''}
+          bio={profile.bio || ''}
+          avatarUrl={profile.avatar_url}
+        />
+        
         <SocialLinks socialMedia={profile.social_media} />
+        
         <ProfileInterests interests={profile.interests} />
         
         {profile.show_upcoming_events && profile.upcoming_events?.length > 0 && (
@@ -109,7 +140,7 @@ export default function PublicProfile() {
         {profile.show_past_events && profile.past_events?.length > 0 && (
           <ProfileEvents 
             title="Past Events" 
-            events={profile.past_events} 
+            events={profile.past_events}
           />
         )}
       </div>
