@@ -54,7 +54,7 @@ export default function EventDetails() {
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
-          <p className="text-primary">Loading event details...</p>
+          <p className="text-primary font-yrsa">Loading event details...</p>
         </div>
       </div>
     );
@@ -65,8 +65,8 @@ export default function EventDetails() {
       <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
         <SimpleHeader />
         <div className="flex-1 max-w-4xl mx-auto px-2 py-8">
-          <p className="text-primary">Error loading event details. Please try again later.</p>
-          {eventError && <p className="text-red-400 mt-2">{(eventError as Error).message}</p>}
+          <p className="text-primary font-yrsa">Error loading event details. Please try again later.</p>
+          {eventError && <p className="text-red-400 mt-2 font-yrsa">{(eventError as Error).message}</p>}
         </div>
       </div>
     );
@@ -100,7 +100,7 @@ export default function EventDetails() {
             </div>
             <div className={`${isMobile ? 'px-4 pb-32' : 'lg:col-span-2 pr-4 max-h-[calc(100vh-8rem)] overflow-y-auto'}`}>
               <div className="space-y-6">
-                <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-gradient-to-r from-custom-gradient-start to-custom-gradient-end bg-clip-text text-transparent dark:text-primary">{event.title}</h1>
+                <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-gradient-to-r from-custom-gradient-start to-custom-gradient-end bg-clip-text text-transparent dark:text-primary font-yrsa">{event.title}</h1>
                 {isMobile && (
                   <EventHeader
                     title={event.title}
