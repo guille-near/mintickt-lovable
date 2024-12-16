@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ProfileData } from "@/components/account/types";
+import { ProfileData, SocialMediaLinks } from "@/components/account/types";
 import { ProfileHeader } from "@/components/public-profile/ProfileHeader";
 import { ProfileInterests } from "@/components/public-profile/ProfileInterests";
 import { ProfileSocialLinks } from "@/components/public-profile/ProfileSocialLinks";
@@ -44,20 +44,56 @@ export default function PublicProfile() {
         throw new Error('Profile not found');
       }
 
-      return {
-        ...profile,
-        social_media: profile.social_media || {
+      // Parse social_media to ensure correct structure
+      let socialMedia: SocialMediaLinks;
+      try {
+        const rawSocialMedia = typeof profile.social_media === 'string' 
+          ? JSON.parse(profile.social_media)
+          : profile.social_media || {};
+
+        socialMedia = {
+          x: rawSocialMedia.x ?? null,
+          linkedin: rawSocialMedia.linkedin ?? null,
+          instagram: rawSocialMedia.instagram ?? null,
+          threads: rawSocialMedia.threads ?? null
+        };
+      } catch (e) {
+        console.error('Error parsing social_media:', e);
+        socialMedia = {
           x: null,
           linkedin: null,
           instagram: null,
           threads: null
-        },
+        };
+      }
+
+      // Transform the profile data to match ProfileData type
+      const transformedProfile: ProfileData = {
+        id: profile.id,
+        username: profile.username,
+        bio: profile.bio,
+        email: profile.email,
+        wallet_address: profile.wallet_address,
+        avatar_url: profile.avatar_url,
+        created_at: profile.created_at,
+        social_media: socialMedia,
         interests: profile.interests || [],
-        past_events: profile.past_events || [],
-        upcoming_events: profile.upcoming_events || [],
         show_upcoming_events: profile.show_upcoming_events ?? true,
         show_past_events: profile.show_past_events ?? true,
-      } as ProfileData;
+        past_events: (profile.past_events || []).map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          date: event.date
+        })),
+        upcoming_events: (profile.upcoming_events || []).map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          date: event.date
+        }))
+      };
+
+      console.log('Transformed profile:', transformedProfile);
+      return transformedProfile;
     },
     enabled: !!username,
     retry: 1
