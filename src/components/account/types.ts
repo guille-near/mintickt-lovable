@@ -1,51 +1,42 @@
-export interface ProfileFormData {
-  username: string | null;
-  bio: string | null;
-  email: string;
-  wallet_address: string | null;
-  social_media: {
-    x: string | null;
-    linkedin: string | null;
-    instagram: string | null;
-    threads: string | null;
-  };
-  interests: string[];
-  show_upcoming_events: boolean;
-  show_past_events: boolean;
-}
+import { Json } from "@/integrations/supabase/types";
 
-export interface Event {
-  id: string;
-  title: string;
-  date: string;
+export interface SocialMedia {
+  x: string | null;
+  linkedin: string | null;
+  instagram: string | null;
+  threads: string | null;
 }
 
 export interface ProfileData {
   id: string;
   username: string | null;
-  bio: string | null;
   email: string;
-  wallet_address: string | null;
   avatar_url: string | null;
+  bio: string | null;
+  wallet_address: string | null;
   created_at: string;
-  social_media: {
-    x: string | null;
-    linkedin: string | null;
-    instagram: string | null;
-    threads: string | null;
-  };
+  social_media: SocialMedia;
   interests: string[];
   show_upcoming_events: boolean;
   show_past_events: boolean;
-  past_events: Event[];
-  upcoming_events: Event[];
+  past_events: Array<{
+    id: string;
+    title: string;
+    date: string;
+  }>;
+  upcoming_events: Array<{
+    id: string;
+    title: string;
+    date: string;
+  }>;
 }
 
-export const INTEREST_OPTIONS = [
-  "Music",
-  "Sports",
-  "Technology",
-  "Art",
-  "Food",
-  "Travel"
-];
+export interface UpdateProfileData {
+  username?: string;
+  bio?: string;
+  avatar_url?: string;
+  social_media?: SocialMedia;
+  interests?: string[];
+  show_upcoming_events?: boolean;
+  show_past_events?: boolean;
+}
