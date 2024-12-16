@@ -16,6 +16,8 @@ export interface SocialMediaLinks {
 export interface ProfileData {
   id: string;
   email: string;
+  first_name: string | null;
+  last_name: string | null;
   username: string | null;
   avatar_url: string | null;
   bio: string | null;
@@ -32,6 +34,8 @@ export interface ProfileData {
 export interface ProfileDbData {
   id: string;
   email: string;
+  first_name: string | null;
+  last_name: string | null;
   username: string | null;
   avatar_url: string | null;
   bio: string | null;

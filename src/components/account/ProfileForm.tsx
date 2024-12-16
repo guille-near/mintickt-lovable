@@ -1,7 +1,4 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -9,6 +6,9 @@ import { X, Linkedin, Instagram, AtSign, EyeOff } from "lucide-react";
 import { ProfileFormData, INTEREST_OPTIONS } from "./types";
 import { format } from "date-fns";
 import { WalletButton } from "../WalletButton";
+import { BasicProfileFields } from "./BasicProfileFields";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface ProfileFormProps {
   profile: ProfileFormData;
@@ -43,30 +43,7 @@ export function ProfileForm({
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <Label>Email</Label>
-        <Input
-          type="email"
-          value={profile.email}
-          onChange={(e) => onProfileChange('email', e.target.value)}
-          placeholder="your@email.com"
-          disabled
-        />
-      </div>
-
-      <div className="space-y-4">
-        <Label htmlFor="username">Username</Label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">@</span>
-          <Input
-            id="username"
-            value={profile.username || ''}
-            onChange={(e) => onProfileChange('username', e.target.value)}
-            placeholder="username"
-            className="w-full pl-7"
-          />
-        </div>
-      </div>
+      <BasicProfileFields profile={profile} onProfileChange={onProfileChange} />
 
       <div className="space-y-4">
         <Label>Wallet Connection</Label>

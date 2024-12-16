@@ -24,6 +24,8 @@ export const convertToDbProfile = (profile: Partial<ProfileData>): Partial<Profi
   return {
     id: profile.id,
     email: profile.email,
+    first_name: profile.first_name,
+    last_name: profile.last_name,
     username: profile.username,
     bio: profile.bio,
     wallet_address: profile.wallet_address,
@@ -50,6 +52,8 @@ export const convertFromDbProfile = (profile: ProfileDbData): ProfileData => {
   return {
     id: profile.id,
     email: profile.email,
+    first_name: profile.first_name,
+    last_name: profile.last_name,
     username: profile.username,
     bio: profile.bio,
     wallet_address: profile.wallet_address,
