@@ -4,15 +4,17 @@ import { Button } from "@/components/ui/button";
 import { QRCodeDialog } from "./QRCodeDialog";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthProvider";
+import { Badge } from "@/components/ui/badge";
 
 interface ProfileHeaderProps {
   username: string | null;
   bio: string | null;
   avatarUrl: string | null;
   userId: string;
+  walletAddress: string | null;
 }
 
-export function ProfileHeader({ username, bio, avatarUrl, userId }: ProfileHeaderProps) {
+export function ProfileHeader({ username, bio, avatarUrl, userId, walletAddress }: ProfileHeaderProps) {
   const { user } = useAuth();
   const isOwnProfile = user?.id === userId;
   const profileUrl = window.location.origin + "/@" + username;
@@ -30,6 +32,15 @@ export function ProfileHeader({ username, bio, avatarUrl, userId }: ProfileHeade
         <div className="space-y-2 flex-grow">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold">@{username}</h1>
+            {walletAddress && (
+              <Badge 
+                variant="outline" 
+                className="gap-1 border-purple-500 text-purple-500"
+              >
+                <img src="/solana-badge.svg" alt="Solana" className="w-4 h-4" />
+                Solana
+              </Badge>
+            )}
           </div>
           {bio && (
             <p className="text-muted-foreground max-w-2xl">{bio}</p>

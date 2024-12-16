@@ -63,6 +63,7 @@ const PublicProfile = () => {
         bio={profile.bio}
         avatarUrl={profile.avatar_url}
         userId={profile.id}
+        walletAddress={profile.wallet_address}
       />
 
       <ProfileSocialLinks socialMedia={profile.social_media} />
