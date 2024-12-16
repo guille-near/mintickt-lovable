@@ -14,132 +14,95 @@ export default function PublicProfile() {
   const rawUsername = params.username || '';
   const username = rawUsername.replace('@', '');
   
-  console.log('[PublicProfile] Route params:', params);
-  console.log('[PublicProfile] Processing username:', { rawUsername, username });
+  console.log('🔍 [PublicProfile] Attempting to fetch profile for username:', username);
+
+  const fetchProfile = async () => {
+    console.log('📡 [PublicProfile] Executing Supabase query for username:', username);
+    
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('username', username)
+      .single();
+    
+    console.log('📦 [PublicProfile] Supabase response:', { data, error });
+
+    if (error) {
+      console.error('❌ [PublicProfile] Supabase error:', error);
+      throw error;
+    }
+
+    if (!data) {
+      console.error('❌ [PublicProfile] No profile found for username:', username);
+      throw new Error('Profile not found');
+    }
+
+    return data;
+  };
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
-    queryFn: async () => {
-      console.log('[PublicProfile] Starting profile query for username:', username);
-      
-      if (!username) {
-        console.error('[PublicProfile] No username provided in URL');
-        throw new Error('No username provided');
-      }
-
-      // Log the query we're about to make
-      console.log('[PublicProfile] Executing Supabase query:', {
-        table: 'profiles',
-        column: 'username',
-        value: username
-      });
-
-      const { data: profile, error: supabaseError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('username', username)
-        .single();
-
-      // Log the raw response from Supabase
-      console.log('[PublicProfile] Supabase raw response:', { profile, error: supabaseError });
-
-      if (supabaseError) {
-        console.error('[PublicProfile] Supabase query error:', supabaseError);
-        throw supabaseError;
-      }
-
-      if (!profile) {
-        console.error('[PublicProfile] No profile found for username:', username);
-        throw new Error('Profile not found');
-      }
-
-      // Parse social_media to ensure correct structure
-      let socialMedia: SocialMediaLinks;
-      try {
-        const rawSocialMedia = typeof profile.social_media === 'string' 
-          ? JSON.parse(profile.social_media)
-          : profile.social_media || {};
-
-        socialMedia = {
-          x: rawSocialMedia.x ?? null,
-          linkedin: rawSocialMedia.linkedin ?? null,
-          instagram: rawSocialMedia.instagram ?? null,
-          threads: rawSocialMedia.threads ?? null
-        };
-        console.log('[PublicProfile] Parsed social media:', socialMedia);
-      } catch (e) {
-        console.error('[PublicProfile] Error parsing social_media:', e);
-        socialMedia = {
-          x: null,
-          linkedin: null,
-          instagram: null,
-          threads: null
-        };
-      }
-
-      // Transform the profile data
-      const transformedProfile: ProfileData = {
-        id: profile.id,
-        username: profile.username,
-        bio: profile.bio,
-        email: profile.email,
-        wallet_address: profile.wallet_address,
-        avatar_url: profile.avatar_url,
-        created_at: profile.created_at,
-        social_media: socialMedia,
-        interests: profile.interests || [],
-        show_upcoming_events: profile.show_upcoming_events ?? true,
-        show_past_events: profile.show_past_events ?? true,
-        past_events: Array.isArray(profile.past_events) ? profile.past_events.map((event: any) => ({
-          id: event.id || '',
-          title: event.title || '',
-          date: event.date || new Date().toISOString()
-        })) : [],
-        upcoming_events: Array.isArray(profile.upcoming_events) ? profile.upcoming_events.map((event: any) => ({
-          id: event.id || '',
-          title: event.title || '',
-          date: event.date || new Date().toISOString()
-        })) : []
-      };
-
-      console.log('[PublicProfile] Transformed profile data:', transformedProfile);
-      return transformedProfile;
-    },
-    enabled: !!username,
+    queryFn: fetchProfile,
+    enabled: Boolean(username),
     retry: 1
   });
 
-  console.log('[PublicProfile] Component render state:', { 
+  console.log('🎯 [PublicProfile] Component state:', { 
+    username,
     isLoading, 
-    hasError: !!error, 
-    errorDetails: error,
-    hasProfile: !!profile 
+    hasError: Boolean(error), 
+    hasProfile: Boolean(profile) 
   });
 
   if (isLoading) {
-    console.log('[PublicProfile] Rendering loading state');
+    console.log('⏳ [PublicProfile] Loading state');
     return <LoadingState />;
   }
 
   if (error || !profile) {
-    console.error('[PublicProfile] Rendering error state:', error);
+    console.error('❌ [PublicProfile] Error state:', error);
     return <ErrorState username={rawUsername} />;
   }
 
-  console.log('[PublicProfile] Rendering profile component with data:', profile);
+  // Transform social media data
+  const socialMedia: SocialMediaLinks = {
+    x: profile.social_media?.x ?? null,
+    linkedin: profile.social_media?.linkedin ?? null,
+    instagram: profile.social_media?.instagram ?? null,
+    threads: profile.social_media?.threads ?? null
+  };
+
+  // Transform profile data
+  const transformedProfile: ProfileData = {
+    id: profile.id,
+    username: profile.username,
+    bio: profile.bio,
+    email: profile.email,
+    wallet_address: profile.wallet_address,
+    avatar_url: profile.avatar_url,
+    created_at: profile.created_at,
+    social_media: socialMedia,
+    interests: profile.interests || [],
+    show_upcoming_events: profile.show_upcoming_events ?? true,
+    show_past_events: profile.show_past_events ?? true,
+    past_events: Array.isArray(profile.past_events) ? profile.past_events : [],
+    upcoming_events: Array.isArray(profile.upcoming_events) ? profile.upcoming_events : []
+  };
+
+  console.log('✅ [PublicProfile] Rendering profile:', transformedProfile);
 
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-4xl mx-auto space-y-8">
-        <ProfileHeader profile={profile} />
-        <ProfileInterests interests={profile.interests} />
-        <ProfileSocialLinks socialMedia={profile.social_media} />
+        <ProfileHeader profile={transformedProfile} />
+        <ProfileInterests interests={transformedProfile.interests} />
+        <ProfileSocialLinks socialMedia={transformedProfile.social_media} />
         
-        {profile.show_upcoming_events && profile.upcoming_events?.length > 0 && (
-          <EventsList title="Upcoming Events" events={profile.upcoming_events} />
+        {transformedProfile.show_upcoming_events && transformedProfile.upcoming_events?.length > 0 && (
+          <EventsList title="Upcoming Events" events={transformedProfile.upcoming_events} />
         )}
-        {profile.show_past_events && profile.past_events?.length > 0 && (
-          <EventsList title="Past Events" events={profile.past_events} />
+        {transformedProfile.show_past_events && transformedProfile.past_events?.length > 0 && (
+          <EventsList title="Past Events" events={transformedProfile.past_events} />
         )}
       </div>
     </div>
