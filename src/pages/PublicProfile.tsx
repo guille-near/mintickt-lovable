@@ -46,6 +46,16 @@ export default function PublicProfile() {
 
       if (error) throw error
 
+      // Parse social_media JSON if it exists
+      const socialMedia = data.social_media ? 
+        (typeof data.social_media === 'string' ? JSON.parse(data.social_media) : data.social_media) : 
+        {
+          x: null,
+          linkedin: null,
+          instagram: null,
+          threads: null,
+        };
+
       // Convert the raw data to match ProfileData type
       const profileData: ProfileData = {
         id: data.id,
@@ -55,12 +65,7 @@ export default function PublicProfile() {
         bio: data.bio,
         wallet_address: data.wallet_address,
         created_at: data.created_at,
-        social_media: data.social_media as SocialMedia || {
-          x: null,
-          linkedin: null,
-          instagram: null,
-          threads: null,
-        },
+        social_media: socialMedia as SocialMedia,
         interests: data.interests || [],
         show_upcoming_events: data.show_upcoming_events ?? true,
         show_past_events: data.show_past_events ?? true,

@@ -1,10 +1,7 @@
 import { Json } from "@/integrations/supabase/types";
 
 export interface SocialMedia {
-  x: string | null;
-  linkedin: string | null;
-  instagram: string | null;
-  threads: string | null;
+  [key: string]: string | null;
 }
 
 export type ProfileData = {
