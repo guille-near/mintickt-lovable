@@ -26,7 +26,8 @@ interface Profile {
 
 const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
-  const { username } = useParams<{ username: string }>();
+  const params = useParams<{ username: string }>();
+  const username = params.username?.replace('@', '');
   console.log('🎯 [PublicProfile] Username param:', username);
 
   const fetchProfile = async () => {
@@ -36,9 +37,6 @@ const PublicProfile = () => {
       console.error('🎯 [PublicProfile] No username provided');
       throw new Error('Username is required');
     }
-
-    const cleanUsername = username.startsWith('@') ? username.slice(1) : username;
-    console.log('🎯 [PublicProfile] Clean username:', cleanUsername);
 
     const { data, error } = await supabase
       .from('profiles')
@@ -54,7 +52,7 @@ const PublicProfile = () => {
         show_upcoming_events,
         show_past_events
       `)
-      .eq('username', cleanUsername)
+      .eq('username', username)
       .single();
 
     console.log('🎯 [PublicProfile] Supabase response:', { data, error });
@@ -75,7 +73,6 @@ const PublicProfile = () => {
       username: data.username,
       bio: data.bio,
       avatar_url: data.avatar_url,
-      // First cast to unknown, then to SocialMediaLinks to handle the type conversion safely
       social_media: (data.social_media as unknown as SocialMediaLinks) || {
         x: null,
         linkedin: null,
@@ -93,8 +90,8 @@ const PublicProfile = () => {
         title: event.title,
         date: event.date
       })),
-      show_upcoming_events: data.show_upcoming_events,
-      show_past_events: data.show_past_events
+      show_upcoming_events: data.show_upcoming_events ?? true,
+      show_past_events: data.show_past_events ?? true
     };
 
     return profile;
@@ -108,6 +105,7 @@ const PublicProfile = () => {
     queryKey: ['profile', username],
     queryFn: fetchProfile,
     retry: false,
+    enabled: !!username, // Only run the query if we have a username
   });
 
   console.log('🎯 [PublicProfile] Query state:', {
@@ -129,7 +127,7 @@ const PublicProfile = () => {
     console.log('🎯 [PublicProfile] Rendering error state');
     return (
       <AuthenticatedLayout>
-        <ErrorState username={username?.startsWith('@') ? username.slice(1) : username || ''} />
+        <ErrorState username={username || ''} />
       </AuthenticatedLayout>
     );
   }
