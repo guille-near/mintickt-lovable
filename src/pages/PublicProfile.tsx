@@ -26,20 +26,17 @@ interface Profile {
 
 const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
-  const params = useParams<{ username: string }>();
-  const username = params.username?.replace('@', '');
+  const { username: rawUsername } = useParams();
+  const username = rawUsername?.replace('@', '');
+  
   console.log('🎯 [PublicProfile] Username param:', username);
-  console.log('🎯 [PublicProfile] Raw params:', params);
 
   const fetchProfile = async () => {
     console.log('🎯 [PublicProfile] Fetching profile for username:', username);
     
     if (!username) {
-      console.error('🎯 [PublicProfile] No username provided');
       throw new Error('Username is required');
     }
-
-    console.log('🎯 [PublicProfile] Making Supabase query for username:', username);
 
     const { data, error } = await supabase
       .from('profiles')
@@ -70,27 +67,24 @@ const PublicProfile = () => {
       throw new Error('Profile not found');
     }
 
-    console.log('🎯 [PublicProfile] Raw profile data:', data);
-
-    // Convert the database response to match our Profile interface
     const profile: Profile = {
       id: data.id,
       username: data.username,
       bio: data.bio,
       avatar_url: data.avatar_url,
-      social_media: (data.social_media as unknown as SocialMediaLinks) || {
+      social_media: data.social_media || {
         x: null,
         linkedin: null,
         instagram: null,
         threads: null
       },
       interests: data.interests || [],
-      upcoming_events: (data.upcoming_events as Json[] || []).map((event: any) => ({
+      upcoming_events: (data.upcoming_events || []).map((event: any) => ({
         id: event.id,
         title: event.title,
         date: event.date
       })),
-      past_events: (data.past_events as Json[] || []).map((event: any) => ({
+      past_events: (data.past_events || []).map((event: any) => ({
         id: event.id,
         title: event.title,
         date: event.date
@@ -99,7 +93,7 @@ const PublicProfile = () => {
       show_past_events: data.show_past_events ?? true
     };
 
-    console.log('🎯 [PublicProfile] Processed profile data:', profile);
+    console.log('🎯 [PublicProfile] Processed profile:', profile);
     return profile;
   };
 
@@ -120,6 +114,15 @@ const PublicProfile = () => {
     hasProfile: !!profile
   });
 
+  if (!username) {
+    console.log('🎯 [PublicProfile] No username provided');
+    return (
+      <AuthenticatedLayout>
+        <ErrorState username="" />
+      </AuthenticatedLayout>
+    );
+  }
+
   if (isLoading) {
     console.log('🎯 [PublicProfile] Rendering loading state');
     return (
@@ -133,16 +136,14 @@ const PublicProfile = () => {
     console.log('🎯 [PublicProfile] Rendering error state');
     return (
       <AuthenticatedLayout>
-        <ErrorState username={username || ''} />
+        <ErrorState username={username} />
       </AuthenticatedLayout>
     );
   }
 
-  console.log('🎯 [PublicProfile] Rendering profile:', profile);
-
   return (
     <AuthenticatedLayout>
-      <div className="flex-1 container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <ProfileHeader
             username={profile.username || ''}
