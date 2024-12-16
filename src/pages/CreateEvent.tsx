@@ -57,7 +57,7 @@ export default function CreateEvent() {
       const { data: profiles, error: profileError } = await supabase
         .from('profiles')
         .select('id, username')
-        .eq('wallet_address', user.id)
+        .eq('id', user.id)  // Changed from wallet_address to id
         .single();
 
       if (profileError || !profiles) {
@@ -100,7 +100,7 @@ export default function CreateEvent() {
         imageUrl = publicUrl;
       }
 
-      // Create the event with the creator_id set to the profile's ID
+      // Create the event
       const { data: event, error } = await supabase
         .from('events')
         .insert({
