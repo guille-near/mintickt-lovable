@@ -154,8 +154,8 @@ export default function Account() {
             onProfileChange={handleProfileChange}
             onSubmit={onSubmit}
             isLoading={isUpdating}
-            pastEvents={profile?.pastEvents}
-            upcomingEvents={profile?.upcomingEvents}
+            pastEvents={profile?.past_events}
+            upcomingEvents={profile?.upcoming_events}
           />
         </div>
       </div>

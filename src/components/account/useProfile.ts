@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ProfileData } from "./types";
+import { ProfileData, Event } from "./types";
 
 export function useProfile(userId: string | undefined) {
   return useQuery({
@@ -64,7 +64,7 @@ export function useProfile(userId: string | undefined) {
         throw error;
       }
 
-      // Ensure social_media has the correct structure
+      // Parse social_media to ensure correct structure
       const social_media = {
         x: profile.social_media?.x ?? null,
         linkedin: profile.social_media?.linkedin ?? null,
@@ -72,9 +72,18 @@ export function useProfile(userId: string | undefined) {
         threads: profile.social_media?.threads ?? null
       };
 
-      // Parse events arrays
-      const past_events = profile.past_events || [];
-      const upcoming_events = profile.upcoming_events || [];
+      // Parse events arrays and ensure they match Event type
+      const past_events = (profile.past_events || []).map((event: any): Event => ({
+        id: event.id,
+        title: event.title,
+        date: event.date
+      }));
+
+      const upcoming_events = (profile.upcoming_events || []).map((event: any): Event => ({
+        id: event.id,
+        title: event.title,
+        date: event.date
+      }));
 
       const typedProfile: ProfileData = {
         ...profile,
