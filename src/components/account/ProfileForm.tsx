@@ -4,16 +4,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { X, Linkedin, Instagram, AtSign, EyeOff } from "lucide-react";
+import { X, Linkedin, Instagram, AtSign } from "lucide-react";
 import { ProfileData, INTEREST_OPTIONS } from "./types";
-import { format } from "date-fns";
+import { WalletButton } from "../WalletButton";
 
 interface ProfileFormProps {
   profile: ProfileData;
   onSubmit: (data: Partial<ProfileData>) => void;
+  isLoading?: boolean;
 }
 
-export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
+export function ProfileForm({ profile, onSubmit, isLoading }: ProfileFormProps) {
   const { register, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
       username: profile.username || "",
@@ -30,10 +31,7 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
     },
   });
 
-  console.log("Setting form data with profile:", profile);
-
   const interests = watch("interests");
-  const social_media = watch("social_media");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -145,11 +143,17 @@ export function ProfileForm({ profile, onSubmit }: ProfileFormProps) {
         </div>
       </div>
 
+      <div className="space-y-4">
+        <Label>Wallet Connection</Label>
+        <WalletButton />
+      </div>
+
       <button
         type="submit"
-        className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
+        disabled={isLoading}
+        className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 disabled:opacity-50"
       >
-        Save Changes
+        {isLoading ? "Saving..." : "Save Changes"}
       </button>
     </form>
   );

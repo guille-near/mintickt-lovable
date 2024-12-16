@@ -87,14 +87,6 @@ export default function Account() {
     );
   }
 
-  const handleProfileChange = (field: keyof ProfileData, value: any) => {
-    console.log("Profile change:", field, value);
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
   const handleAvatarUpdate = async (url: string) => {
     if (!profile) return;
     
