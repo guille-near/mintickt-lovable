@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { ProfileFormData } from "./types";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletButton } from "../WalletButton";
 
 interface ProfileFormProps {
   profile: ProfileFormData;
@@ -78,6 +79,10 @@ export function ProfileForm({ profile, onProfileChange, onSubmit, isLoading }: P
               onClick={handleWalletClick}
             />
           </div>
+        </div>
+
+        <div>
+          <WalletButton />
         </div>
       </div>
 
