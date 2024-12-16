@@ -42,10 +42,8 @@ export default function Account() {
   if (authLoading || profileLoading) {
     return (
       <AuthenticatedLayout>
-        <div className="container mx-auto py-6">
-          <div className="flex items-center justify-center h-[50vh]">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
+        <div className="flex items-center justify-center h-[50vh]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       </AuthenticatedLayout>
     );
@@ -54,10 +52,8 @@ export default function Account() {
   if (!user) {
     return (
       <AuthenticatedLayout>
-        <div className="container mx-auto py-6">
-          <div className="text-center">
-            <p className="text-red-500">Please log in to view your profile</p>
-          </div>
+        <div className="text-center">
+          <p className="text-red-500">Please log in to view your profile</p>
         </div>
       </AuthenticatedLayout>
     );
@@ -66,10 +62,8 @@ export default function Account() {
   if (error) {
     return (
       <AuthenticatedLayout>
-        <div className="container mx-auto py-6">
-          <div className="text-center space-y-4">
-            <p className="text-red-500">Error loading profile</p>
-          </div>
+        <div className="text-center space-y-4">
+          <p className="text-red-500">Error loading profile</p>
         </div>
       </AuthenticatedLayout>
     );
