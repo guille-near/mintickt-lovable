@@ -27,6 +27,23 @@ export interface ProfileData {
   past_events: Event[];
 }
 
+// Database types for Supabase operations
+export interface ProfileDbData {
+  id: string;
+  email: string;
+  username: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  created_at: string;
+  wallet_address: string | null;
+  social_media: Record<string, string | null>;
+  interests: string[];
+  show_upcoming_events: boolean;
+  show_past_events: boolean;
+  upcoming_events: Record<string, string>[];
+  past_events: Record<string, string>[];
+}
+
 // Using ProfileData as the base for form data
 export type ProfileFormData = Omit<ProfileData, 'id' | 'created_at' | 'avatar_url' | 'upcoming_events' | 'past_events'>;
 

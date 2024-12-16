@@ -1,8 +1,79 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ProfileData, Event, SocialMediaLinks } from "./types";
+import { ProfileData, Event, SocialMediaLinks, ProfileDbData } from "./types";
 import { Json } from "@/integrations/supabase/types";
+
+const convertToDbProfile = (profile: Partial<ProfileData>): Partial<ProfileDbData> => {
+  return {
+    ...profile,
+    social_media: profile.social_media as unknown as Json,
+    past_events: profile.past_events?.map(event => ({
+      id: event.id,
+      title: event.title,
+      date: event.date
+    })) as unknown as Json[],
+    upcoming_events: profile.upcoming_events?.map(event => ({
+      id: event.id,
+      title: event.title,
+      date: event.date
+    })) as unknown as Json[]
+  };
+};
+
+const convertFromDbProfile = (profile: any): ProfileData => {
+  // Parse social_media to ensure correct structure
+  let socialMedia: SocialMediaLinks;
+  try {
+    const rawSocialMedia = typeof profile.social_media === 'string' 
+      ? JSON.parse(profile.social_media)
+      : profile.social_media || {};
+
+    socialMedia = {
+      x: rawSocialMedia.x ?? null,
+      linkedin: rawSocialMedia.linkedin ?? null,
+      instagram: rawSocialMedia.instagram ?? null,
+      threads: rawSocialMedia.threads ?? null
+    };
+  } catch (e) {
+    console.error('❌ Error parsing social_media:', e);
+    socialMedia = {
+      x: null,
+      linkedin: null,
+      instagram: null,
+      threads: null
+    };
+  }
+
+  // Parse events arrays and ensure they match Event type
+  const pastEvents = (profile.past_events || []).map((event: any): Event => ({
+    id: event.id,
+    title: event.title,
+    date: event.date
+  }));
+
+  const upcomingEvents = (profile.upcoming_events || []).map((event: any): Event => ({
+    id: event.id,
+    title: event.title,
+    date: event.date
+  }));
+
+  return {
+    id: profile.id,
+    email: profile.email,
+    username: profile.username,
+    bio: profile.bio,
+    wallet_address: profile.wallet_address,
+    avatar_url: profile.avatar_url,
+    created_at: profile.created_at,
+    social_media: socialMedia,
+    interests: profile.interests || [],
+    show_upcoming_events: profile.show_upcoming_events ?? true,
+    show_past_events: profile.show_past_events ?? true,
+    past_events: pastEvents,
+    upcoming_events: upcomingEvents
+  };
+};
 
 export function useProfile(userId: string | undefined) {
   return useQuery({
@@ -57,7 +128,7 @@ export function useProfile(userId: string | undefined) {
 
           const { data: createdProfile, error: createError } = await supabase
             .from('profiles')
-            .insert([newProfile])
+            .insert([convertToDbProfile(newProfile)])
             .select()
             .single();
 
@@ -76,58 +147,7 @@ export function useProfile(userId: string | undefined) {
         throw error;
       }
 
-      // Parse social_media to ensure correct structure
-      let socialMedia: SocialMediaLinks;
-      try {
-        const rawSocialMedia = typeof profile.social_media === 'string' 
-          ? JSON.parse(profile.social_media)
-          : profile.social_media || {};
-
-        socialMedia = {
-          x: rawSocialMedia.x ?? null,
-          linkedin: rawSocialMedia.linkedin ?? null,
-          instagram: rawSocialMedia.instagram ?? null,
-          threads: rawSocialMedia.threads ?? null
-        };
-      } catch (e) {
-        console.error('❌ Error parsing social_media:', e);
-        socialMedia = {
-          x: null,
-          linkedin: null,
-          instagram: null,
-          threads: null
-        };
-      }
-
-      // Parse events arrays and ensure they match Event type
-      const pastEvents = (profile.past_events || []).map((event: any): Event => ({
-        id: event.id,
-        title: event.title,
-        date: event.date
-      }));
-
-      const upcomingEvents = (profile.upcoming_events || []).map((event: any): Event => ({
-        id: event.id,
-        title: event.title,
-        date: event.date
-      }));
-
-      const typedProfile: ProfileData = {
-        id: profile.id,
-        email: profile.email,
-        username: profile.username,
-        bio: profile.bio,
-        wallet_address: profile.wallet_address,
-        avatar_url: profile.avatar_url,
-        created_at: profile.created_at,
-        social_media: socialMedia,
-        interests: profile.interests || [],
-        show_upcoming_events: profile.show_upcoming_events ?? true,
-        show_past_events: profile.show_past_events ?? true,
-        past_events: pastEvents,
-        upcoming_events: upcomingEvents
-      };
-
+      const typedProfile = convertFromDbProfile(profile);
       console.log('✅ Returning formatted profile:', typedProfile);
       return typedProfile;
     },

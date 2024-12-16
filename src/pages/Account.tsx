@@ -120,7 +120,7 @@ export default function Account() {
           username: formData.username,
           bio: formData.bio,
           email: formData.email,
-          social_media: formData.social_media as Json,
+          social_media: formData.social_media as unknown as Json,
           interests: formData.interests,
           show_upcoming_events: formData.show_upcoming_events,
           show_past_events: formData.show_past_events
