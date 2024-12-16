@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileEventCard } from "./event-card/MobileEventCard";
 import { DesktopEventCard } from "./event-card/DesktopEventCard";
@@ -21,10 +21,17 @@ export const EventCard = ({
   price 
 }: EventCardProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useIsMobile();
 
   const handleViewDetails = () => {
-    navigate(`/event/${id}`);
+    // If we're on the discover page, navigate internally
+    if (location.pathname === '/discover') {
+      navigate(`/event/${id}`);
+    } else {
+      // For other pages, open in new tab
+      window.open(`/event/${id}`, '_blank');
+    }
   };
 
   if (isMobile) {

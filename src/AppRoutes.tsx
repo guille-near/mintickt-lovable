@@ -15,13 +15,13 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
-      <Route path="/discover" element={<DiscoverEvents />} />
-      <Route path="/@:username" element={<PublicProfile />} />
       <Route element={<AuthenticatedLayout><Outlet /></AuthenticatedLayout>}>
+        <Route path="/discover" element={<DiscoverEvents />} />
         <Route path="/account" element={<Account />} />
         <Route path="/create-event" element={<CreateEvent />} />
         <Route path="/event/:id" element={<EventDetails />} />
       </Route>
+      <Route path="/@:username" element={<PublicProfile />} />
     </Routes>
   );
 }
