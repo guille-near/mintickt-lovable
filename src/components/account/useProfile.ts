@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ProfileData, Event } from "./types";
+import { Json } from "@/integrations/supabase/types";
 
 export function useProfile(userId: string | undefined) {
   return useQuery({
@@ -65,25 +66,40 @@ export function useProfile(userId: string | undefined) {
       }
 
       // Parse social_media to ensure correct structure
-      const social_media = {
-        x: profile.social_media?.x ?? null,
-        linkedin: profile.social_media?.linkedin ?? null,
-        instagram: profile.social_media?.instagram ?? null,
-        threads: profile.social_media?.threads ?? null
+      const social_media = profile.social_media as {
+        x: string | null;
+        linkedin: string | null;
+        instagram: string | null;
+        threads: string | null;
+      } || {
+        x: null,
+        linkedin: null,
+        instagram: null,
+        threads: null
       };
 
       // Parse events arrays and ensure they match Event type
-      const past_events = (profile.past_events || []).map((event: any): Event => ({
-        id: event.id,
-        title: event.title,
-        date: event.date
-      }));
+      const past_events = (profile.past_events || []).map((event: Json): Event => {
+        if (typeof event === 'object' && event !== null) {
+          return {
+            id: String(event.id || ''),
+            title: String(event.title || ''),
+            date: String(event.date || '')
+          };
+        }
+        return { id: '', title: '', date: '' };
+      });
 
-      const upcoming_events = (profile.upcoming_events || []).map((event: any): Event => ({
-        id: event.id,
-        title: event.title,
-        date: event.date
-      }));
+      const upcoming_events = (profile.upcoming_events || []).map((event: Json): Event => {
+        if (typeof event === 'object' && event !== null) {
+          return {
+            id: String(event.id || ''),
+            title: String(event.title || ''),
+            date: String(event.date || '')
+          };
+        }
+        return { id: '', title: '', date: '' };
+      });
 
       const typedProfile: ProfileData = {
         ...profile,
