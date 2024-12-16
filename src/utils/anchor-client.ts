@@ -1,7 +1,10 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { EventTickets } from "../programs/event-tickets/types";
+import { EventTickets, IDL } from "../programs/event-tickets/types";
+
+// Reemplaza esto con tu Program ID real una vez que despliegues el programa
+const PROGRAM_ID = new PublicKey("your_program_id");
 
 export class EventTicketsClient {
   program: Program<EventTickets>;
