@@ -10,9 +10,14 @@ import { LoadingState } from "@/components/public-profile/LoadingState";
 import { ErrorState } from "@/components/public-profile/ErrorState";
 
 export default function PublicProfile() {
-  const { username } = useParams<{ username: string }>();
-
-  console.log('Attempting to load profile for username:', username);
+  // Get username from URL parameters
+  const params = useParams();
+  console.log('Raw URL parameters:', params);
+  
+  // Extract username and clean it
+  const rawUsername = params.username || '';
+  const username = rawUsername.replace('@', '');
+  console.log('Processing username:', { rawUsername, cleanedUsername: username });
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['public-profile', username],
@@ -20,21 +25,18 @@ export default function PublicProfile() {
       console.log('Starting profile query for username:', username);
       
       if (!username) {
-        console.error('No username provided');
+        console.error('No username provided in URL');
         throw new Error('No username provided');
       }
 
-      // Remove @ from username if present
-      const cleanUsername = username.startsWith('@') ? username.slice(1) : username;
-      console.log('Querying for cleaned username:', cleanUsername);
-
+      console.log('Executing Supabase query for username:', username);
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('username', cleanUsername)
+        .eq('username', username)
         .single();
 
-      console.log('Supabase response:', { profile, error });
+      console.log('Supabase query response:', { profile, error });
 
       if (error) {
         console.error('Supabase query error:', error);
@@ -42,7 +44,7 @@ export default function PublicProfile() {
       }
 
       if (!profile) {
-        console.error('No profile found for username:', cleanUsername);
+        console.error('No profile found for username:', username);
         throw new Error('Profile not found');
       }
 
@@ -82,38 +84,38 @@ export default function PublicProfile() {
         interests: profile.interests || [],
         show_upcoming_events: profile.show_upcoming_events ?? true,
         show_past_events: profile.show_past_events ?? true,
-        past_events: (profile.past_events || []).map((event: any) => ({
-          id: event.id,
-          title: event.title,
-          date: event.date
-        })),
-        upcoming_events: (profile.upcoming_events || []).map((event: any) => ({
-          id: event.id,
-          title: event.title,
-          date: event.date
-        }))
+        past_events: Array.isArray(profile.past_events) ? profile.past_events.map((event: any) => ({
+          id: event.id || '',
+          title: event.title || '',
+          date: event.date || new Date().toISOString()
+        })) : [],
+        upcoming_events: Array.isArray(profile.upcoming_events) ? profile.upcoming_events.map((event: any) => ({
+          id: event.id || '',
+          title: event.title || '',
+          date: event.date || new Date().toISOString()
+        })) : []
       };
 
-      console.log('Transformed profile:', transformedProfile);
+      console.log('Transformed profile data:', transformedProfile);
       return transformedProfile;
     },
     enabled: !!username,
     retry: 1
   });
 
-  console.log('Query state:', { isLoading, error, profile });
+  console.log('Component render state:', { isLoading, error, hasProfile: !!profile });
 
   if (isLoading) {
-    console.log('Loading state displayed');
+    console.log('Rendering loading state');
     return <LoadingState />;
   }
 
   if (error || !profile) {
-    console.error('Error state displayed:', error);
-    return <ErrorState username={username || ''} />;
+    console.error('Rendering error state:', error);
+    return <ErrorState username={rawUsername} />;
   }
 
-  console.log('Rendering profile:', profile);
+  console.log('Rendering profile component with data:', profile);
 
   return (
     <div className="container mx-auto py-8 px-4">
