@@ -11,11 +11,21 @@ import { useProfileQuery } from "@/components/public-profile/useProfileQuery";
 const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
   
-  const { username } = useParams<{ username: string }>();
+  const params = useParams();
+  console.log('🎯 [PublicProfile] URL params:', params);
   
-  console.log('🎯 [PublicProfile] Raw username param:', username);
+  // Extract username without the @ symbol since it's part of the route
+  const username = params.username;
+  console.log('🎯 [PublicProfile] Username from params:', username);
 
   const { data: profile, isLoading, error } = useProfileQuery(username);
+
+  console.log('🎯 [PublicProfile] Query state:', {
+    isLoading,
+    error,
+    hasProfile: !!profile,
+    profile
+  });
 
   if (!username) {
     console.log('🎯 [PublicProfile] Rendering: No username provided');
