@@ -66,12 +66,12 @@ export function useProfile(userId: string | undefined) {
       }
 
       // Parse social_media to ensure correct structure
-      const social_media = profile.social_media as {
-        x: string | null;
-        linkedin: string | null;
-        instagram: string | null;
-        threads: string | null;
-      } || {
+      const social_media = profile.social_media ? {
+        x: (profile.social_media as any)?.x ?? null,
+        linkedin: (profile.social_media as any)?.linkedin ?? null,
+        instagram: (profile.social_media as any)?.instagram ?? null,
+        threads: (profile.social_media as any)?.threads ?? null
+      } : {
         x: null,
         linkedin: null,
         instagram: null,
@@ -79,27 +79,17 @@ export function useProfile(userId: string | undefined) {
       };
 
       // Parse events arrays and ensure they match Event type
-      const past_events = (profile.past_events || []).map((event: Json): Event => {
-        if (typeof event === 'object' && event !== null) {
-          return {
-            id: String(event.id || ''),
-            title: String(event.title || ''),
-            date: String(event.date || '')
-          };
-        }
-        return { id: '', title: '', date: '' };
-      });
+      const past_events = (profile.past_events || []).map((event: any): Event => ({
+        id: String(event?.id || ''),
+        title: String(event?.title || ''),
+        date: String(event?.date || '')
+      }));
 
-      const upcoming_events = (profile.upcoming_events || []).map((event: Json): Event => {
-        if (typeof event === 'object' && event !== null) {
-          return {
-            id: String(event.id || ''),
-            title: String(event.title || ''),
-            date: String(event.date || '')
-          };
-        }
-        return { id: '', title: '', date: '' };
-      });
+      const upcoming_events = (profile.upcoming_events || []).map((event: any): Event => ({
+        id: String(event?.id || ''),
+        title: String(event?.title || ''),
+        date: String(event?.date || '')
+      }));
 
       const typedProfile: ProfileData = {
         ...profile,

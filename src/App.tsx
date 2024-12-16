@@ -6,7 +6,7 @@ import CreateEvent from "./pages/CreateEvent";
 import EventDetails from "./pages/EventDetails";
 import DiscoverEvents from "./pages/DiscoverEvents";
 import PublicProfile from "./pages/PublicProfile";
-import { AuthenticatedLayout } from "./components/AuthenticatedLayout";
+import AuthenticatedLayout from "./components/AuthenticatedLayout";
 
 function App() {
   return (
