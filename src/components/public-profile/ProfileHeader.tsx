@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { QRCodeDialog } from "./QRCodeDialog";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthProvider";
-import { Badge } from "@/components/ui/badge";
 
 interface ProfileHeaderProps {
   username: string | null;
@@ -22,25 +21,27 @@ export function ProfileHeader({ username, bio, avatarUrl, userId, walletAddress 
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-        <Avatar className="h-24 w-24">
-          <AvatarImage src={avatarUrl || undefined} alt={username || 'User'} />
-          <AvatarFallback>
-            <User2 className="h-12 w-12" />
-          </AvatarFallback>
-        </Avatar>
+        <div className="relative">
+          <Avatar className="h-24 w-24">
+            <AvatarImage src={avatarUrl || undefined} alt={username || 'User'} />
+            <AvatarFallback>
+              <User2 className="h-12 w-12" />
+            </AvatarFallback>
+          </Avatar>
+          {walletAddress && (
+            <div className="absolute -bottom-2 -right-2 h-8 w-8">
+              <img
+                src="/solana-badge.svg"
+                alt="Solana Wallet Connected"
+                className="w-full h-full"
+              />
+            </div>
+          )}
+        </div>
         
         <div className="space-y-2 flex-grow">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold">@{username}</h1>
-            {walletAddress && (
-              <Badge 
-                variant="outline" 
-                className="gap-1 border-purple-500 text-purple-500"
-              >
-                <img src="/solana-badge.svg" alt="Solana" className="w-4 h-4" />
-                Solana
-              </Badge>
-            )}
           </div>
           {bio && (
             <p className="text-muted-foreground max-w-2xl">{bio}</p>
