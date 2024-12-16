@@ -5,7 +5,7 @@ import { ProfileHeader } from "@/components/public-profile/ProfileHeader";
 import { ProfileSocialLinks } from "@/components/public-profile/ProfileSocialLinks";
 import { ProfileInterests } from "@/components/public-profile/ProfileInterests";
 import { EventsList } from "@/components/public-profile/EventsList";
-import { SimpleHeader } from "@/components/SimpleHeader";
+import { ProfileContainer } from "@/components/public-profile/ProfileContainer";
 import { useProfileQuery } from "@/components/public-profile/useProfileQuery";
 
 const PublicProfile = () => {
@@ -14,7 +14,6 @@ const PublicProfile = () => {
   const params = useParams();
   console.log('🎯 [PublicProfile] URL params:', params);
   
-  // Extract username without the @ symbol since it's part of the route
   const username = params.username;
   console.log('🎯 [PublicProfile] Username from params:', username);
 
@@ -30,65 +29,57 @@ const PublicProfile = () => {
   if (!username) {
     console.log('🎯 [PublicProfile] Rendering: No username provided');
     return (
-      <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
-        <SimpleHeader />
+      <ProfileContainer>
         <ErrorState username="" />
-      </div>
+      </ProfileContainer>
     );
   }
 
   if (isLoading) {
     console.log('🎯 [PublicProfile] Rendering: Loading state');
     return (
-      <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
-        <SimpleHeader />
+      <ProfileContainer>
         <LoadingState />
-      </div>
+      </ProfileContainer>
     );
   }
 
   if (error || !profile) {
     console.log('🎯 [PublicProfile] Rendering: Error state', { error });
     return (
-      <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
-        <SimpleHeader />
+      <ProfileContainer>
         <ErrorState username={username} />
-      </div>
+      </ProfileContainer>
     );
   }
 
   console.log('🎯 [PublicProfile] Rendering: Success state with profile:', profile);
   return (
-    <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
-      <SimpleHeader />
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <ProfileHeader
-            username={profile.username}
-            bio={profile.bio}
-            avatarUrl={profile.avatar_url}
-          />
+    <ProfileContainer>
+      <ProfileHeader
+        username={profile.username}
+        bio={profile.bio}
+        avatarUrl={profile.avatar_url}
+      />
 
-          <ProfileSocialLinks socialMedia={profile.social_media} />
+      <ProfileSocialLinks socialMedia={profile.social_media} />
 
-          <ProfileInterests interests={profile.interests} />
+      <ProfileInterests interests={profile.interests} />
 
-          {profile.show_upcoming_events && (
-            <EventsList
-              title="Upcoming Events"
-              events={profile.upcoming_events}
-            />
-          )}
+      {profile.show_upcoming_events && (
+        <EventsList
+          title="Upcoming Events"
+          events={profile.upcoming_events}
+        />
+      )}
 
-          {profile.show_past_events && (
-            <EventsList
-              title="Past Events"
-              events={profile.past_events}
-            />
-          )}
-        </div>
-      </div>
-    </div>
+      {profile.show_past_events && (
+        <EventsList
+          title="Past Events"
+          events={profile.past_events}
+        />
+      )}
+    </ProfileContainer>
   );
 };
 

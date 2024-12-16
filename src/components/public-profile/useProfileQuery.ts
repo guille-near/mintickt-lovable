@@ -6,11 +6,11 @@ export function useProfileQuery(username: string | undefined) {
   return useQuery({
     queryKey: ['public-profile', username],
     queryFn: async () => {
-      console.log('🎯 [PublicProfile] Starting query function');
-      console.log('🎯 [PublicProfile] Fetching profile for username:', username);
+      console.log('🎯 [useProfileQuery] Starting query function');
+      console.log('🎯 [useProfileQuery] Fetching profile for username:', username);
       
       if (!username) {
-        console.log('🎯 [PublicProfile] No username provided');
+        console.log('🎯 [useProfileQuery] No username provided');
         throw new Error('Username is required');
       }
 
@@ -20,20 +20,20 @@ export function useProfileQuery(username: string | undefined) {
         .eq('username', username)
         .maybeSingle();
 
-      console.log('🎯 [PublicProfile] Supabase raw response:', { data, error: supabaseError });
+      console.log('🎯 [useProfileQuery] Supabase response:', { data, error: supabaseError });
 
       if (supabaseError) {
-        console.error('🎯 [PublicProfile] Error fetching profile:', supabaseError);
+        console.error('🎯 [useProfileQuery] Supabase error:', supabaseError);
         throw supabaseError;
       }
 
       if (!data) {
-        console.error('🎯 [PublicProfile] No profile found');
+        console.error('🎯 [useProfileQuery] No profile found');
         throw new Error('Profile not found');
       }
 
       const convertedProfile = convertFromDbProfile(data);
-      console.log('🎯 [PublicProfile] Converted profile:', convertedProfile);
+      console.log('🎯 [useProfileQuery] Converted profile:', convertedProfile);
       return convertedProfile;
     },
     enabled: !!username,
