@@ -8,6 +8,7 @@ import { ProfileSocialLinks } from "@/components/public-profile/ProfileSocialLin
 import { ProfileInterests } from "@/components/public-profile/ProfileInterests";
 import { EventsList } from "@/components/public-profile/EventsList";
 import { Event, SocialMediaLinks } from "@/components/account/types";
+import { convertFromDbProfile } from "@/components/account/profileConverters";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { Json } from "@/integrations/supabase/types";
 
@@ -50,7 +51,10 @@ const PublicProfile = () => {
         upcoming_events,
         past_events,
         show_upcoming_events,
-        show_past_events
+        show_past_events,
+        email,
+        created_at,
+        wallet_address
       `)
       .eq('username', username)
       .single();
@@ -67,30 +71,18 @@ const PublicProfile = () => {
       throw new Error('Profile not found');
     }
 
+    const convertedProfile = convertFromDbProfile(data);
     const profile: Profile = {
-      id: data.id,
-      username: data.username,
-      bio: data.bio,
-      avatar_url: data.avatar_url,
-      social_media: data.social_media || {
-        x: null,
-        linkedin: null,
-        instagram: null,
-        threads: null
-      },
-      interests: data.interests || [],
-      upcoming_events: (data.upcoming_events || []).map((event: any) => ({
-        id: event.id,
-        title: event.title,
-        date: event.date
-      })),
-      past_events: (data.past_events || []).map((event: any) => ({
-        id: event.id,
-        title: event.title,
-        date: event.date
-      })),
-      show_upcoming_events: data.show_upcoming_events ?? true,
-      show_past_events: data.show_past_events ?? true
+      id: convertedProfile.id,
+      username: convertedProfile.username,
+      bio: convertedProfile.bio,
+      avatar_url: convertedProfile.avatar_url,
+      social_media: convertedProfile.social_media,
+      interests: convertedProfile.interests,
+      upcoming_events: convertedProfile.upcoming_events,
+      past_events: convertedProfile.past_events,
+      show_upcoming_events: convertedProfile.show_upcoming_events,
+      show_past_events: convertedProfile.show_past_events
     };
 
     console.log('🎯 [PublicProfile] Processed profile:', profile);
