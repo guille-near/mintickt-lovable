@@ -84,11 +84,13 @@ export const SimpleHeader = () => {
               </AvatarFallback>
             </Avatar>
             {profile?.wallet_address && (
-              <img
-                src="/solana-badge.svg"
-                alt="Solana Wallet Connected"
-                className="absolute -bottom-1 -right-1 h-5 w-5"
-              />
+              <div className="absolute -bottom-1 -right-1 h-5 w-5">
+                <img
+                  src="/solana-badge.svg"
+                  alt="Solana Wallet Connected"
+                  className="w-full h-full"
+                />
+              </div>
             )}
           </div>
         ) : (
