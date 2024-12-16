@@ -45,14 +45,14 @@ export function ProfileHeader({ username, bio, avatarUrl, userId, walletAddress 
         )}
       </div>
 
-      <div className="flex items-center gap-2">
-        <QRCodeDialog profileUrl={profileUrl} />
-        {isOwnProfile && (
+      {isOwnProfile && (
+        <div className="flex items-center gap-2">
+          <QRCodeDialog profileUrl={profileUrl} />
           <Button variant="default" asChild>
             <Link to="/account">Edit Profile</Link>
           </Button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
