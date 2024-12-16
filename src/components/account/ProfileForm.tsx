@@ -13,11 +13,11 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ profile, onProfileChange, onSubmit, isLoading }: ProfileFormProps) {
-  const { select } = useWallet();
+  const { wallets, select } = useWallet();
 
   const handleWalletClick = () => {
-    if (!profile.wallet_address) {
-      select();
+    if (!profile.wallet_address && wallets.length > 0) {
+      select(wallets[0].adapter.name);
     }
   };
 
