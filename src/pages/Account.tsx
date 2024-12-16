@@ -60,9 +60,7 @@ export default function Account() {
         })
         .eq('id', user.id);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       toast.success("Profile updated successfully");
       await refetch();
