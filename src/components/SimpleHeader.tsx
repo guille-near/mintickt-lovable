@@ -69,7 +69,7 @@ export const SimpleHeader = () => {
         <img 
           src="/Logo.svg" 
           alt="NFT Tickets Logo" 
-          className="h-12 cursor-pointer dark:invert" 
+          className="h-12 w-auto cursor-pointer dark:invert" 
           onClick={() => navigate('/')} 
         />
         {session ? (
