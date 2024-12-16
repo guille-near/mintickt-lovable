@@ -28,7 +28,7 @@ export function ProfileHeader({ username, bio, avatarUrl, userId, walletAddress 
           </AvatarFallback>
         </Avatar>
         {walletAddress && (
-          <div className="absolute -bottom-2 -right-6 h-8 w-8">
+          <div className="absolute -bottom-2 -right-2 h-8 w-8">
             <img
               src="/solana-badge.svg"
               alt="Solana Wallet Connected"
