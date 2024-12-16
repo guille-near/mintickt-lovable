@@ -7,8 +7,6 @@ export interface SocialMedia {
   threads: string | null;
 }
 
-export type ProfileFormData = ProfileData;
-
 export interface ProfileData {
   id: string;
   username: string | null;
@@ -33,15 +31,7 @@ export interface ProfileData {
   }>;
 }
 
-export interface UpdateProfileData {
-  username?: string;
-  bio?: string;
-  avatar_url?: string;
-  social_media?: SocialMedia;
-  interests?: string[];
-  show_upcoming_events?: boolean;
-  show_past_events?: boolean;
-}
+export type UpdateProfileData = Partial<Omit<ProfileData, 'id' | 'created_at' | 'email'>>;
 
 export const INTEREST_OPTIONS = [
   "Music",

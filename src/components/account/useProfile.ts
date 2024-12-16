@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { ProfileData, UpdateProfileData } from "./types";
+import type { ProfileData, UpdateProfileData, SocialMedia } from "./types";
 
 export const useProfile = (userId: string) => {
   const queryClient = useQueryClient();
 
-  const { data: profile, isLoading, error, refetch } = useQuery({
+  const { data: profile, isLoading, error } = useQuery({
     queryKey: ["profile", userId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -18,9 +18,22 @@ export const useProfile = (userId: string) => {
 
       // Convert the raw data to match ProfileData type
       const profileData: ProfileData = {
-        ...data,
-        social_media: data.social_media as ProfileData["social_media"],
+        id: data.id,
+        username: data.username,
+        email: data.email,
+        avatar_url: data.avatar_url,
+        bio: data.bio,
+        wallet_address: data.wallet_address,
+        created_at: data.created_at,
+        social_media: data.social_media as SocialMedia || {
+          x: null,
+          linkedin: null,
+          instagram: null,
+          threads: null,
+        },
         interests: data.interests || [],
+        show_upcoming_events: data.show_upcoming_events ?? true,
+        show_past_events: data.show_past_events ?? true,
         past_events: (data.past_events || []).map((event: any) => ({
           id: event.id,
           title: event.title,
@@ -59,6 +72,5 @@ export const useProfile = (userId: string) => {
     isLoading,
     error,
     updateProfile,
-    refetch,
   };
 };

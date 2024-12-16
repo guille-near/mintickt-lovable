@@ -6,17 +6,20 @@ import { AccountHeader } from "@/components/account/AccountHeader";
 import { useProfile } from "@/components/account/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { ProfileFormData } from "@/components/account/types";
+import type { ProfileData } from "@/components/account/types";
 
 export default function Account() {
   const { user, isLoading: authLoading } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
-  const { data: profile, isLoading: profileLoading, error, refetch } = useProfile(user?.id);
-  const [formData, setFormData] = useState<ProfileFormData>({
+  const { profile, isLoading: profileLoading, error } = useProfile(user?.id || '');
+  const [formData, setFormData] = useState<ProfileData>({
+    id: '',
     username: null,
     bio: null,
     email: '',
+    avatar_url: null,
     wallet_address: null,
+    created_at: new Date().toISOString(),
     social_media: {
       x: null,
       linkedin: null,
@@ -25,26 +28,14 @@ export default function Account() {
     },
     interests: [],
     show_upcoming_events: true,
-    show_past_events: true
+    show_past_events: true,
+    past_events: [],
+    upcoming_events: []
   });
 
   useEffect(() => {
     if (profile) {
-      setFormData({
-        username: profile.username || null,
-        bio: profile.bio || null,
-        email: profile.email,
-        wallet_address: profile.wallet_address,
-        social_media: profile.social_media || {
-          x: null,
-          linkedin: null,
-          instagram: null,
-          threads: null
-        },
-        interests: profile.interests || [],
-        show_upcoming_events: profile.show_upcoming_events ?? true,
-        show_past_events: profile.show_past_events ?? true
-      });
+      setFormData(profile);
     }
   }, [profile]);
 
@@ -90,7 +81,7 @@ export default function Account() {
     );
   }
 
-  const handleProfileChange = (field: keyof ProfileFormData, value: any) => {
+  const handleProfileChange = (field: keyof ProfileData, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -98,7 +89,26 @@ export default function Account() {
   };
 
   const handleAvatarUpdate = async (url: string) => {
-    await refetch();
+    if (!profile) return;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: url })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+      
+      setFormData(prev => ({
+        ...prev,
+        avatar_url: url
+      }));
+      
+      toast.success("Avatar updated successfully");
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+      toast.error("Error updating avatar");
+    }
   };
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -124,13 +134,9 @@ export default function Account() {
         })
         .eq('id', user.id);
 
-      if (error) {
-        console.error('Error updating profile:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       toast.success("Profile updated successfully");
-      await refetch();
     } catch (error: any) {
       console.error('Error updating profile:', error);
       toast.error("Error updating profile");
