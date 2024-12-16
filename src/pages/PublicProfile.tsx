@@ -9,7 +9,7 @@ import { ProfileInterests } from "@/components/public-profile/ProfileInterests";
 import { EventsList } from "@/components/public-profile/EventsList";
 import { Event, SocialMediaLinks } from "@/components/account/types";
 import { convertFromDbProfile } from "@/components/account/profileConverters";
-import AuthenticatedLayout from "@/components/AuthenticatedLayout";
+import { SimpleHeader } from "@/components/SimpleHeader";
 import { Json } from "@/integrations/supabase/types";
 
 interface Profile {
@@ -109,32 +109,36 @@ const PublicProfile = () => {
   if (!username) {
     console.log('🎯 [PublicProfile] No username provided');
     return (
-      <AuthenticatedLayout>
+      <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
+        <SimpleHeader />
         <ErrorState username="" />
-      </AuthenticatedLayout>
+      </div>
     );
   }
 
   if (isLoading) {
     console.log('🎯 [PublicProfile] Rendering loading state');
     return (
-      <AuthenticatedLayout>
+      <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
+        <SimpleHeader />
         <LoadingState />
-      </AuthenticatedLayout>
+      </div>
     );
   }
 
   if (error || !profile) {
     console.log('🎯 [PublicProfile] Rendering error state');
     return (
-      <AuthenticatedLayout>
+      <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
+        <SimpleHeader />
         <ErrorState username={username} />
-      </AuthenticatedLayout>
+      </div>
     );
   }
 
   return (
-    <AuthenticatedLayout>
+    <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
+      <SimpleHeader />
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <ProfileHeader
@@ -162,7 +166,7 @@ const PublicProfile = () => {
           )}
         </div>
       </div>
-    </AuthenticatedLayout>
+    </div>
   );
 };
 
