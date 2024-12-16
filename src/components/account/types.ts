@@ -34,9 +34,9 @@ export interface ProfileData {
     instagram: string | null;
     threads: string | null;
   };
-  interests: string[] | null;
-  show_upcoming_events: boolean | null;
-  show_past_events: boolean | null;
+  interests: string[];
+  show_upcoming_events: boolean;
+  show_past_events: boolean;
   past_events: Event[];
   upcoming_events: Event[];
 }
