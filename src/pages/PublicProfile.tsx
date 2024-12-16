@@ -1,13 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ProfileData, SocialMediaLinks } from "@/components/account/types";
+import { ProfileData, SocialMediaLinks, Event } from "@/components/account/types";
 import { ProfileHeader } from "@/components/public-profile/ProfileHeader";
 import { ProfileInterests } from "@/components/public-profile/ProfileInterests";
 import { ProfileSocialLinks } from "@/components/public-profile/ProfileSocialLinks";
 import { EventsList } from "@/components/public-profile/EventsList";
 import { LoadingState } from "@/components/public-profile/LoadingState";
 import { ErrorState } from "@/components/public-profile/ErrorState";
+import { Json } from "@/integrations/supabase/types";
 
 export default function PublicProfile() {
   const params = useParams<{ username: string }>();
@@ -64,12 +65,37 @@ export default function PublicProfile() {
     return <ErrorState username={rawUsername} />;
   }
 
-  // Transform social media data
-  const socialMedia: SocialMediaLinks = {
-    x: profile.social_media?.x ?? null,
-    linkedin: profile.social_media?.linkedin ?? null,
-    instagram: profile.social_media?.instagram ?? null,
-    threads: profile.social_media?.threads ?? null
+  // Parse social media data
+  let socialMedia: SocialMediaLinks;
+  try {
+    const rawSocialMedia = typeof profile.social_media === 'string' 
+      ? JSON.parse(profile.social_media)
+      : profile.social_media || {};
+
+    socialMedia = {
+      x: rawSocialMedia?.x ?? null,
+      linkedin: rawSocialMedia?.linkedin ?? null,
+      instagram: rawSocialMedia?.instagram ?? null,
+      threads: rawSocialMedia?.threads ?? null
+    };
+  } catch (e) {
+    console.error('Error parsing social_media:', e);
+    socialMedia = {
+      x: null,
+      linkedin: null,
+      instagram: null,
+      threads: null
+    };
+  }
+
+  // Parse events arrays
+  const parseEvents = (events: Json[] | null): Event[] => {
+    if (!Array.isArray(events)) return [];
+    return events.map((event: any) => ({
+      id: event.id || '',
+      title: event.title || '',
+      date: event.date || ''
+    }));
   };
 
   // Transform profile data
@@ -82,11 +108,11 @@ export default function PublicProfile() {
     avatar_url: profile.avatar_url,
     created_at: profile.created_at,
     social_media: socialMedia,
-    interests: profile.interests || [],
+    interests: Array.isArray(profile.interests) ? profile.interests : [],
     show_upcoming_events: profile.show_upcoming_events ?? true,
     show_past_events: profile.show_past_events ?? true,
-    past_events: Array.isArray(profile.past_events) ? profile.past_events : [],
-    upcoming_events: Array.isArray(profile.upcoming_events) ? profile.upcoming_events : []
+    past_events: parseEvents(profile.past_events),
+    upcoming_events: parseEvents(profile.upcoming_events)
   };
 
   console.log('✅ [PublicProfile] Rendering profile:', transformedProfile);
