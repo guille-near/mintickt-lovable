@@ -8,32 +8,7 @@ import { ProfileSocialLinks } from "@/components/public-profile/ProfileSocialLin
 import { EventsList } from "@/components/public-profile/EventsList";
 import { LoadingState } from "@/components/public-profile/LoadingState";
 import { ErrorState } from "@/components/public-profile/ErrorState";
-
-interface SocialMedia {
-  x: string | null;
-  linkedin: string | null;
-  instagram: string | null;
-  threads: string | null;
-}
-
-interface Event {
-  id: string;
-  title: string;
-  date: string;
-  // ... add other event properties as needed
-}
-
-interface Profile {
-  username: string;
-  avatar_url: string | null;
-  bio: string | null;
-  social_media: SocialMedia;
-  interests: string[];
-  show_upcoming_events: boolean;
-  show_past_events: boolean;
-  upcoming_events: Event[];
-  past_events: Event[];
-}
+import { Event, ProfileData } from "@/components/account/types";
 
 export default function PublicProfile() {
   const { username } = useParams<{ username: string }>();
@@ -63,29 +38,34 @@ export default function PublicProfile() {
         throw new Error('Profile not found');
       }
 
-      // Parse the social media JSON
-      const socialMedia = profileData.social_media as SocialMedia;
-      
-      // Parse events arrays
-      const parseEvents = (events: any[]): Event[] => {
+      // Parse events arrays if they exist
+      const parseEvents = (events: any[] | null): Event[] => {
+        if (!events) return [];
         return events.map(event => ({
           id: event.id,
           title: event.title,
           date: event.date,
-          // ... map other event properties
         }));
       };
 
-      const parsedProfile: Profile = {
+      const parsedProfile: ProfileData = {
+        id: profileData.id,
         username: profileData.username,
         avatar_url: profileData.avatar_url,
         bio: profileData.bio,
-        social_media: socialMedia,
+        created_at: profileData.created_at,
+        wallet_address: profileData.wallet_address,
+        social_media: profileData.social_media || {
+          x: null,
+          linkedin: null,
+          instagram: null,
+          threads: null,
+        },
         interests: profileData.interests || [],
-        show_upcoming_events: profileData.show_upcoming_events,
-        show_past_events: profileData.show_past_events,
-        upcoming_events: parseEvents(profileData.upcoming_events || []),
-        past_events: parseEvents(profileData.past_events || []),
+        show_upcoming_events: profileData.show_upcoming_events ?? true,
+        show_past_events: profileData.show_past_events ?? true,
+        upcoming_events: parseEvents(profileData.upcoming_events),
+        past_events: parseEvents(profileData.past_events),
       };
 
       console.log('✅ [PublicProfile] Profile parsed successfully:', parsedProfile);
@@ -102,7 +82,7 @@ export default function PublicProfile() {
 
   if (error || !profile) {
     console.error('❌ [PublicProfile] Error state:', error);
-    return <ErrorState error={error as Error} />;
+    return <ErrorState username={username || ''} />;
   }
 
   console.log('✨ [PublicProfile] Rendering profile:', profile);
@@ -111,11 +91,7 @@ export default function PublicProfile() {
     <div className="min-h-screen flex flex-col dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
       <SimpleHeader />
       <div className="flex-1 container mx-auto px-4 py-8 space-y-8">
-        <ProfileHeader
-          username={profile.username}
-          avatarUrl={profile.avatar_url}
-          bio={profile.bio}
-        />
+        <ProfileHeader profile={profile} />
         <div className="grid gap-8 md:grid-cols-2">
           <div className="space-y-8">
             <ProfileSocialLinks socialMedia={profile.social_media} />
