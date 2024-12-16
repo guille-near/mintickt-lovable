@@ -18,6 +18,7 @@ export default function Account() {
     username: '',
     bio: '',
     email: '',
+    wallet_address: '',
   });
 
   const { data: profile, isLoading, error, refetch } = useQuery({
@@ -40,6 +41,7 @@ export default function Account() {
         username: profile.username || '',
         bio: profile.bio || '',
         email: profile.email,
+        wallet_address: profile.wallet_address || '',
       });
 
       return profile;
@@ -74,6 +76,7 @@ export default function Account() {
           username: formData.username,
           bio: formData.bio,
           email: formData.email,
+          wallet_address: formData.wallet_address,
         })
         .eq('id', user.id);
 
@@ -81,7 +84,7 @@ export default function Account() {
         if (error.code === '23505') { // Unique constraint violation
           toast({
             title: "Error",
-            description: "This email is already in use. Please use a different email.",
+            description: "This email or username is already in use. Please use a different one.",
             variant: "destructive",
           });
           return;

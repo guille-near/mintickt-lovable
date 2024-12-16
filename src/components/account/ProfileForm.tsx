@@ -8,6 +8,7 @@ interface ProfileFormProps {
     username: string | null;
     bio: string | null;
     email: string;
+    wallet_address: string | null;
   };
   onProfileChange: (field: string, value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -34,6 +35,16 @@ export function ProfileForm({ profile, onProfileChange, onSubmit, isLoading }: P
           type="text"
           value={profile.username || ""}
           onChange={(e) => onProfileChange("username", e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="wallet_address">Wallet Address</Label>
+        <Input
+          id="wallet_address"
+          type="text"
+          value={profile.wallet_address || ""}
+          onChange={(e) => onProfileChange("wallet_address", e.target.value)}
+          placeholder="Enter your Solana wallet address"
         />
       </div>
       <div>
