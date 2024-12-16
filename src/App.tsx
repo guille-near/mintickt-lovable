@@ -8,6 +8,7 @@ import DiscoverEvents from "./pages/DiscoverEvents";
 import PublicProfile from "./pages/PublicProfile";
 
 function App() {
+  console.log('🎯 [App] Rendering routes');
   return (
     <Router>
       <Routes>
@@ -17,7 +18,7 @@ function App() {
         <Route path="/create-event" element={<CreateEvent />} />
         <Route path="/event/:eventId" element={<EventDetails />} />
         <Route path="/discover" element={<DiscoverEvents />} />
-        <Route path="/@:username" element={<PublicProfile />} />
+        <Route path="/profile/@:username" element={<PublicProfile />} />
       </Routes>
     </Router>
   );
