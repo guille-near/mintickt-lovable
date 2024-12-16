@@ -7,10 +7,12 @@ import { WalletButton } from "@/components/WalletButton";
 import { supabase } from "@/integrations/supabase/client";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthProvider";
 
 export default function Account() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
@@ -21,42 +23,19 @@ export default function Account() {
   const { data: profile, isLoading, error, refetch } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .maybeSingle();
+        .single();
 
       if (error) {
         console.error('Error fetching profile:', error);
         throw error;
       }
 
-      // If no profile exists, create one
-      if (!profile) {
-        const { data: newProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              id: user.id,
-              email: user.email,
-            }
-          ])
-          .select()
-          .single();
-
-        if (createError) {
-          console.error('Error creating profile:', createError);
-          throw createError;
-        }
-
-        return newProfile;
-      }
-
-      // Update form data when profile is loaded
       setFormData({
         username: profile.username || '',
         bio: profile.bio || '',
@@ -65,6 +44,7 @@ export default function Account() {
 
       return profile;
     },
+    enabled: !!user,
     retry: false,
   });
 
@@ -83,10 +63,10 @@ export default function Account() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+
     try {
       setIsUpdating(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
 
       const { error } = await supabase
         .from('profiles')
@@ -97,10 +77,20 @@ export default function Account() {
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23505') { // Unique constraint violation
+          toast({
+            title: "Error",
+            description: "This email is already in use. Please use a different email.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error;
+      }
 
       toast({
-        title: "Profile updated",
+        title: "Success",
         description: "Your profile has been updated successfully.",
       });
 

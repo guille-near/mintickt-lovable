@@ -24,6 +24,7 @@ export function ProfileForm({ profile, onProfileChange, onSubmit, isLoading }: P
           type="email"
           value={profile.email}
           onChange={(e) => onProfileChange("email", e.target.value)}
+          required
         />
       </div>
       <div>
@@ -41,6 +42,7 @@ export function ProfileForm({ profile, onProfileChange, onSubmit, isLoading }: P
           id="bio"
           value={profile.bio || ""}
           onChange={(e) => onProfileChange("bio", e.target.value)}
+          placeholder="Tell us about yourself..."
         />
       </div>
       <Button type="submit" disabled={isLoading}>
