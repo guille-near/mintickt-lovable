@@ -75,7 +75,8 @@ const PublicProfile = () => {
       username: data.username,
       bio: data.bio,
       avatar_url: data.avatar_url,
-      social_media: data.social_media as SocialMediaLinks || {
+      // First cast to unknown, then to SocialMediaLinks to handle the type conversion safely
+      social_media: (data.social_media as unknown as SocialMediaLinks) || {
         x: null,
         linkedin: null,
         instagram: null,
