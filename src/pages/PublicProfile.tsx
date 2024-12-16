@@ -47,11 +47,16 @@ export default function PublicProfile() {
         .eq("username", username)
         .single();
 
-      console.log("Supabase response:", { data, error });
+      console.log("Supabase response for public profile:", { data, error });
 
       if (error) {
         console.error("Error fetching profile:", error);
         throw error;
+      }
+
+      // Parse social_media if it's a string
+      if (data.social_media && typeof data.social_media === 'string') {
+        data.social_media = JSON.parse(data.social_media);
       }
 
       return data as ProfileData;
@@ -67,9 +72,9 @@ export default function PublicProfile() {
     return (
       <div className="container mx-auto py-8 space-y-8">
         <div className="space-y-4">
-          <Skeleton className="h-32 w-32 rounded-full" />
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-4 w-64" />
+          <Skeleton className="h-32 w-32 rounded-full mx-auto" />
+          <Skeleton className="h-8 w-48 mx-auto" />
+          <Skeleton className="h-4 w-64 mx-auto" />
         </div>
       </div>
     );
