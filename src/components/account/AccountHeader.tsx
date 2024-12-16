@@ -18,8 +18,10 @@ export function AccountHeader({ profileId, avatarUrl, onAvatarUpdate }: AccountH
         />
       </div>
       <div className="w-full">
-        <h2 className="text-xl font-semibold mb-4">Wallet Connection</h2>
-        <WalletButton />
+        <h2 className="text-xl font-semibold mb-4 font-yrsa">Connect Your Wallet</h2>
+        <div className="max-w-sm">
+          <WalletButton />
+        </div>
       </div>
     </div>
   );
