@@ -1,66 +1,24 @@
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { LoadingState } from "@/components/public-profile/LoadingState";
 import { ErrorState } from "@/components/public-profile/ErrorState";
 import { ProfileHeader } from "@/components/public-profile/ProfileHeader";
 import { ProfileSocialLinks } from "@/components/public-profile/ProfileSocialLinks";
 import { ProfileInterests } from "@/components/public-profile/ProfileInterests";
 import { EventsList } from "@/components/public-profile/EventsList";
-import { convertFromDbProfile } from "@/components/account/profileConverters";
 import { SimpleHeader } from "@/components/SimpleHeader";
+import { useProfileQuery } from "@/components/public-profile/useProfileQuery";
 
 const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
   
-  // Get username from URL /@:username
-  const { username } = useParams<{ username: string }>();
+  // Extraer el username sin el @ de la URL
+  const params = useParams();
+  const username = params.username?.replace('@', '');
   
-  console.log('🎯 [PublicProfile] Username from params:', username);
+  console.log('🎯 [PublicProfile] Raw params:', params);
+  console.log('🎯 [PublicProfile] Extracted username:', username);
 
-  const { data: profile, isLoading, error } = useQuery({
-    queryKey: ['public-profile', username],
-    queryFn: async () => {
-      console.log('🎯 [PublicProfile] Starting query function');
-      console.log('🎯 [PublicProfile] Fetching profile for username:', username);
-      
-      if (!username) {
-        console.log('🎯 [PublicProfile] No username provided');
-        throw new Error('Username is required');
-      }
-
-      const { data, error: supabaseError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('username', username)
-        .maybeSingle();
-
-      console.log('🎯 [PublicProfile] Supabase raw response:', { data, error: supabaseError });
-
-      if (supabaseError) {
-        console.error('🎯 [PublicProfile] Error fetching profile:', supabaseError);
-        throw supabaseError;
-      }
-
-      if (!data) {
-        console.error('🎯 [PublicProfile] No profile found');
-        throw new Error('Profile not found');
-      }
-
-      const convertedProfile = convertFromDbProfile(data);
-      console.log('🎯 [PublicProfile] Converted profile:', convertedProfile);
-      return convertedProfile;
-    },
-    enabled: !!username,
-    retry: false
-  });
-
-  console.log('🎯 [PublicProfile] Query state:', {
-    isLoading,
-    error,
-    hasProfile: !!profile,
-    profile
-  });
+  const { data: profile, isLoading, error } = useProfileQuery(username);
 
   if (!username) {
     console.log('🎯 [PublicProfile] Rendering: No username provided');
