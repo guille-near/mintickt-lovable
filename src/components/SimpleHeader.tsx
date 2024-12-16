@@ -73,15 +73,24 @@ export const SimpleHeader = () => {
           onClick={() => navigate('/')} 
         />
         {session ? (
-          <Avatar 
-            className="h-10 w-10 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => navigate('/account')}
-          >
-            <AvatarImage src={profile?.avatar_url} />
-            <AvatarFallback>
-              <User className="h-5 w-5" />
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar 
+              className="h-10 w-10 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => navigate('/account')}
+            >
+              <AvatarImage src={profile?.avatar_url} />
+              <AvatarFallback>
+                <User className="h-5 w-5" />
+              </AvatarFallback>
+            </Avatar>
+            {profile?.wallet_address && (
+              <img
+                src="/solana-badge.svg"
+                alt="Solana Wallet Connected"
+                className="absolute -bottom-1 -right-1 h-5 w-5"
+              />
+            )}
+          </div>
         ) : (
           <Button
             variant="outline"
