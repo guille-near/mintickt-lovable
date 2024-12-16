@@ -1,3 +1,5 @@
+import { Json } from "@/integrations/supabase/types";
+
 export interface ProfileFormData {
   username: string | null;
   bio: string | null;
@@ -10,6 +12,7 @@ export interface ProfileFormData {
 }
 
 export interface SocialMediaLinks {
+  [key: string]: string | null;
   x: string | null;
   linkedin: string | null;
   instagram: string | null;

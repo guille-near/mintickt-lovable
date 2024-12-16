@@ -6,7 +6,7 @@ import { AccountHeader } from "@/components/account/AccountHeader";
 import { useProfile } from "@/components/account/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import type { ProfileFormData } from "@/components/account/types";
+import type { ProfileFormData, SocialMediaLinks } from "@/components/account/types";
 
 export default function Account() {
   const { user, isLoading: authLoading } = useAuth();
@@ -30,12 +30,19 @@ export default function Account() {
 
   useEffect(() => {
     if (profile) {
+      const socialMedia: SocialMediaLinks = profile.social_media || {
+        x: null,
+        linkedin: null,
+        instagram: null,
+        threads: null
+      };
+
       setFormData({
         username: profile.username || null,
         bio: profile.bio || null,
         email: profile.email,
         wallet_address: profile.wallet_address,
-        social_media: profile.social_media,
+        social_media: socialMedia,
         interests: profile.interests || [],
         show_upcoming_events: profile.show_upcoming_events ?? true,
         show_past_events: profile.show_past_events ?? true
@@ -112,7 +119,7 @@ export default function Account() {
           username: formData.username,
           bio: formData.bio,
           email: formData.email,
-          social_media: formData.social_media,
+          social_media: formData.social_media as Json,
           interests: formData.interests,
           show_upcoming_events: formData.show_upcoming_events,
           show_past_events: formData.show_past_events
