@@ -1,5 +1,7 @@
 import { SimpleHeader } from "@/components/SimpleHeader";
 import { EventCard } from "@/components/EventCard";
+import { useEffect } from "react";
+import { useTheme } from "@/contexts/ThemeProvider";
 
 const mockEvents = [
   {
@@ -26,6 +28,14 @@ const mockEvents = [
 ];
 
 const Index = () => {
+  const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    if (theme !== 'dark') {
+      toggleTheme();
+    }
+  }, []);
+
   return (
     <div className="min-h-screen dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
       <SimpleHeader />
