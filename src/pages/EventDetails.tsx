@@ -114,7 +114,11 @@ export default function EventDetails() {
                         organizerAvatar={event.creator?.avatar_url}
                       />
                     </div>
-                    <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />
+                    <TicketPurchase 
+                      ticketPrice={event.price} 
+                      eventTitle={event.title} 
+                      eventId={event.id}
+                    />
                   </>
                 )}
               </div>
@@ -144,7 +148,13 @@ export default function EventDetails() {
           </div>
         </div>
       </div>
-      {isMobile && <TicketPurchase ticketPrice={event.price} eventTitle={event.title} />}
+      {isMobile && (
+        <TicketPurchase 
+          ticketPrice={event.price} 
+          eventTitle={event.title} 
+          eventId={event.id}
+        />
+      )}
     </div>
   );
 }
