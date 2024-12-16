@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { ProfileForm } from "@/components/account/ProfileForm";
+import { ProfileAvatar } from "@/components/account/ProfileAvatar";
+import { WalletButton } from "@/components/WalletButton";
 import { supabase } from "@/integrations/supabase/client";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { useQuery } from "@tanstack/react-query";
@@ -73,6 +75,12 @@ export default function Account() {
     }));
   };
 
+  const handleAvatarUpdate = (url: string) => {
+    if (profile) {
+      refetch();
+    }
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -137,7 +145,20 @@ export default function Account() {
     <AuthenticatedLayout>
       <div className="container mx-auto py-6">
         <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
-        <div className="max-w-2xl">
+        <div className="max-w-2xl space-y-8">
+          <div className="flex flex-col sm:flex-row items-start gap-8">
+            <div className="w-full sm:w-auto">
+              <ProfileAvatar
+                currentAvatarUrl={profile?.avatar_url || null}
+                userId={profile?.id || ''}
+                onAvatarUpdate={handleAvatarUpdate}
+              />
+            </div>
+            <div className="w-full">
+              <h2 className="text-xl font-semibold mb-4">Wallet Connection</h2>
+              <WalletButton />
+            </div>
+          </div>
           <ProfileForm
             profile={formData}
             onProfileChange={handleProfileChange}
