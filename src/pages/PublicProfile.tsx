@@ -11,12 +11,9 @@ import { useProfileQuery } from "@/components/public-profile/useProfileQuery";
 const PublicProfile = () => {
   console.log('🎯 [PublicProfile] Component mounted');
   
-  // Extraer el username sin el @ de la URL
-  const params = useParams();
-  const username = params.username?.replace('@', '');
+  const { username } = useParams<{ username: string }>();
   
-  console.log('🎯 [PublicProfile] Raw params:', params);
-  console.log('🎯 [PublicProfile] Extracted username:', username);
+  console.log('🎯 [PublicProfile] Raw username param:', username);
 
   const { data: profile, isLoading, error } = useProfileQuery(username);
 
