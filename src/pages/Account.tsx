@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthProvider";
 import { ProfileForm } from "@/components/account/ProfileForm";
-import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { AccountHeader } from "@/components/account/AccountHeader";
 import { useProfile } from "@/components/account/useProfile";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,33 +56,27 @@ export default function Account() {
   if (authLoading || profileLoading) {
     console.log("Loading state active");
     return (
-      <AuthenticatedLayout>
-        <div className="flex items-center justify-center h-[50vh]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </AuthenticatedLayout>
+      <div className="flex items-center justify-center h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
     );
   }
 
   if (!user) {
     console.log("No user found");
     return (
-      <AuthenticatedLayout>
-        <div className="text-center">
-          <p className="text-red-500">Please log in to view your profile</p>
-        </div>
-      </AuthenticatedLayout>
+      <div className="text-center">
+        <p className="text-red-500">Please log in to view your profile</p>
+      </div>
     );
   }
 
   if (profileError) {
     console.error("Profile error:", profileError);
     return (
-      <AuthenticatedLayout>
-        <div className="text-center space-y-4">
-          <p className="text-red-500">Error loading profile: {profileError.message}</p>
-        </div>
-      </AuthenticatedLayout>
+      <div className="text-center space-y-4">
+        <p className="text-red-500">Error loading profile: {profileError.message}</p>
+      </div>
     );
   }
 
@@ -131,22 +124,20 @@ export default function Account() {
   };
 
   return (
-    <AuthenticatedLayout>
-      <div>
-        <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
-        <div className="max-w-2xl space-y-8">
-          <AccountHeader
-            profileId={user?.id}
-            avatarUrl={profile?.avatar_url}
-            onAvatarUpdate={handleAvatarUpdate}
-          />
-          <ProfileForm
-            profile={formData}
-            onSubmit={handleSubmit}
-            isLoading={isUpdating}
-          />
-        </div>
+    <div>
+      <h1 className="text-4xl font-bold mb-8">Account Settings</h1>
+      <div className="max-w-2xl space-y-8">
+        <AccountHeader
+          profileId={user?.id}
+          avatarUrl={profile?.avatar_url}
+          onAvatarUpdate={handleAvatarUpdate}
+        />
+        <ProfileForm
+          profile={formData}
+          onSubmit={handleSubmit}
+          isLoading={isUpdating}
+        />
       </div>
-    </AuthenticatedLayout>
+    </div>
   );
 }
