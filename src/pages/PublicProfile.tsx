@@ -7,23 +7,16 @@ import { ProfileHeader } from "@/components/public-profile/ProfileHeader";
 import { ProfileSocialLinks } from "@/components/public-profile/ProfileSocialLinks";
 import { ProfileInterests } from "@/components/public-profile/ProfileInterests";
 import { EventsList } from "@/components/public-profile/EventsList";
-import { Event } from "@/components/account/types";
+import { Event, SocialMediaLinks } from "@/components/account/types";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { Json } from "@/integrations/supabase/types";
-
-interface SocialMedia {
-  x: string | null;
-  threads: string | null;
-  linkedin: string | null;
-  instagram: string | null;
-}
 
 interface Profile {
   id: string;
   username: string | null;
   bio: string | null;
   avatar_url: string | null;
-  social_media: SocialMedia;
+  social_media: SocialMediaLinks;
   interests: string[];
   upcoming_events: Event[];
   past_events: Event[];
@@ -82,10 +75,23 @@ const PublicProfile = () => {
       username: data.username,
       bio: data.bio,
       avatar_url: data.avatar_url,
-      social_media: data.social_media as SocialMedia,
+      social_media: data.social_media as SocialMediaLinks || {
+        x: null,
+        linkedin: null,
+        instagram: null,
+        threads: null
+      },
       interests: data.interests || [],
-      upcoming_events: data.upcoming_events as Event[] || [],
-      past_events: data.past_events as Event[] || [],
+      upcoming_events: (data.upcoming_events as Json[] || []).map((event: any) => ({
+        id: event.id,
+        title: event.title,
+        date: event.date
+      })),
+      past_events: (data.past_events as Json[] || []).map((event: any) => ({
+        id: event.id,
+        title: event.title,
+        date: event.date
+      })),
       show_upcoming_events: data.show_upcoming_events,
       show_past_events: data.show_past_events
     };
