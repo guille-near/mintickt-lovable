@@ -43,7 +43,7 @@ export function EventsList({ title, events }: EventsListProps) {
             </div>
 
             <CardContent className="p-4 h-full flex flex-col justify-start relative z-10">
-              <h3 className="font-semibold text-sm text-white text-left">{event.title}</h3>
+              <h3 className="font-semibold text-sm text-white text-left truncate">{event.title}</h3>
               <p className="text-xs text-white/80 text-left">
                 {format(new Date(event.date), 'PPP')}
               </p>
