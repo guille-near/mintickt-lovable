@@ -6,7 +6,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { QrCode } from "lucide-react";
 
 interface QRCodeDialogProps {
@@ -16,10 +15,8 @@ interface QRCodeDialogProps {
 export function QRCodeDialog({ profileUrl }: QRCodeDialogProps) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="border border-input">
-          <QrCode className="h-4 w-4" />
-        </Button>
+      <DialogTrigger>
+        <QrCode className="h-4 w-4" />
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

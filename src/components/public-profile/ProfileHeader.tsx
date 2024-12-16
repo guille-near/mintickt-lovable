@@ -47,7 +47,9 @@ export function ProfileHeader({ username, bio, avatarUrl, userId, walletAddress 
 
       {isOwnProfile && (
         <div className="flex items-center gap-2">
-          <QRCodeDialog profileUrl={profileUrl} />
+          <Button variant="outline" size="icon" className="border border-input h-9 w-9">
+            <QRCodeDialog profileUrl={profileUrl} />
+          </Button>
           <Button variant="outline" asChild className="border border-input h-9">
             <Link to="/account">Edit Profile</Link>
           </Button>
