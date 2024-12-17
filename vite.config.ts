@@ -29,6 +29,7 @@ export default defineConfig(({ mode }) => ({
       '@solana/web3.js',
       '@solana/spl-token',
       'buffer',
+      'bn.js',
     ],
     esbuildOptions: {
       target: 'esnext',
@@ -43,6 +44,7 @@ export default defineConfig(({ mode }) => ({
       transformMixedEsModules: true,
     },
     rollupOptions: {
+      external: ['buffer'],
       plugins: [
         {
           name: 'inject-buffer-polyfill',
@@ -51,7 +53,7 @@ export default defineConfig(({ mode }) => ({
                 id.includes('node_modules/@project-serum') || 
                 id.includes('node_modules/bn.js')) {
               const polyfills = `
-                import { Buffer as BufferPolyfill } from 'buffer/';
+                import { Buffer as BufferPolyfill } from 'buffer';
                 if (typeof window !== 'undefined') {
                   window.Buffer = window.Buffer || BufferPolyfill;
                 }
