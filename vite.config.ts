@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => ({
         global: 'globalThis'
       }
     },
-    include: ['buffer']  // Include buffer in optimization
+    include: ['buffer', '@solana/web3.js', '@solana/spl-token', '@project-serum/anchor']  // Include all Solana-related packages
   },
   build: {
     commonjsOptions: {
