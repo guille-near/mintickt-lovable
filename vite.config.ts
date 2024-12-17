@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "buffer": "buffer",  // Add explicit buffer resolution
+      "buffer": "buffer",
     },
   },
   define: {
@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => ({
         global: 'globalThis'
       }
     },
-    include: ['buffer', '@solana/web3.js', '@solana/spl-token', '@project-serum/anchor']  // Include all Solana-related packages
+    include: ['buffer', '@solana/web3.js', '@solana/spl-token', '@project-serum/anchor', '@solana-mobile/mobile-wallet-adapter-protocol-web3js']
   },
   build: {
     commonjsOptions: {
@@ -46,19 +46,16 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('node_modules/@solana') || 
                 id.includes('node_modules/@project-serum') || 
                 id.includes('node_modules/@solana-mobile')) {
-              // Only inject Buffer polyfill once at the start of Solana-related files
-              if (!code.includes('import { Buffer }')) {
-                return {
-                  code: `
-                    import { Buffer } from 'buffer';
-                    if (typeof window !== 'undefined' && !window.Buffer) {
-                      window.Buffer = Buffer;
-                    }
-                    ${code}
-                  `,
-                  map: null
-                };
-              }
+              return {
+                code: `
+                  import { Buffer } from 'buffer';
+                  if (typeof window !== 'undefined') {
+                    window.Buffer = window.Buffer || Buffer;
+                  }
+                  ${code}
+                `,
+                map: null
+              };
             }
             return null;
           }
