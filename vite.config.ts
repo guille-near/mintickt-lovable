@@ -54,6 +54,7 @@ export default defineConfig(({ mode }) => ({
                 id.includes('node_modules/@project-serum') || 
                 id.includes('node_modules/bn.js') ||
                 id.includes('node_modules/bigint-buffer')) {
+              // Ensure Buffer is properly initialized before any other imports
               const polyfills = `
                 import { Buffer } from 'buffer';
                 if (typeof window !== 'undefined') {
@@ -61,6 +62,8 @@ export default defineConfig(({ mode }) => ({
                   if (!window.global) window.global = window;
                   if (!window.process) window.process = { env: {} };
                 }
+                const __global = typeof window !== 'undefined' ? window : global;
+                if (!__global.Buffer) __global.Buffer = Buffer;
               `;
               return {
                 code: `${polyfills}\n${code}`,
