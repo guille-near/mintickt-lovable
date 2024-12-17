@@ -53,9 +53,11 @@ export default defineConfig(({ mode }) => ({
                 id.includes('node_modules/@project-serum') || 
                 id.includes('node_modules/bn.js')) {
               const polyfills = `
-                import { Buffer as BufferPolyfill } from 'buffer';
+                import { Buffer } from 'buffer';
                 if (typeof window !== 'undefined') {
-                  window.Buffer = window.Buffer || BufferPolyfill;
+                  if (!window.Buffer) window.Buffer = Buffer;
+                  if (!window.global) window.global = window;
+                  if (!window.process) window.process = { env: {} };
                 }
               `;
               return {
