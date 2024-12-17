@@ -22,13 +22,36 @@ export default defineConfig(({ mode }) => ({
   define: {
     'process.env': {},
     'process.browser': true,
-    'process.version': '"v16.0.0"'
+    'process.version': '"v16.0.0"',
+    'global': {},
   },
   optimizeDeps: {
     esbuildOptions: {
       define: {
         global: 'globalThis'
       }
+    }
+  },
+  build: {
+    rollupOptions: {
+      plugins: [
+        // Polyfill Node.js globals
+        {
+          name: 'polyfill-node-globals',
+          transform(_, id) {
+            if (id.includes('node_modules/@solana') || id.includes('node_modules/@project-serum')) {
+              return {
+                code: `
+                  import { Buffer } from 'buffer';
+                  window.Buffer = Buffer;
+                  ${_}
+                `,
+                map: null
+              };
+            }
+          }
+        }
+      ]
     }
   }
 }));
