@@ -33,24 +33,30 @@ export default defineConfig(({ mode }) => ({
     }
   },
   build: {
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
     rollupOptions: {
       plugins: [
-        // Polyfill Node.js globals
         {
           name: 'polyfill-node-globals',
           transform(code, id) {
             if (id.includes('node_modules/@solana') || id.includes('node_modules/@project-serum')) {
-              return {
-                code: `
-                  import { Buffer } from 'buffer';
-                  if (typeof window !== 'undefined') {
-                    window.Buffer = Buffer;
-                  }
-                  ${code}
-                `,
-                map: null
-              };
+              // Only inject Buffer polyfill once at the start of Solana-related files
+              if (!code.includes('import { Buffer }')) {
+                return {
+                  code: `
+                    import { Buffer } from 'buffer';
+                    if (typeof window !== 'undefined' && !window.Buffer) {
+                      window.Buffer = Buffer;
+                    }
+                    ${code}
+                  `,
+                  map: null
+                };
+              }
             }
+            return null;
           }
         }
       ]
