@@ -30,6 +30,7 @@ export default defineConfig(({ mode }) => ({
       '@solana/spl-token',
       'buffer',
       'bn.js',
+      'bigint-buffer',
     ],
     esbuildOptions: {
       target: 'esnext',
@@ -51,7 +52,8 @@ export default defineConfig(({ mode }) => ({
           transform(code, id) {
             if (id.includes('node_modules/@solana') || 
                 id.includes('node_modules/@project-serum') || 
-                id.includes('node_modules/bn.js')) {
+                id.includes('node_modules/bn.js') ||
+                id.includes('node_modules/bigint-buffer')) {
               const polyfills = `
                 import { Buffer } from 'buffer';
                 if (typeof window !== 'undefined') {
