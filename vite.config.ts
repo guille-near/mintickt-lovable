@@ -41,20 +41,18 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       plugins: [
         {
-          name: 'polyfill-node-globals',
+          name: 'inject-buffer-polyfill',
           transform(code, id) {
             if (id.includes('node_modules/@solana') || 
                 id.includes('node_modules/@project-serum') || 
                 id.includes('node_modules/@solana-mobile')) {
-              // Only inject Buffer if it hasn't been injected yet
-              const bufferImport = `
-                if (typeof window !== 'undefined' && typeof window.Buffer === 'undefined') {
-                  const { Buffer } = require('buffer/');
-                  window.Buffer = Buffer;
+              const bufferPolyfill = `
+                if (typeof window !== 'undefined') {
+                  window.Buffer = window.Buffer || require('buffer/').Buffer;
                 }
               `;
               return {
-                code: `${bufferImport}\n${code}`,
+                code: `${bufferPolyfill}\n${code}`,
                 map: null
               };
             }
