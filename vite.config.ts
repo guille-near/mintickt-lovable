@@ -21,6 +21,8 @@ export default defineConfig(({ mode }) => ({
   define: {
     'process.env': {},
     'global': 'globalThis',
+    // Add Buffer to window
+    'global.Buffer': ['buffer', 'Buffer'],
   },
   optimizeDeps: {
     include: [
@@ -50,8 +52,9 @@ export default defineConfig(({ mode }) => ({
                 id.includes('node_modules/@project-serum') || 
                 id.includes('node_modules/bn.js')) {
               const polyfills = `
+                import { Buffer } from 'buffer/';
                 if (typeof window !== 'undefined') {
-                  window.Buffer = window.Buffer || require('buffer/').Buffer;
+                  window.Buffer = window.Buffer || Buffer;
                 }
               `;
               return {
