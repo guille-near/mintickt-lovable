@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => ({
     'process.env': {},
     'process.browser': true,
     'process.version': '"v16.0.0"',
-    'global': {},
+    'global': 'globalThis',
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -38,13 +38,15 @@ export default defineConfig(({ mode }) => ({
         // Polyfill Node.js globals
         {
           name: 'polyfill-node-globals',
-          transform(_, id) {
+          transform(code, id) {
             if (id.includes('node_modules/@solana') || id.includes('node_modules/@project-serum')) {
               return {
                 code: `
                   import { Buffer } from 'buffer';
-                  window.Buffer = Buffer;
-                  ${_}
+                  if (typeof window !== 'undefined') {
+                    window.Buffer = Buffer;
+                  }
+                  ${code}
                 `,
                 map: null
               };
