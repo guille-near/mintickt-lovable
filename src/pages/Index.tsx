@@ -1,47 +1,51 @@
 import { SimpleHeader } from "@/components/SimpleHeader";
-import { EventCard } from "@/components/EventCard";
-import { useEffect } from "react";
+import { DesktopEventCard } from "@/components/event-card/DesktopEventCard";
+import { MobileEventCard } from "@/components/event-card/MobileEventCard";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeProvider";
-
-const mockEvents = [
-  {
-    id: "1",
-    title: "Solana Summer Fest",
-    date: "Aug 15, 2024",
-    price: 2.5,
-    image: "https://picsum.photos/seed/1/400",
-  },
-  {
-    id: "2",
-    title: "NFT Conference 2024",
-    date: "Sep 20, 2024",
-    price: 1.8,
-    image: "https://picsum.photos/seed/2/400",
-  },
-  {
-    id: "3",
-    title: "Blockchain Summit",
-    date: "Oct 5, 2024",
-    price: 3.0,
-    image: "https://picsum.photos/seed/3/400",
-  },
-];
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useMobile } from "@/hooks/use-mobile";
 
 const Index = () => {
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const isMobile = useMobile();
 
+  // Ensure dark theme on landing page
   useEffect(() => {
     if (theme !== 'dark') {
       toggleTheme();
     }
   }, []);
 
+  // Fetch events from Supabase
+  const { data: events, isLoading } = useQuery({
+    queryKey: ['featured-events'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('visibility', 'public')
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  const handleEventClick = (eventId: string) => {
+    navigate(`/event/${eventId}`);
+  };
+
   return (
     <div className="min-h-screen dark:bg-[linear-gradient(135deg,#FF00E5_1%,transparent_8%),_linear-gradient(315deg,rgba(94,255,69,0.25)_0.5%,transparent_8%)] dark:bg-black">
       <SimpleHeader />
       <main className="container mx-auto px-6 py-12">
         <section className="mb-12 text-center">
-          <h2 className="mb-4 text-4xl font-bold text-primary">
+          <h2 className="mb-4 text-4xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
             Experience Web3 Events
           </h2>
           <p className="mx-auto max-w-2xl text-muted-foreground">
@@ -50,11 +54,38 @@ const Index = () => {
           </p>
         </section>
 
-        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {mockEvents.map((event) => (
-            <EventCard key={event.id} {...event} />
-          ))}
-        </section>
+        {isLoading ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="animate-pulse bg-muted rounded-lg aspect-square" />
+            ))}
+          </div>
+        ) : (
+          <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {events?.map((event) => (
+              isMobile ? (
+                <MobileEventCard
+                  key={event.id}
+                  title={event.title}
+                  date={event.date}
+                  image={event.image_url || '/placeholder.svg'}
+                  location={event.location}
+                  onClick={() => handleEventClick(event.id)}
+                />
+              ) : (
+                <DesktopEventCard
+                  key={event.id}
+                  title={event.title}
+                  date={event.date}
+                  image={event.image_url || '/placeholder.svg'}
+                  location={event.location}
+                  price={event.price}
+                  onClick={() => handleEventClick(event.id)}
+                />
+              )
+            ))}
+          </section>
+        )}
       </main>
     </div>
   );
