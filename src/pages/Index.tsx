@@ -6,12 +6,12 @@ import { useTheme } from "@/contexts/ThemeProvider";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Index = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
 
   // Ensure dark theme on landing page
   useEffect(() => {
