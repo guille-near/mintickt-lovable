@@ -28,8 +28,6 @@ export default defineConfig(({ mode }) => ({
       '@solana/web3.js',
       '@solana/spl-token',
       'buffer',
-      'assert',
-      'util',
     ],
     esbuildOptions: {
       target: 'esnext',
@@ -46,21 +44,14 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       plugins: [
         {
-          name: 'inject-polyfills',
+          name: 'inject-buffer-polyfill',
           transform(code, id) {
             if (id.includes('node_modules/@solana') || 
                 id.includes('node_modules/@project-serum') || 
-                id.includes('node_modules/bn.js') ||
-                id.includes('node_modules/assert') ||
-                id.includes('node_modules/util')) {
+                id.includes('node_modules/bn.js')) {
               const polyfills = `
                 if (typeof window !== 'undefined') {
                   window.Buffer = window.Buffer || require('buffer/').Buffer;
-                  window.process = window.process || { 
-                    env: { NODE_ENV: 'production' },
-                    version: '',
-                    browser: true
-                  };
                 }
               `;
               return {
