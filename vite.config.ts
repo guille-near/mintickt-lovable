@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "buffer": "buffer",  // Add explicit buffer resolution
     },
   },
   define: {
@@ -30,7 +31,8 @@ export default defineConfig(({ mode }) => ({
       define: {
         global: 'globalThis'
       }
-    }
+    },
+    include: ['buffer']  // Include buffer in optimization
   },
   build: {
     commonjsOptions: {
@@ -41,7 +43,9 @@ export default defineConfig(({ mode }) => ({
         {
           name: 'polyfill-node-globals',
           transform(code, id) {
-            if (id.includes('node_modules/@solana') || id.includes('node_modules/@project-serum')) {
+            if (id.includes('node_modules/@solana') || 
+                id.includes('node_modules/@project-serum') || 
+                id.includes('node_modules/@solana-mobile')) {
               // Only inject Buffer polyfill once at the start of Solana-related files
               if (!code.includes('import { Buffer }')) {
                 return {
