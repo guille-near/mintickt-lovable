@@ -46,14 +46,15 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('node_modules/@solana') || 
                 id.includes('node_modules/@project-serum') || 
                 id.includes('node_modules/@solana-mobile')) {
+              // Only inject Buffer if it hasn't been injected yet
+              const bufferImport = `
+                if (typeof window !== 'undefined' && typeof window.Buffer === 'undefined') {
+                  const { Buffer } = require('buffer/');
+                  window.Buffer = Buffer;
+                }
+              `;
               return {
-                code: `
-                  import { Buffer } from 'buffer';
-                  if (typeof window !== 'undefined') {
-                    window.Buffer = window.Buffer || Buffer;
-                  }
-                  ${code}
-                `,
+                code: `${bufferImport}\n${code}`,
                 map: null
               };
             }
