@@ -15,7 +15,6 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      'buffer': 'buffer/',
     },
   },
   define: {
@@ -54,15 +53,10 @@ export default defineConfig(({ mode }) => ({
                 id.includes('node_modules/bigint-buffer')) {
               const polyfills = `
                 import { Buffer } from 'buffer';
-                const __global = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global);
-                if (!__global.Buffer) {
-                  __global.Buffer = Buffer;
-                }
                 if (typeof window !== 'undefined') {
-                  window.Buffer = __global.Buffer;
-                }
-                if (!__global.process) {
-                  __global.process = { env: {} };
+                  window.Buffer = Buffer;
+                  window.global = window;
+                  if (!window.process) window.process = { env: {} };
                 }
               `;
               return { code: `${polyfills}\n${code}`, map: null };
