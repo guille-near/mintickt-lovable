@@ -20,8 +20,6 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     'process.env': {},
-    'global': 'globalThis',
-    'global.Buffer': ['buffer', 'Buffer'],
   },
   optimizeDeps: {
     include: [
@@ -34,9 +32,6 @@ export default defineConfig(({ mode }) => ({
     ],
     esbuildOptions: {
       target: 'esnext',
-      define: {
-        global: 'globalThis'
-      }
     },
   },
   build: {
@@ -45,7 +40,6 @@ export default defineConfig(({ mode }) => ({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      external: ['buffer'],
       plugins: [
         {
           name: 'inject-buffer-polyfill',
@@ -54,16 +48,13 @@ export default defineConfig(({ mode }) => ({
                 id.includes('node_modules/@project-serum') || 
                 id.includes('node_modules/bn.js') ||
                 id.includes('node_modules/bigint-buffer')) {
-              // Ensure Buffer is properly initialized before any other imports
               const polyfills = `
                 import { Buffer } from 'buffer';
                 if (typeof window !== 'undefined') {
-                  if (!window.Buffer) window.Buffer = Buffer;
-                  if (!window.global) window.global = window;
+                  window.Buffer = Buffer;
+                  window.global = window;
                   if (!window.process) window.process = { env: {} };
                 }
-                const __global = typeof window !== 'undefined' ? window : global;
-                if (!__global.Buffer) __global.Buffer = Buffer;
               `;
               return {
                 code: `${polyfills}\n${code}`,

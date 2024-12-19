@@ -1,29 +1,27 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
+import './utils/polyfills';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
 import './index.css';
-import { ThemeProvider } from '@/contexts/ThemeProvider';
-import { WalletContextProvider } from '@/contexts/WalletContextProvider';
-import { AuthProvider } from '@/contexts/AuthProvider';
+import { ThemeProvider } from './contexts/ThemeProvider';
+import { WalletContextProvider } from './contexts/WalletContextProvider';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'sonner';
+import { AuthProvider } from './contexts/AuthProvider';
 
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
-createRoot(document.getElementById("root")!).render(
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <WalletContextProvider>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
         <AuthProvider>
-          <App />
+          <WalletContextProvider>
+            <App />
+            <Toaster />
+          </WalletContextProvider>
         </AuthProvider>
-      </WalletContextProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
