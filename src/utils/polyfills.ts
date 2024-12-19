@@ -9,12 +9,9 @@ declare global {
 }
 
 if (typeof window !== 'undefined') {
-  window.Buffer = Buffer;
-  window.global = window;
-  
-  if (!window.process) {
-    window.process = { env: {} };
-  }
+  if (!window.global) window.global = window;
+  if (!window.Buffer) window.Buffer = Buffer;
+  if (!window.process) window.process = { env: {} };
 }
 
 export {};

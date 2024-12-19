@@ -20,8 +20,12 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     'process.env': {},
+    'global': {},
   },
   optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext',
+    },
     include: [
       '@project-serum/anchor',
       '@solana/web3.js',
@@ -30,9 +34,6 @@ export default defineConfig(({ mode }) => ({
       'bn.js',
       'bigint-buffer',
     ],
-    esbuildOptions: {
-      target: 'esnext',
-    },
   },
   build: {
     target: 'esnext',
@@ -41,24 +42,26 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       external: ['buffer'],
+      output: {
+        globals: {
+          buffer: 'Buffer'
+        }
+      },
       plugins: [
         {
-          name: 'inject-buffer-polyfill',
+          name: 'inject-process-env',
           transform(code, id) {
             if (id.includes('node_modules/@solana') || 
                 id.includes('node_modules/@project-serum') || 
                 id.includes('node_modules/bn.js') ||
                 id.includes('node_modules/bigint-buffer')) {
-              const polyfills = `
-                import { Buffer } from 'buffer';
-                if (typeof window !== 'undefined') {
-                  window.Buffer = Buffer;
-                  window.global = window;
-                  if (!window.process) window.process = { env: {} };
-                }
-              `;
               return {
-                code: `${polyfills}\n${code}`,
+                code: `
+                  if (typeof window !== 'undefined') {
+                    window.global = window;
+                    if (!window.process) window.process = { env: {} };
+                  }
+                  ${code}`,
                 map: null
               };
             }
