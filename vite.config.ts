@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     'process.env': {},
-    'global': {},
+    'global': 'globalThis',
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -41,12 +41,6 @@ export default defineConfig(({ mode }) => ({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      external: ['buffer'],
-      output: {
-        globals: {
-          buffer: 'Buffer'
-        }
-      },
       plugins: [
         {
           name: 'inject-process-env',
@@ -57,7 +51,9 @@ export default defineConfig(({ mode }) => ({
                 id.includes('node_modules/bigint-buffer')) {
               return {
                 code: `
+                  import { Buffer } from 'buffer';
                   if (typeof window !== 'undefined') {
+                    window.Buffer = window.Buffer || Buffer;
                     window.global = window;
                     if (!window.process) window.process = { env: {} };
                   }
