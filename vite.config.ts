@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { componentTagger } from "lovable-tagger";
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 
 export default defineConfig(({ mode }) => ({
   server: {
@@ -27,6 +29,13 @@ export default defineConfig(({ mode }) => ({
       define: {
         global: 'globalThis',
       },
+      plugins: [
+        NodeGlobalsPolyfillPlugin({
+          buffer: true,
+          process: true
+        }),
+        NodeModulesPolyfillPlugin()
+      ],
     },
     include: [
       '@project-serum/anchor',
@@ -42,28 +51,5 @@ export default defineConfig(({ mode }) => ({
     commonjsOptions: {
       transformMixedEsModules: true,
     },
-    rollupOptions: {
-      plugins: [
-        {
-          name: 'inject-buffer-polyfill',
-          transform(code, id) {
-            if (id.includes('node_modules/@solana') || 
-                id.includes('node_modules/@project-serum') || 
-                id.includes('node_modules/bn.js') ||
-                id.includes('node_modules/bigint-buffer')) {
-              const polyfills = `
-                import { Buffer } from 'buffer';
-                if (typeof window !== 'undefined') {
-                  window.Buffer = Buffer;
-                  window.global = window;
-                  if (!window.process) window.process = { env: {} };
-                }
-              `;
-              return { code: `${polyfills}\n${code}`, map: null };
-            }
-          }
-        }
-      ]
-    }
   },
 }));
