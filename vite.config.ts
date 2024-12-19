@@ -54,12 +54,16 @@ export default defineConfig(({ mode }) => ({
                 id.includes('node_modules/bigint-buffer')) {
               const polyfills = `
                 import { Buffer } from 'buffer';
-                if (typeof window !== 'undefined') {
-                  window.Buffer = Buffer;
-                  window.global = window;
+                if (typeof globalThis !== 'undefined') {
+                  if (!globalThis.Buffer) {
+                    globalThis.Buffer = Buffer;
+                  }
+                  if (typeof window !== 'undefined') {
+                    window.Buffer = globalThis.Buffer;
+                  }
                 }
                 if (typeof process === 'undefined') {
-                  window.process = { env: {} };
+                  globalThis.process = { env: {} };
                 }
               `;
               return { code: `${polyfills}\n${code}`, map: null };

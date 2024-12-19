@@ -8,10 +8,17 @@ declare global {
   }
 }
 
-if (typeof window !== 'undefined') {
-  window.Buffer = Buffer;
-  if (!window.global) window.global = window;
-  if (!window.process) window.process = { env: {} };
+if (typeof globalThis !== 'undefined') {
+  if (!globalThis.Buffer) {
+    globalThis.Buffer = Buffer;
+  }
+  if (typeof window !== 'undefined') {
+    window.Buffer = globalThis.Buffer;
+    window.global = globalThis;
+    if (!window.process) {
+      window.process = { env: {} };
+    }
+  }
 }
 
 export {};
