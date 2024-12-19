@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,12 +7,21 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRecovering, setIsRecovering] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, session } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect if user is already authenticated
+  useEffect(() => {
+    if (session) {
+      navigate('/discover');
+    }
+  }, [session, navigate]);
 
   const handlePasswordRecovery = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,9 +83,9 @@ export default function Auth() {
           </TabsList>
           <TabsContent value="signin">
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                signIn(email, password);
+                await signIn(email, password);
               }}
               className="space-y-4"
             >
@@ -115,9 +124,9 @@ export default function Auth() {
           </TabsContent>
           <TabsContent value="signup">
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                signUp(email, password);
+                await signUp(email, password);
               }}
               className="space-y-4"
             >

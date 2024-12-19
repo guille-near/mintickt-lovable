@@ -7,11 +7,20 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/contexts/AuthProvider";
 
 const Index = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
+  const { session } = useAuth();
+
+  // Redirect if user is authenticated
+  useEffect(() => {
+    if (session) {
+      navigate('/discover');
+    }
+  }, [session, navigate]);
 
   // Ensure dark theme on landing page
   useEffect(() => {
