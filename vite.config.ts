@@ -31,8 +31,9 @@ export default defineConfig(({ mode }) => ({
       },
       plugins: [
         NodeGlobalsPolyfillPlugin({
-          buffer: true,
-          process: true
+          process: true,
+          // Temporarily disable buffer polyfill to prevent conflicts
+          buffer: false
         }),
         NodeModulesPolyfillPlugin()
       ],

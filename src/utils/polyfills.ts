@@ -8,6 +8,7 @@ declare global {
   }
 }
 
+// Only set these globals if they don't already exist
 if (typeof window !== 'undefined') {
   if (!window.Buffer) window.Buffer = Buffer;
   if (!window.global) window.global = window;
