@@ -3,7 +3,7 @@ import { Buffer } from 'buffer';
 declare global {
   interface Window {
     Buffer: typeof Buffer;
-    process: any;
+    process: any; // Using any here since we only need a subset of the Node process
     global: any;
   }
 }
