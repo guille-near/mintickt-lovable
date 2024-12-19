@@ -9,7 +9,7 @@ declare global {
 }
 
 if (typeof window !== 'undefined') {
-  window.Buffer = window.Buffer || Buffer;
+  window.Buffer = Buffer;
   if (!window.global) window.global = window;
   if (!window.process) window.process = { env: {} };
 }
