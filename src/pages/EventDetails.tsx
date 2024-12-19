@@ -142,6 +142,10 @@ export default function EventDetails() {
                   id={event.id}
                   price={event.price}
                   title={event.title}
+                  nftCollectionName={event.nft_collection_name}
+                  nftSymbol={event.nft_symbol}
+                  nftMetadataUri={event.nft_metadata_uri}
+                  royaltiesPercentage={event.royalties_percentage}
                 />
               </div>
             </div>
