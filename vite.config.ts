@@ -25,6 +25,9 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     esbuildOptions: {
       target: 'esnext',
+      define: {
+        global: 'globalThis',
+      },
     },
     include: [
       '@project-serum/anchor',
@@ -43,23 +46,25 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       plugins: [
         {
-          name: 'inject-process-env',
+          name: 'inject-buffer-polyfill',
           transform(code, id) {
             if (id.includes('node_modules/@solana') || 
                 id.includes('node_modules/@project-serum') || 
                 id.includes('node_modules/bn.js') ||
                 id.includes('node_modules/bigint-buffer')) {
-              return {
-                code: `
-                  import { Buffer } from 'buffer';
-                  if (typeof window !== 'undefined') {
-                    window.Buffer = window.Buffer || Buffer;
-                    window.global = window;
-                    if (!window.process) window.process = { env: {} };
-                  }
-                  ${code}`,
-                map: null
-              };
+              const polyfills = `
+                import { Buffer } from 'buffer';
+                const __global = typeof window !== 'undefined' ? window : global;
+                if (typeof window !== 'undefined') {
+                  window.Buffer = window.Buffer || Buffer;
+                  window.global = window;
+                }
+                if (!__global.Buffer) __global.Buffer = Buffer;
+                if (typeof window !== 'undefined' && !window.process) {
+                  window.process = { env: {} };
+                }
+              `;
+              return { code: `${polyfills}\n${code}`, map: null };
             }
           }
         }
