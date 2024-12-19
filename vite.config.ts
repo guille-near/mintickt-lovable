@@ -40,6 +40,7 @@ export default defineConfig(({ mode }) => ({
       transformMixedEsModules: true,
     },
     rollupOptions: {
+      external: ['buffer'],
       plugins: [
         {
           name: 'inject-buffer-polyfill',
