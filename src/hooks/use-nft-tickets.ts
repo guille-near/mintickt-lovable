@@ -6,6 +6,7 @@ import { AnchorProvider } from "@project-serum/anchor";
 import { toast } from "sonner";
 import { PublicKey } from "@solana/web3.js";
 import { supabase } from "@/integrations/supabase/client";
+import { generateTicketMetadata } from "@/utils/nft-metadata";
 
 export const useNFTTickets = (eventId: string) => {
   const { connection } = useConnection();
@@ -59,6 +60,17 @@ export const useNFTTickets = (eventId: string) => {
     try {
       console.log('Starting ticket purchase process for event:', eventId);
       
+      // Get the event details first
+      const { data: event, error: eventError } = await supabase
+        .from('events')
+        .select('*')
+        .eq('id', eventId)
+        .single();
+
+      if (eventError || !event) {
+        throw new Error('Failed to fetch event details');
+      }
+
       // Get the event PDA
       const [eventPda] = PublicKey.findProgramAddressSync(
         [Buffer.from("event"), wallet.publicKey.toBuffer()],
@@ -71,13 +83,29 @@ export const useNFTTickets = (eventId: string) => {
       const eventAccount = await client.program.account.eventCollection.fetch(eventPda);
       const ticketNumber = eventAccount.ticketsMinted.toNumber() + 1;
 
-      console.log('Minting ticket number:', ticketNumber);
+      console.log('Generating metadata for ticket number:', ticketNumber);
+
+      // Generate metadata for the NFT
+      const metadata = generateTicketMetadata(
+        event.title,
+        new Date(event.date).toISOString(),
+        ticketNumber,
+        wallet.publicKey.toString(),
+        event.image_url || '',
+        event.royalties_percentage
+      );
+
+      // TODO: In a production environment, we would upload this metadata to IPFS or Arweave
+      // For now, we'll store it in Supabase
+      const metadataString = JSON.stringify(metadata);
+      console.log('Ticket metadata:', metadataString);
 
       // Mint the ticket NFT
       const tx = await client.mintTicket(
         eventPda,
         wallet.publicKey,
-        ticketNumber
+        ticketNumber,
+        metadataString // Pass metadata to the minting function
       );
 
       console.log('Ticket minted successfully, transaction:', tx);

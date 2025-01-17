@@ -59,9 +59,14 @@ export class EventTicketsClient {
   async mintTicket(
     event: PublicKey,
     authority: PublicKey,
-    ticketNumber: number
+    ticketNumber: number,
+    metadata: string
   ) {
-    console.log('Minting ticket:', { event: event.toString(), ticketNumber });
+    console.log('Minting ticket:', { 
+      event: event.toString(), 
+      ticketNumber,
+      metadata 
+    });
     
     try {
       const tx = await this.program.methods
