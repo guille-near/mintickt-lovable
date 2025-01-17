@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { EventForm, FormData } from "@/components/create-event/EventForm";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,6 +46,7 @@ export default function CreateEvent() {
   const onSubmit = async (formData: FormData) => {
     try {
       setIsSubmitting(true);
+      console.log("🎯 [CreateEvent] Starting form submission");
 
       if (!user) {
         toast({
@@ -65,6 +66,7 @@ export default function CreateEvent() {
         return;
       }
 
+      console.log("🎯 [CreateEvent] Getting user profile");
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id, username')
@@ -84,6 +86,7 @@ export default function CreateEvent() {
       let imageUrl = formData.giphyUrl;
 
       if (formData.image) {
+        console.log("🎯 [CreateEvent] Uploading image");
         const fileExt = formData.image.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `${fileName}`;
@@ -109,13 +112,14 @@ export default function CreateEvent() {
         imageUrl = publicUrl;
       }
 
-      // Initialize Candy Machine
+      console.log("🎯 [CreateEvent] Initializing Candy Machine");
       const candyMachine = await initializeCandyMachine(
         wallet,
-        formData.title || 'Untitled Event',
-        parseInt(formData.totalTickets || "0")
+        formData.title,
+        parseInt(formData.totalTickets)
       );
 
+      console.log("🎯 [CreateEvent] Creating event in database");
       const { data: event, error } = await supabase
         .from('events')
         .insert({
@@ -125,8 +129,8 @@ export default function CreateEvent() {
           location: formData.location,
           image_url: imageUrl,
           price: formData.ticketType === 'free' ? 0 : parseFloat(formData.price || "0"),
-          total_tickets: parseInt(formData.totalTickets || "0"),
-          remaining_tickets: parseInt(formData.totalTickets || "0"),
+          total_tickets: parseInt(formData.totalTickets),
+          remaining_tickets: parseInt(formData.totalTickets),
           creator_id: profile.id,
           is_free: formData.ticketType === 'free',
           organizer_name: profile.username || 'Anonymous',
