@@ -80,7 +80,7 @@ export function DiscoverSidebar() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <SidebarMenuButton
-                      onClick={() => navigate('/create')}
+                      onClick={() => navigate('/create-event')}
                       className="w-full flex items-center gap-2"
                     >
                       <Plus className="h-5 w-5 shrink-0" />
