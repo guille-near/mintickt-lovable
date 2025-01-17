@@ -33,6 +33,9 @@ export default function CreateEvent() {
   const { user } = useAuth();
   const wallet = useWallet();
 
+  console.log("🔍 [CreateEvent] Component rendered with user:", user?.id);
+  console.log("🔍 [CreateEvent] Wallet connected status:", wallet.connected);
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,19 +48,30 @@ export default function CreateEvent() {
   const onSubmit = async (formData: FormData) => {
     try {
       setIsSubmitting(true);
-      console.log("🎯 [CreateEvent] Starting form submission");
+      console.log("🎯 [CreateEvent] Starting form submission with data:", {
+        title: formData.title,
+        description: formData.description?.substring(0, 50) + "...",
+        date: formData.date,
+        location: formData.location,
+        hasImage: !!formData.image,
+        hasGiphyUrl: !!formData.giphyUrl,
+        ticketType: formData.ticketType,
+        totalTickets: formData.totalTickets,
+      });
 
       if (!user) {
+        console.error("❌ [CreateEvent] No user found in context");
         toast.error("You must be logged in to create an event");
         return;
       }
 
       if (!wallet.connected) {
+        console.error("❌ [CreateEvent] Wallet not connected");
         toast.error("Please connect your wallet to create an event");
         return;
       }
 
-      console.log("🎯 [CreateEvent] Getting user profile");
+      console.log("🎯 [CreateEvent] Getting user profile for ID:", user.id);
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id, username')
@@ -65,34 +79,45 @@ export default function CreateEvent() {
         .single();
 
       if (profileError || !profile) {
-        console.error('Error getting profile:', profileError);
+        console.error('❌ [CreateEvent] Error getting profile:', profileError);
         toast.error("Failed to get user profile");
         return;
       }
 
+      console.log("✅ [CreateEvent] Found profile:", profile);
+
       let imageUrl = formData.giphyUrl;
 
       if (formData.image) {
-        console.log("🎯 [CreateEvent] Uploading image");
+        console.log("🎯 [CreateEvent] Starting image upload");
         const fileExt = formData.image.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
         const filePath = `${fileName}`;
+
+        console.log("🎯 [CreateEvent] Uploading image:", {
+          fileName,
+          fileSize: formData.image.size,
+          fileType: formData.image.type
+        });
 
         const { error: uploadError, data } = await supabase.storage
           .from('event-images')
           .upload(filePath, formData.image);
 
         if (uploadError) {
-          console.error('Error uploading image:', uploadError);
+          console.error('❌ [CreateEvent] Error uploading image:', uploadError);
           toast.error("Failed to upload image");
           return;
         }
+
+        console.log("✅ [CreateEvent] Image uploaded successfully");
 
         const { data: { publicUrl } } = supabase.storage
           .from('event-images')
           .getPublicUrl(filePath);
 
         imageUrl = publicUrl;
+        console.log("✅ [CreateEvent] Image public URL generated:", imageUrl);
       }
 
       console.log("🎯 [CreateEvent] Initializing Candy Machine");
@@ -101,6 +126,8 @@ export default function CreateEvent() {
         formData.title,
         parseInt(formData.totalTickets)
       );
+
+      console.log("✅ [CreateEvent] Candy Machine initialized:", candyMachine);
 
       console.log("🎯 [CreateEvent] Creating event in database");
       const { data: event, error } = await supabase
@@ -124,18 +151,20 @@ export default function CreateEvent() {
         .single();
 
       if (error) {
-        console.error('Error creating event:', error);
+        console.error('❌ [CreateEvent] Error creating event:', error);
         toast.error("Failed to create event");
         return;
       }
 
+      console.log("✅ [CreateEvent] Event created successfully:", event);
       toast.success("Event created successfully");
       navigate(`/event/${event.id}`);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('❌ [CreateEvent] Unexpected error:', error);
       toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
+      console.log("🏁 [CreateEvent] Form submission completed");
     }
   };
 
