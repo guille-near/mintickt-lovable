@@ -28,7 +28,6 @@ const formSchema = z.object({
 });
 
 export default function CreateEvent() {
-  const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
@@ -49,20 +48,12 @@ export default function CreateEvent() {
       console.log("🎯 [CreateEvent] Starting form submission");
 
       if (!user) {
-        toast({
-          title: "Error",
-          description: "You must be logged in to create an event",
-          variant: "destructive",
-        });
+        toast.error("You must be logged in to create an event");
         return;
       }
 
       if (!wallet.connected) {
-        toast({
-          title: "Error",
-          description: "Please connect your wallet to create an event",
-          variant: "destructive",
-        });
+        toast.error("Please connect your wallet to create an event");
         return;
       }
 
@@ -75,11 +66,7 @@ export default function CreateEvent() {
 
       if (profileError || !profile) {
         console.error('Error getting profile:', profileError);
-        toast({
-          title: "Error",
-          description: "Failed to get user profile",
-          variant: "destructive",
-        });
+        toast.error("Failed to get user profile");
         return;
       }
 
@@ -97,11 +84,7 @@ export default function CreateEvent() {
 
         if (uploadError) {
           console.error('Error uploading image:', uploadError);
-          toast({
-            title: "Error",
-            description: "Failed to upload image",
-            variant: "destructive",
-          });
+          toast.error("Failed to upload image");
           return;
         }
 
@@ -142,27 +125,15 @@ export default function CreateEvent() {
 
       if (error) {
         console.error('Error creating event:', error);
-        toast({
-          title: "Error",
-          description: "Failed to create event",
-          variant: "destructive",
-        });
+        toast.error("Failed to create event");
         return;
       }
 
-      toast({
-        title: "Success",
-        description: "Event created successfully",
-      });
-
+      toast.success("Event created successfully");
       navigate(`/event/${event.id}`);
     } catch (error) {
       console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "Something went wrong",
-        variant: "destructive",
-      });
+      toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
