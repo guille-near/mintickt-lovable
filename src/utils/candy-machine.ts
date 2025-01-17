@@ -1,5 +1,5 @@
 import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
-import { Connection, clusterApiUrl } from "@solana/web3.js";
+import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "sonner";
 
@@ -19,12 +19,18 @@ export const initializeCandyMachine = async (
       itemsAvailable: totalTickets,
       sellerFeeBasisPoints: 500, // 5% royalties
       collection: {
-        name: eventTitle,
-        family: "NFT Tickets",
+        address: wallet.publicKey,
+        updateAuthority: wallet
       },
       guards: {
         solPayment: {
-          amount: { basisPoints: 0, currency: { symbol: "SOL" } }, // Free minting
+          amount: { 
+            basisPoints: 0, 
+            currency: { 
+              symbol: "SOL", 
+              decimals: 9 
+            } 
+          }, // Free minting
           destination: wallet.publicKey,
         },
       },
@@ -62,7 +68,7 @@ export const mintTicketNFT = async (
     const metaplex = new Metaplex(connection).use(walletAdapterIdentity(wallet));
 
     const candyMachine = await metaplex.candyMachines().findByAddress({
-      address: candyMachineAddress,
+      address: new PublicKey(candyMachineAddress),
     });
 
     const { nft } = await metaplex.candyMachines().mint({
