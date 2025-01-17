@@ -16,6 +16,7 @@
     "@giphy/js-fetch-api": "^5.6.0",
     "@giphy/react-components": "^9.8.0",
     "@hookform/resolvers": "^3.9.0",
+    "@metaplex-foundation/js": "^0.20.1",
     "@metaplex-foundation/mpl-token-metadata": "^3.3.0",
     "@project-serum/anchor": "^0.26.0",
     "@radix-ui/react-accordion": "^1.2.0",

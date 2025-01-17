@@ -10,6 +10,8 @@ import { EventForm, FormData } from "@/components/create-event/EventForm";
 import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthProvider";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { initializeCandyMachine } from "@/utils/candy-machine";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -30,6 +32,7 @@ export default function CreateEvent() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
+  const wallet = useWallet();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -40,31 +43,6 @@ export default function CreateEvent() {
     },
   });
 
-  const initializeNFTCollection = async (eventId: string) => {
-    try {
-      const response = await fetch('/functions/v1/initialize-nft-collection', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-        },
-        body: JSON.stringify({ eventId }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to initialize NFT collection');
-      }
-
-      const data = await response.json();
-      console.log('NFT Collection initialized:', data);
-      return data;
-    } catch (error) {
-      console.error('Error initializing NFT collection:', error);
-      throw error;
-    }
-  };
-
   const onSubmit = async (formData: FormData) => {
     try {
       setIsSubmitting(true);
@@ -73,6 +51,15 @@ export default function CreateEvent() {
         toast({
           title: "Error",
           description: "You must be logged in to create an event",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!wallet.connected) {
+        toast({
+          title: "Error",
+          description: "Please connect your wallet to create an event",
           variant: "destructive",
         });
         return;
@@ -122,6 +109,13 @@ export default function CreateEvent() {
         imageUrl = publicUrl;
       }
 
+      // Initialize Candy Machine
+      const candyMachine = await initializeCandyMachine(
+        wallet,
+        formData.title || 'Untitled Event',
+        parseInt(formData.totalTickets || "0")
+      );
+
       const { data: event, error } = await supabase
         .from('events')
         .insert({
@@ -136,6 +130,8 @@ export default function CreateEvent() {
           creator_id: profile.id,
           is_free: formData.ticketType === 'free',
           organizer_name: profile.username || 'Anonymous',
+          candy_machine_address: candyMachine.address,
+          candy_machine_config: candyMachine.config,
         })
         .select()
         .single();
@@ -150,20 +146,10 @@ export default function CreateEvent() {
         return;
       }
 
-      // Initialize NFT collection after event creation
-      try {
-        await initializeNFTCollection(event.id);
-        toast({
-          title: "Success",
-          description: "Event created and NFT collection initialized successfully",
-        });
-      } catch (nftError) {
-        console.error('Error initializing NFT collection:', nftError);
-        toast({
-          title: "Warning",
-          description: "Event created but failed to initialize NFT collection. Please try again later.",
-        });
-      }
+      toast({
+        title: "Success",
+        description: "Event created successfully",
+      });
 
       navigate(`/event/${event.id}`);
     } catch (error) {

@@ -46,6 +46,8 @@ export type Database = {
           additional_info: Json | null
           age_restriction: string | null
           cancellation_policy: string | null
+          candy_machine_address: string | null
+          candy_machine_config: Json | null
           category: string | null
           created_at: string
           creator_id: string
@@ -79,6 +81,8 @@ export type Database = {
           additional_info?: Json | null
           age_restriction?: string | null
           cancellation_policy?: string | null
+          candy_machine_address?: string | null
+          candy_machine_config?: Json | null
           category?: string | null
           created_at?: string
           creator_id: string
@@ -112,6 +116,8 @@ export type Database = {
           additional_info?: Json | null
           age_restriction?: string | null
           cancellation_policy?: string | null
+          candy_machine_address?: string | null
+          candy_machine_config?: Json | null
           category?: string | null
           created_at?: string
           creator_id?: string
