@@ -6,23 +6,21 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   server: {
-    host: "::",
-    port: 8080,
+    host: '0.0.0.0',
+    port: 5173,
   },
   plugins: [
     react(),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
+    componentTagger(),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      stream: 'rollup-plugin-node-polyfills/polyfills/stream',
-      events: 'rollup-plugin-node-polyfills/polyfills/events',
-      assert: 'assert',
+      stream: 'stream-browserify',
       crypto: 'crypto-browserify',
-      util: 'util',
+      events: 'events',
       http: 'stream-http',
       https: 'https-browserify',
       os: 'os-browserify',
@@ -31,25 +29,22 @@ export default defineConfig(({ mode }) => ({
     },
   },
   define: {
-    'process.env': {},
-    'global': 'globalThis',
+    'process.env.BROWSER': true,
+    'process.env.NODE_DEBUG': JSON.stringify(''),
+    'process.env.REACT_APP_CLUSTER': JSON.stringify('devnet'),
+    global: 'globalThis',
   },
   optimizeDeps: {
     esbuildOptions: {
       target: 'esnext',
-      define: {
-        global: 'globalThis',
-      },
       plugins: [
         NodeGlobalsPolyfillPlugin({
-          process: true,
-          buffer: true
+          buffer: true,
         }),
         NodeModulesPolyfillPlugin()
       ],
     },
     include: [
-      '@project-serum/anchor',
       '@solana/web3.js',
       '@solana/spl-token',
       'buffer',
@@ -64,10 +59,13 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: 'esnext',
     rollupOptions: {
-      plugins: [rollupNodePolyFill()],
+      plugins: [
+        // Using the plugin in a type-safe way
+        rollupNodePolyFill() as any
+      ]
     },
     commonjsOptions: {
       transformMixedEsModules: true,
     },
   },
-}));
+});
