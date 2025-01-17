@@ -4,6 +4,7 @@ import path from 'path';
 import { componentTagger } from "lovable-tagger";
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
+import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 
 export default defineConfig(({ mode }) => ({
   server: {
@@ -17,6 +18,15 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      stream: 'rollup-plugin-node-polyfills/polyfills/stream',
+      events: 'rollup-plugin-node-polyfills/polyfills/events',
+      assert: 'assert',
+      crypto: 'crypto-browserify',
+      util: 'util',
+      http: 'stream-http',
+      https: 'https-browserify',
+      os: 'os-browserify',
+      url: 'url',
       buffer: 'buffer',
     },
   },
@@ -43,12 +53,19 @@ export default defineConfig(({ mode }) => ({
       '@solana/web3.js',
       '@solana/spl-token',
       'buffer',
+      'crypto-browserify',
+      'events',
+      'stream-browserify',
+      'util',
       'bn.js',
       'bigint-buffer',
     ],
   },
   build: {
     target: 'esnext',
+    rollupOptions: {
+      plugins: [rollupNodePolyFill()],
+    },
     commonjsOptions: {
       transformMixedEsModules: true,
     },
