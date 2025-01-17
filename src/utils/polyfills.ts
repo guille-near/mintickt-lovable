@@ -1,19 +1,17 @@
-// Import Buffer from the 'buffer' package correctly
-import { Buffer as BufferPolyfill } from 'buffer';
+import { Buffer } from 'buffer';
 
 declare global {
   interface Window {
-    Buffer: typeof BufferPolyfill;
+    Buffer: typeof Buffer;
     process: any;
     global: typeof globalThis;
   }
 }
 
-// Only set these globals if they don't already exist
 if (typeof window !== 'undefined') {
-  if (!window.Buffer) window.Buffer = BufferPolyfill;
-  if (!window.global) window.global = window;
-  if (!window.process) window.process = { env: {} };
+  window.global = window;
+  window.Buffer = Buffer;
+  window.process = { env: {} };
 }
 
 export {};

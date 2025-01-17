@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      buffer: 'buffer',
     },
   },
   define: {
@@ -32,7 +33,7 @@ export default defineConfig(({ mode }) => ({
       plugins: [
         NodeGlobalsPolyfillPlugin({
           process: true,
-          buffer: false // Disable automatic buffer polyfill since we're handling it manually
+          buffer: true
         }),
         NodeModulesPolyfillPlugin()
       ],
