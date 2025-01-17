@@ -4,7 +4,6 @@ import { PublicKey, Keypair, SystemProgram } from "@solana/web3.js";
 import { EventTickets, IDL } from "../programs/event-tickets/types";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
-// Using the program ID from environment variables
 const PROGRAM_ID = new PublicKey(process.env.PROGRAM_ID || "11111111111111111111111111111111");
 
 export class EventTicketsClient {
