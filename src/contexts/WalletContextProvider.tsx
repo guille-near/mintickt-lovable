@@ -6,6 +6,8 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
+  BackpackWalletAdapter,
+  GlowWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 
 interface Props {
@@ -13,13 +15,23 @@ interface Props {
 }
 
 export const WalletContextProvider: FC<Props> = ({ children }) => {
-  const endpoint = useMemo(() => clusterApiUrl('devnet'), []);
+  const endpoint = useMemo(() => {
+    const url = clusterApiUrl('devnet');
+    console.log('🔗 [WalletContext] Using Solana endpoint:', url);
+    return url;
+  }, []);
   
   const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-    ],
+    () => {
+      const availableWallets = [
+        new PhantomWalletAdapter(),
+        new SolflareWalletAdapter(),
+        new BackpackWalletAdapter(),
+        new GlowWalletAdapter(),
+      ];
+      console.log('🔍 [WalletContext] Available wallets:', availableWallets.map(w => w.name));
+      return availableWallets;
+    },
     []
   );
 
