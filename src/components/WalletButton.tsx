@@ -30,47 +30,46 @@ export const WalletButton = () => {
             .from('profiles')
             .select('*')
             .eq('id', user.id)
-            .single();
+            .maybeSingle();
 
           if (profileError) {
-            if (profileError.code === 'PGRST116') {
-              console.log("📝 [Wallet] Profile not found, creating new profile");
-              // Profile doesn't exist, create it
-              const { error: createError } = await supabase
-                .from('profiles')
-                .insert([{ 
-                  id: user.id, 
-                  email: user.email,
-                  wallet_address: publicKey.toString()
-                }]);
+            console.error('❌ [Wallet] Error checking profile:', profileError);
+            toast.error('Error checking profile status');
+            await disconnect();
+            hasHandledInitialConnection.current = false;
+            return;
+          }
 
-              if (createError) {
-                console.error('❌ [Wallet] Error creating profile:', createError);
-                toast.error('Error setting up your profile');
-                await disconnect();
-                hasHandledInitialConnection.current = false;
-                return;
-              }
-              console.log("✅ [Wallet] Profile created successfully");
-            } else {
-              console.error('❌ [Wallet] Error checking profile:', profileError);
-              toast.error('Error checking profile status');
+          if (!userProfile) {
+            console.log("📝 [Wallet] Profile not found, creating new profile");
+            const { error: createError } = await supabase
+              .from('profiles')
+              .insert([{ 
+                id: user.id, 
+                email: user.email,
+                wallet_address: publicKey.toString()
+              }]);
+
+            if (createError) {
+              console.error('❌ [Wallet] Error creating profile:', createError);
+              toast.error('Error setting up your profile');
               await disconnect();
               hasHandledInitialConnection.current = false;
               return;
             }
+            console.log("✅ [Wallet] Profile created successfully");
           }
 
-          // If profile exists, check if any other profile has this wallet address
+          // Check if any other profile has this wallet address
           console.log("🔍 [Wallet] Checking for duplicate wallet addresses");
           const { data: existingProfile, error: fetchError } = await supabase
             .from('profiles')
             .select('id')
             .eq('wallet_address', publicKey.toString())
             .neq('id', user.id)
-            .single();
+            .maybeSingle();
 
-          if (fetchError && fetchError.code !== 'PGRST116') {
+          if (fetchError) {
             console.error('❌ [Wallet] Error checking wallet address:', fetchError);
             toast.error('Error checking wallet status');
             await disconnect();
@@ -117,18 +116,30 @@ export const WalletButton = () => {
 
     // Restore wallet connection on page load
     const restoreWalletConnection = async () => {
-      const lastConnectedWallet = localStorage.getItem('lastConnectedWallet');
-      if (lastConnectedWallet && user && !connected) {
-        console.log("🔄 [Wallet] Attempting to restore wallet connection");
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('wallet_address')
-          .eq('id', user.id)
-          .single();
+      try {
+        const lastConnectedWallet = localStorage.getItem('lastConnectedWallet');
+        if (lastConnectedWallet && user && !connected) {
+          console.log("🔄 [Wallet] Attempting to restore wallet connection");
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('wallet_address')
+            .eq('id', user.id)
+            .maybeSingle();
 
-        if (profile?.wallet_address === lastConnectedWallet) {
-          console.log("✅ [Wallet] Wallet connection restored");
+          if (error) {
+            console.error('❌ [Wallet] Error fetching profile:', error);
+            return;
+          }
+
+          if (profile?.wallet_address === lastConnectedWallet) {
+            console.log("✅ [Wallet] Wallet connection restored");
+          } else {
+            localStorage.removeItem('lastConnectedWallet');
+          }
         }
+      } catch (error) {
+        console.error('❌ [Wallet] Error restoring wallet connection:', error);
+        localStorage.removeItem('lastConnectedWallet');
       }
     };
 
