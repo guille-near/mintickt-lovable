@@ -8,8 +8,8 @@ import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 
 export default defineConfig({
   server: {
-    host: '0.0.0.0',
-    port: 5173,
+    port: 8080,
+    host: true, // This enables listening on all available network interfaces
   },
   plugins: [
     react(),
@@ -60,7 +60,6 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       plugins: [
-        // Using the plugin in a type-safe way
         rollupNodePolyFill() as any
       ]
     },
