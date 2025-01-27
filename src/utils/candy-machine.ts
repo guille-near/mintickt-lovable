@@ -106,7 +106,7 @@ export const mintTicketNFT = async (
 
     console.log('✅ [CandyMachine] NFT minted successfully:', {
       mintAddress: nft.address.toString(),
-      owner: nft.owner.toString()
+      ownerAddress: nft.token.ownerAddress.toString() // Updated this line to use token.ownerAddress
     });
     
     return nft.address.toString();
