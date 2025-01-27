@@ -6,8 +6,6 @@ import '@solana/wallet-adapter-react-ui/styles.css';
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
-  BackpackWalletAdapter,
-  GlowWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 
 interface Props {
@@ -26,8 +24,6 @@ export const WalletContextProvider: FC<Props> = ({ children }) => {
       const availableWallets = [
         new PhantomWalletAdapter(),
         new SolflareWalletAdapter(),
-        new BackpackWalletAdapter(),
-        new GlowWalletAdapter(),
       ];
       console.log('🔍 [WalletContext] Available wallets:', availableWallets.map(w => w.name));
       return availableWallets;
@@ -37,7 +33,7 @@ export const WalletContextProvider: FC<Props> = ({ children }) => {
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect={false}>
+      <WalletProvider wallets={wallets} autoConnect={true}>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
