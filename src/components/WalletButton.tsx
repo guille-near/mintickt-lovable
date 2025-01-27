@@ -101,6 +101,7 @@ export const WalletButton = () => {
             return;
           }
 
+          localStorage.setItem('lastConnectedWallet', publicKey.toString());
           console.log("✅ [Wallet] Wallet connected successfully");
           toast.success('Successfully connected wallet');
         } catch (error) {
@@ -113,6 +114,25 @@ export const WalletButton = () => {
     };
 
     handleConnection();
+
+    // Restore wallet connection on page load
+    const restoreWalletConnection = async () => {
+      const lastConnectedWallet = localStorage.getItem('lastConnectedWallet');
+      if (lastConnectedWallet && user && !connected) {
+        console.log("🔄 [Wallet] Attempting to restore wallet connection");
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('wallet_address')
+          .eq('id', user.id)
+          .single();
+
+        if (profile?.wallet_address === lastConnectedWallet) {
+          console.log("✅ [Wallet] Wallet connection restored");
+        }
+      }
+    };
+
+    restoreWalletConnection();
   }, [connected, publicKey, user, disconnect]);
 
   return <WalletMultiButton />;
