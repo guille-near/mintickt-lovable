@@ -45,10 +45,16 @@ export function ProfileForm({
     <form onSubmit={onSubmit} className="space-y-6">
       <BasicProfileFields profile={profile} onProfileChange={onProfileChange} />
 
-      <div className="space-y-4">
-        <Label>Wallet Connection</Label>
-        <WalletButton />
-      </div>
+      <Card>
+        <CardContent className="pt-6">
+          <div className="space-y-4">
+            <Label className="text-base font-semibold">Wallet Connection</Label>
+            <div className="flex items-center justify-center w-full">
+              <WalletButton />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="space-y-4">
         <Label>Social Media URLs</Label>

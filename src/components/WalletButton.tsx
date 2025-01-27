@@ -146,5 +146,7 @@ export const WalletButton = () => {
     restoreWalletConnection();
   }, [connected, publicKey, user, disconnect]);
 
-  return <WalletMultiButton />;
+  return (
+    <WalletMultiButton className="!bg-festival hover:!bg-festival-hover !h-10 !py-0 !rounded-md !text-white" />
+  );
 };
