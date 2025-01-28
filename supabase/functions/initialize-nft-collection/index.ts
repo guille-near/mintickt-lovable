@@ -35,7 +35,7 @@ serve(async (req) => {
   }
 
   try {
-    // Get and log the raw request body
+    // Get and validate request body
     const rawBody = await req.text();
     console.log('📝 [initialize-nft-collection] Raw request body:', rawBody);
     
@@ -43,15 +43,22 @@ serve(async (req) => {
       throw new Error('Request body is empty');
     }
 
-    // Safely parse JSON and validate
+    // Clean and parse the JSON input
     let input: CreateCollectionInput;
     try {
-      // Trim any whitespace and ensure we have valid JSON
-      const cleanBody = rawBody.trim();
+      const cleanBody = rawBody.replace(/^\s+|\s+$/g, ''); // Remove leading/trailing whitespace
+      console.log('🔍 [initialize-nft-collection] Cleaned body:', cleanBody);
+      
       input = JSON.parse(cleanBody);
       
+      // Validate the parsed input
+      if (typeof input !== 'object' || input === null) {
+        throw new Error('Invalid input format: expected an object');
+      }
+
       // Log the parsed input for debugging
       console.log('✅ [initialize-nft-collection] Parsed input:', {
+        eventId: input.eventId,
         name: input.name,
         symbol: input.symbol,
         totalSupply: input.totalSupply,
