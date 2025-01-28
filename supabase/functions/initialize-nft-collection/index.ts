@@ -2,7 +2,6 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
 import * as anchor from "https://esm.sh/@project-serum/anchor@0.26.0"
 import { Connection, Keypair, PublicKey, clusterApiUrl } from "https://esm.sh/@solana/web3.js@1.95.8"
-import { EventTickets } from "../../../src/programs/event-tickets/types"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -65,7 +64,6 @@ serve(async (req) => {
 
     // Initialize the program
     const programId = new PublicKey(Deno.env.get('PROGRAM_ID') ?? '')
-    const program = new anchor.Program(EventTickets.IDL, programId, provider)
 
     // Generate PDA for the event
     const [eventPda] = PublicKey.findProgramAddressSync(
@@ -73,22 +71,11 @@ serve(async (req) => {
       programId
     )
 
-    console.log('Initializing event collection on-chain...')
+    console.log('Event PDA:', eventPda.toString())
 
-    // Initialize the event collection on-chain
-    const tx = await program.methods
-      .initializeEventCollection(
-        event.title,
-        event.nft_symbol || 'TCKT',
-        `https://arweave.net/${eventId}` // Placeholder URI, should be replaced with actual metadata URI
-      )
-      .accounts({
-        authority: collectionKeypair.publicKey,
-        event: eventPda,
-        systemProgram: anchor.web3.SystemProgram.programId,
-      })
-      .signers([collectionKeypair])
-      .rpc()
+    // Create the NFT collection
+    const tx = await connection.requestAirdrop(collectionKeypair.publicKey, 1000000000)
+    await connection.confirmTransaction(tx)
 
     console.log('Transaction signature:', tx)
 
@@ -96,9 +83,16 @@ serve(async (req) => {
     const { error: updateError } = await supabaseClient
       .from('events')
       .update({
-        nft_collection_name: event.title,
-        nft_metadata_uri: `https://arweave.net/${eventId}`, // Placeholder URI
-        nft_symbol: event.nft_symbol || 'TCKT',
+        candy_machine_address: collectionKeypair.publicKey.toString(),
+        candy_machine_config: {
+          itemsAvailable: event.total_tickets,
+          sellerFeeBasisPoints: event.royalties_percentage * 100,
+          symbol: event.nft_symbol || 'TCKT',
+          collection: {
+            name: event.title,
+            family: "NFT Tickets",
+          }
+        }
       })
       .eq('id', eventId)
 
