@@ -1,15 +1,6 @@
-import { Buffer } from 'buffer';
-
-// Only declare the Buffer type if it doesn't exist
-declare global {
-  interface Window {
-    Buffer: typeof Buffer;
-  }
-}
-
-// Only set Buffer on window if it doesn't already exist
+// Only set Buffer if it's not already defined
 if (typeof window !== 'undefined' && !window.Buffer) {
-  window.Buffer = Buffer;
+  window.Buffer = require('buffer').Buffer;
 }
 
 export {};

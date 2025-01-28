@@ -5,6 +5,7 @@ import { WalletContextProvider } from './contexts/WalletContextProvider';
 import { ThemeProvider } from './contexts/ThemeProvider';
 import { AuthProvider } from './contexts/AuthProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import './utils/polyfills';
 import './index.css';
 
 // Create a client
