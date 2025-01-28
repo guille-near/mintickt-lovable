@@ -18,6 +18,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // Remove duplicate buffer polyfill
       stream: 'rollup-plugin-node-polyfills/polyfills/stream',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
       assert: 'assert',
@@ -37,7 +38,8 @@ export default defineConfig({
       plugins: [
         NodeGlobalsPolyfillPlugin({
           process: true,
-          buffer: true
+          // Disable buffer polyfill here since we're handling it in polyfills.ts
+          buffer: false
         }),
         NodeModulesPolyfillPlugin(),
       ],
