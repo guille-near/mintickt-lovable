@@ -123,8 +123,11 @@ export default function CreateEvent() {
       console.log("🎯 [CreateEvent] Initializing Candy Machine");
       const candyMachine = await initializeCandyMachine(
         wallet,
-        formData.title,
-        parseInt(formData.totalTickets)
+        formData.title || '',
+        parseInt(formData.totalTickets || '0'),
+        formData.ticketType === 'paid' ? parseFloat(formData.price || '0') : 0,
+        imageUrl || '',
+        formData.description || ''
       );
 
       console.log("✅ [CreateEvent] Candy Machine initialized:", candyMachine);

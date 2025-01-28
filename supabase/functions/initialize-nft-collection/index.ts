@@ -44,46 +44,46 @@ serve(async (req) => {
       )
     }
 
-    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed')
-    const collectionKeypair = Keypair.generate()
-    
-    console.log('Generated collection keypair:', collectionKeypair.publicKey.toString())
-
-    // Request airdrop for the collection keypair
-    const airdropTx = await connection.requestAirdrop(collectionKeypair.publicKey, 2 * 1_000_000_000) // 2 SOL
-    await connection.confirmTransaction(airdropTx)
-    console.log('Airdrop confirmed:', airdropTx)
-
-    // Initialize Metaplex
+    const connection = new Connection(clusterApiUrl('devnet'))
     const metaplex = new Metaplex(connection)
-    metaplex.use({
-      keypair: collectionKeypair,
-    })
+    
+    // Generate a new keypair for the collection
+    const collectionAuthority = Keypair.generate()
+    console.log('Generated collection authority:', collectionAuthority.publicKey.toString())
 
-    console.log('Creating NFT collection...')
-    const { nft: collectionNft } = await metaplex.nfts().create({
-      name: event.title,
-      symbol: event.nft_symbol || 'TCKT',
-      uri: event.image_url || '',
-      sellerFeeBasisPoints: (event.royalties_percentage || 5) * 100,
-      isCollection: true,
-      updateAuthority: collectionKeypair,
-    })
+    // Request airdrop for the collection authority
+    const airdropSignature = await connection.requestAirdrop(
+      collectionAuthority.publicKey,
+      2 * 1_000_000_000 // 2 SOL
+    )
+    await connection.confirmTransaction(airdropSignature)
+    console.log('Airdrop confirmed:', airdropSignature)
+
+    // Create the NFT collection
+    const { nft: collectionNft } = await metaplex
+      .nfts()
+      .create({
+        name: event.title,
+        symbol: event.nft_symbol || 'TCKT',
+        uri: event.image_url || '',
+        sellerFeeBasisPoints: (event.royalties_percentage || 5) * 100,
+        isCollection: true,
+        updateAuthority: collectionAuthority,
+      })
 
     console.log('Collection NFT created:', collectionNft.address.toString())
 
+    // Update event with collection details
     const { error: updateError } = await supabaseClient
       .from('events')
       .update({
-        candy_machine_address: collectionKeypair.publicKey.toString(),
+        nft_collection_name: event.title,
+        nft_metadata_uri: event.image_url,
+        candy_machine_address: collectionNft.address.toString(),
         candy_machine_config: {
-          itemsAvailable: event.total_tickets,
-          sellerFeeBasisPoints: (event.royalties_percentage || 5) * 100,
-          symbol: event.nft_symbol || 'TCKT',
           collection: {
             address: collectionNft.address.toString(),
-            name: event.title,
-            family: "NFT Tickets",
+            updateAuthority: collectionAuthority.publicKey.toString()
           }
         }
       })
@@ -91,25 +91,22 @@ serve(async (req) => {
 
     if (updateError) {
       console.error('Error updating event:', updateError)
-      return new Response(
-        JSON.stringify({ error: 'Failed to update event with collection details' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-      )
+      throw updateError
     }
 
     return new Response(
       JSON.stringify({
         message: 'NFT collection initialized successfully',
         collectionAddress: collectionNft.address.toString(),
-        candyMachineAddress: collectionKeypair.publicKey.toString(),
+        collectionAuthority: collectionAuthority.publicKey.toString()
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 
   } catch (error) {
     console.error('Error initializing NFT collection:', error)
     return new Response(
-      JSON.stringify({ error: 'Failed to initialize NFT collection', details: error.message }),
+      JSON.stringify({ error: 'Failed to initialize NFT collection' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     )
   }
