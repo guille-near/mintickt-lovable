@@ -24,13 +24,34 @@ serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     console.log('✨ [initialize-nft-collection] Handling CORS preflight request');
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('🎯 [initialize-nft-collection] Parsing request body');
-    const input = await req.json() as CreateCollectionInput;
-    console.log('📝 [initialize-nft-collection] Input received:', {
+    // Get the request body as text first
+    const bodyText = await req.text();
+    console.log('📝 [initialize-nft-collection] Raw request body:', bodyText);
+
+    // Try to parse the JSON
+    let input: CreateCollectionInput;
+    try {
+      input = JSON.parse(bodyText);
+    } catch (parseError) {
+      console.error('❌ [initialize-nft-collection] JSON parse error:', parseError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid JSON in request body',
+          details: parseError.message,
+          receivedBody: bodyText
+        }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    console.log('📝 [initialize-nft-collection] Parsed input:', {
       eventId: input.eventId,
       name: input.name,
       symbol: input.symbol,
@@ -41,7 +62,16 @@ serve(async (req) => {
     // Validate input
     if (!input.name || !input.symbol || !input.totalSupply || input.price === undefined) {
       console.error('❌ [initialize-nft-collection] Validation failed: Missing required fields');
-      throw new Error('Missing required fields: name, symbol, totalSupply, or price');
+      return new Response(
+        JSON.stringify({ 
+          error: 'Missing required fields',
+          receivedInput: input
+        }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
     // Initialize Solana connection
@@ -54,7 +84,13 @@ serve(async (req) => {
     const privateKey = Deno.env.get('CANDY_MACHINE_PRIVATE_KEY');
     if (!privateKey) {
       console.error('❌ [initialize-nft-collection] Missing CANDY_MACHINE_PRIVATE_KEY environment variable');
-      throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable');
+      return new Response(
+        JSON.stringify({ error: 'Server configuration error: Missing private key' }),
+        { 
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
     // Create keypair
@@ -89,7 +125,7 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       },
-    )
+    );
 
   } catch (error) {
     console.error('❌ [initialize-nft-collection] Error occurred:', error);
@@ -103,6 +139,6 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       },
-    )
+    );
   }
 })
