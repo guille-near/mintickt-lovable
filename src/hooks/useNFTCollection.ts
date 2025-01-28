@@ -15,18 +15,18 @@ interface NFTCollectionData {
 export const useNFTCollection = () => {
   const initializeNFTCollection = async (data: NFTCollectionData) => {
     try {
-      console.log("🎯 [useNFTCollection] Initializing NFT collection with data:", {
+      // Ensure price is a valid number, defaulting to 0 if undefined or invalid
+      const validatedData = {
         ...data,
-        price: data.price || 0 // Ensure price is always a number
-      });
+        price: typeof data.price === 'number' ? data.price : 0
+      };
+
+      console.log("🎯 [useNFTCollection] Initializing NFT collection with data:", validatedData);
       
       const { data: nftData, error: nftError } = await supabase.functions.invoke(
         'initialize-nft-collection',
         {
-          body: JSON.stringify({
-            ...data,
-            price: data.price || 0 // Ensure price is always a number
-          }),
+          body: JSON.stringify(validatedData),
           headers: {
             'Content-Type': 'application/json',
           },

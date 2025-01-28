@@ -73,8 +73,8 @@ serve(async (req) => {
       );
     }
 
-    // Ensure price is a number (default to 0 if not provided)
-    input.price = Number(input.price) || 0;
+    // Ensure price is a number (default to 0 if not provided or invalid)
+    input.price = typeof input.price === 'number' ? input.price : 0;
     console.log('💰 [initialize-nft-collection] Validated price:', input.price);
 
     // Initialize Solana connection
@@ -106,7 +106,7 @@ serve(async (req) => {
         newAccountPubkey: mintKeypair.publicKey,
         space: 82,
         lamports: rentExemptBalance,
-        programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), // Token Program ID
+        programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
       })
     );
 
