@@ -127,7 +127,7 @@ export default function CreateEvent() {
         description: formData.description || '',
         imageUrl: imageUrl || '',
         totalSupply: parseInt(formData.totalTickets),
-        price: formData.ticketType === 'paid' ? parseFloat(formData.price || '0') : 0,
+        price: formData.ticketType === 'paid' ? parseFloat(formData.price || '0') : 0, // Always send a price, 0 for free events
         sellerFeeBasisPoints: 500, // 5%
       };
 
