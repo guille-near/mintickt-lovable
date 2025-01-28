@@ -18,13 +18,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      // Remove duplicate buffer polyfill
+      // Core Node.js modules
       stream: 'rollup-plugin-node-polyfills/polyfills/stream',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
       assert: 'assert',
       crypto: 'crypto-browserify',
       util: 'util',
-      buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6', // Updated buffer alias
+      buffer: 'buffer',  // Use the buffer package directly
     },
   },
   define: {
@@ -39,8 +39,7 @@ export default defineConfig({
       plugins: [
         NodeGlobalsPolyfillPlugin({
           process: true,
-          // Disable buffer polyfill here since we're handling it in polyfills.ts
-          buffer: false
+          buffer: true  // Enable buffer polyfill
         }),
         NodeModulesPolyfillPlugin(),
       ],
