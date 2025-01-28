@@ -39,8 +39,25 @@ serve(async (req) => {
 
     let input: CreateCollectionInput;
     try {
+      // Asegurarse de que el body no esté vacío
+      if (!rawBody) {
+        throw new Error('Request body is empty');
+      }
+      
       input = JSON.parse(rawBody);
       console.log('✅ [initialize-nft-collection] Successfully parsed JSON:', input);
+      
+      // Validar campos requeridos
+      const requiredFields = ['name', 'symbol', 'totalSupply'];
+      const missingFields = requiredFields.filter(field => !input[field]);
+      
+      if (missingFields.length > 0) {
+        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+      }
+
+      // Asegurarse de que price sea un número
+      input.price = typeof input.price === 'number' ? input.price : 0;
+      
     } catch (parseError) {
       console.error('❌ [initialize-nft-collection] JSON parse error:', parseError);
       return new Response(
@@ -54,28 +71,6 @@ serve(async (req) => {
         }
       );
     }
-
-    // Validate all required fields
-    const requiredFields = ['name', 'symbol', 'totalSupply'];
-    const missingFields = requiredFields.filter(field => !input[field]);
-    
-    if (missingFields.length > 0) {
-      console.error('❌ [initialize-nft-collection] Missing required fields:', missingFields);
-      return new Response(
-        JSON.stringify({
-          error: 'Missing required fields',
-          missingFields,
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
-    }
-
-    // Ensure price is a number (default to 0 if not provided or invalid)
-    input.price = typeof input.price === 'number' ? input.price : 0;
-    console.log('💰 [initialize-nft-collection] Validated price:', input.price);
 
     // Initialize Solana connection
     console.log('🔗 [initialize-nft-collection] Connecting to Solana devnet');

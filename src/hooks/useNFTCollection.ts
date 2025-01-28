@@ -15,7 +15,7 @@ interface NFTCollectionData {
 export const useNFTCollection = () => {
   const initializeNFTCollection = async (data: NFTCollectionData) => {
     try {
-      // Ensure price is a valid number, defaulting to 0 if undefined or invalid
+      // Asegurarse de que el precio sea un número
       const validatedData = {
         ...data,
         price: typeof data.price === 'number' ? data.price : 0
