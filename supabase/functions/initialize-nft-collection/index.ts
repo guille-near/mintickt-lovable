@@ -27,25 +27,22 @@ serve(async (req) => {
   }
 
   try {
-    // Log request details
-    console.log('📨 [initialize-nft-collection] Request method:', req.method);
-    console.log('📨 [initialize-nft-collection] Content-Type:', req.headers.get('content-type'));
-
-    // Get the request body
-    const bodyText = await req.text();
-    console.log('📝 [initialize-nft-collection] Raw request body:', bodyText);
+    // Get and log the raw request body
+    const rawBody = await req.text();
+    console.log('📝 [initialize-nft-collection] Raw request body:', rawBody);
 
     // Parse JSON with error handling
     let input: CreateCollectionInput;
     try {
-      input = JSON.parse(bodyText);
+      input = JSON.parse(rawBody);
+      console.log('✅ [initialize-nft-collection] Successfully parsed JSON:', input);
     } catch (parseError) {
       console.error('❌ [initialize-nft-collection] JSON parse error:', parseError);
       return new Response(
         JSON.stringify({
           error: 'Invalid JSON in request body',
           details: parseError.message,
-          receivedBody: bodyText
+          receivedBody: rawBody
         }),
         {
           status: 400,
@@ -54,12 +51,16 @@ serve(async (req) => {
       );
     }
 
-    // Validate input
-    if (!input.name || !input.symbol || !input.totalSupply || input.price === undefined) {
-      console.error('❌ [initialize-nft-collection] Validation failed: Missing required fields');
+    // Validate required fields
+    const requiredFields = ['name', 'symbol', 'totalSupply'];
+    const missingFields = requiredFields.filter(field => !input[field]);
+    
+    if (missingFields.length > 0) {
+      console.error('❌ [initialize-nft-collection] Missing required fields:', missingFields);
       return new Response(
         JSON.stringify({
           error: 'Missing required fields',
+          missingFields,
           receivedInput: input
         }),
         {
