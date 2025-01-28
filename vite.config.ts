@@ -55,6 +55,7 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       plugins: [
+        // @ts-ignore - Known issue with types, but the plugin works correctly
         rollupNodePolyFill()
       ]
     },
