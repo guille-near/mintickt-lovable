@@ -1,5 +1,5 @@
 import { Metaplex, walletAdapterIdentity, CreateCandyMachineInput } from "@metaplex-foundation/js";
-import { Connection, clusterApiUrl } from "@solana/web3.js";
+import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
 import { toast } from "sonner";
 
 export const initializeCandyMachine = async (
@@ -105,7 +105,12 @@ export const mintTicketNFT = async (
     const connection = new Connection(clusterApiUrl("devnet"));
     const metaplex = new Metaplex(connection).use(walletAdapterIdentity(wallet));
 
-    const candyMachine = await metaplex.candyMachines().findByAddress({ address: candyMachineAddress });
+    // Convertir la dirección string a PublicKey
+    const candyMachinePublicKey = new PublicKey(candyMachineAddress);
+
+    const candyMachine = await metaplex.candyMachines().findByAddress({
+      address: candyMachinePublicKey
+    });
 
     console.log('🎯 [CandyMachine] Minting NFT');
     const { nft } = await metaplex.candyMachines().mint({
