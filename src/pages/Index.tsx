@@ -15,6 +15,8 @@ const Index = () => {
   const isMobile = useIsMobile();
   const { session } = useAuth();
 
+  console.log('🎯 [Index] Session:', session);
+
   // Redirect if user is authenticated
   useEffect(() => {
     if (session) {
@@ -27,7 +29,7 @@ const Index = () => {
     if (theme !== 'dark') {
       toggleTheme();
     }
-  }, []);
+  }, [theme, toggleTheme]);
 
   // Fetch events from Supabase
   const { data: events, isLoading } = useQuery({
