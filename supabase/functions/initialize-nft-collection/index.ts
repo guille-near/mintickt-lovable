@@ -26,44 +26,38 @@ interface CreateCollectionInput {
 }
 
 serve(async (req) => {
+  // Log the start of the function
   console.log('🚀 [initialize-nft-collection] Function started');
+  console.log('📝 [initialize-nft-collection] Request method:', req.method);
   
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     console.log('✨ [initialize-nft-collection] Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Log the raw request
     const rawBody = await req.text();
     console.log('📝 [initialize-nft-collection] Raw request body:', rawBody);
+    
+    // Early validation of raw body
+    if (!rawBody) {
+      throw new Error('Request body is empty');
+    }
 
+    // Try to parse the JSON and log the result
     let input: CreateCollectionInput;
     try {
-      // Asegurarse de que el body no esté vacío
-      if (!rawBody) {
-        throw new Error('Request body is empty');
-      }
-      
       input = JSON.parse(rawBody);
-      console.log('✅ [initialize-nft-collection] Successfully parsed JSON:', input);
-      
-      // Validar campos requeridos
-      const requiredFields = ['name', 'symbol', 'totalSupply'];
-      const missingFields = requiredFields.filter(field => !input[field]);
-      
-      if (missingFields.length > 0) {
-        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
-      }
-
-      // Asegurarse de que price sea un número
-      input.price = typeof input.price === 'number' ? input.price : 0;
-      
+      console.log('✅ [initialize-nft-collection] Parsed input:', JSON.stringify(input, null, 2));
     } catch (parseError) {
       console.error('❌ [initialize-nft-collection] JSON parse error:', parseError);
       return new Response(
         JSON.stringify({
           error: 'Invalid JSON in request body',
           details: parseError.message,
+          receivedBody: rawBody
         }),
         {
           status: 400,
@@ -71,6 +65,29 @@ serve(async (req) => {
         }
       );
     }
+
+    // Validate required fields
+    const requiredFields = ['name', 'symbol', 'totalSupply'];
+    const missingFields = requiredFields.filter(field => !input[field]);
+    
+    if (missingFields.length > 0) {
+      console.error('❌ [initialize-nft-collection] Missing required fields:', missingFields);
+      return new Response(
+        JSON.stringify({
+          error: 'Missing required fields',
+          missingFields,
+          receivedInput: input
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Ensure price is a number
+    input.price = typeof input.price === 'number' ? input.price : 0;
+    console.log('💰 [initialize-nft-collection] Validated price:', input.price);
 
     // Initialize Solana connection
     console.log('🔗 [initialize-nft-collection] Connecting to Solana devnet');
