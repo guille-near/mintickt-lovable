@@ -32,8 +32,8 @@ export const EventContent = ({
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold mb-4 text-primary font-yrsa">Event Details</h2>
-          <div className="space-y-4 text-muted-foreground font-yrsa font-light text-xl">
+          <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
+          <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
             <p>{description || 'No description available.'}</p>
             <p>
               Join us for an unforgettable experience at this amazing event. We've carefully curated every detail to ensure you have the best time possible. From the moment you arrive, you'll be immersed in an atmosphere of excitement and wonder.
@@ -75,8 +75,8 @@ export const EventContent = ({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-4 text-primary font-yrsa">Event Details</h2>
-        <div className="space-y-4 text-muted-foreground font-yrsa font-light text-xl">
+        <h2 className="text-2xl font-bold mb-4 text-primary">Event Details</h2>
+        <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
           <p>{description || 'No description available.'}</p>
           <p>
             Join us for an unforgettable experience at this amazing event. We've carefully curated every detail to ensure you have the best time possible. From the moment you arrive, you'll be immersed in an atmosphere of excitement and wonder.
