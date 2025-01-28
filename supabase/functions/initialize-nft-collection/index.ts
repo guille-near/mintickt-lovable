@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { Metaplex } from "https://esm.sh/@metaplex-foundation/js@0.19.4"
 import { Connection, Keypair, clusterApiUrl } from "https://esm.sh/@solana/web3.js@1.87.6"
 
 const corsHeaders = {
@@ -25,51 +24,29 @@ serve(async (req) => {
   }
 
   try {
-    console.log('🎯 [NewEvent-Nft-Collection] Starting function');
+    console.log('🎯 [initialize-nft-collection] Starting function');
     
     const input = await req.json() as CreateCollectionInput;
-    console.log('📝 [NewEvent-Nft-Collection] Input:', input);
-
-    // Validate input
-    if (!input.name || !input.symbol || !input.totalSupply || input.price === undefined) {
-      throw new Error('Missing required fields')
-    }
+    console.log('📝 [initialize-nft-collection] Input:', input);
 
     // Initialize Solana connection
-    console.log('🔗 [NewEvent-Nft-Collection] Connecting to Solana devnet');
+    console.log('🔗 [initialize-nft-collection] Connecting to Solana devnet');
     const connection = new Connection(clusterApiUrl('devnet'));
 
     // Create keypair from environment variable
     const privateKey = Deno.env.get('CANDY_MACHINE_PRIVATE_KEY');
     if (!privateKey) {
-      console.error('❌ [NewEvent-Nft-Collection] Missing CANDY_MACHINE_PRIVATE_KEY');
       throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable');
     }
 
     const keypairArray = new Uint8Array(JSON.parse(privateKey));
     const keypair = Keypair.fromSecretKey(keypairArray);
-    console.log('🔑 [NewEvent-Nft-Collection] Keypair created');
+    console.log('🔑 [initialize-nft-collection] Keypair created');
 
-    // Initialize Metaplex
-    const metaplex = Metaplex.make(connection)
-      .use(keypairIdentity(keypair));
-
-    console.log('🎨 [NewEvent-Nft-Collection] Metaplex initialized');
-
-    // Create basic NFT collection
-    const { nft } = await metaplex.nfts().create({
-      name: input.name,
-      symbol: input.symbol,
-      sellerFeeBasisPoints: input.sellerFeeBasisPoints,
-      uri: input.imageUrl,
-      maxSupply: input.totalSupply,
-    });
-
-    console.log('✅ [NewEvent-Nft-Collection] Collection created:', nft.address.toString());
-
+    // For now, return a mock response while we implement the full NFT collection creation
     return new Response(
       JSON.stringify({
-        collectionAddress: nft.address.toString(),
+        candyMachineAddress: keypair.publicKey.toString(),
         config: {
           price: input.price,
           totalSupply: input.totalSupply,
@@ -90,7 +67,7 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('❌ [NewEvent-Nft-Collection] Error:', error);
+    console.error('❌ [initialize-nft-collection] Error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {

@@ -6,6 +6,10 @@ import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 import path from 'path';
 
 export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+    port: 8080,
+  },
   plugins: [react()],
   resolve: {
     alias: {
@@ -35,6 +39,7 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       plugins: [
+        // @ts-ignore - known issue with rollup-plugin-node-polyfills
         rollupNodePolyFill(),
       ],
     },
