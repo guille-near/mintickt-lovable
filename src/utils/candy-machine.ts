@@ -1,5 +1,5 @@
 import { Metaplex, walletAdapterIdentity, CreateCandyMachineInput } from "@metaplex-foundation/js";
-import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
+import { Connection, clusterApiUrl } from "@solana/web3.js";
 import { toast } from "sonner";
 
 export const initializeCandyMachine = async (
@@ -43,23 +43,18 @@ export const initializeCandyMachine = async (
         address: wallet.publicKey,
         updateAuthority: wallet
       },
-      items: [{
-        name: `${eventTitle} Ticket`,
-        uri: imageUrl,
-        sellerFeeBasisPoints: royaltiesPercentage * 100,
-      }],
-      guards: {
+      guards: price > 0 ? {
         solPayment: {
-          amount: { 
+          amount: {
             basisPoints: price * 1_000_000_000,
-            currency: { 
+            currency: {
               symbol: "SOL",
-              decimals: 9
+              decimals: 9,
             }
           },
           destination: wallet.publicKey,
         },
-      }
+      } : undefined
     };
 
     console.log('🎯 [CandyMachine] Creating Candy Machine with settings:', candyMachineSettings);
@@ -98,22 +93,24 @@ export const initializeCandyMachine = async (
 
 export const mintTicketNFT = async (
   wallet: any,
-  candyMachine: any,
+  candyMachineAddress: string,
   eventTitle: string
 ) => {
   try {
     console.log('🎫 [CandyMachine] Starting NFT mint process:', {
-      candyMachine,
+      candyMachineAddress,
       eventTitle
     });
     
     const connection = new Connection(clusterApiUrl("devnet"));
     const metaplex = new Metaplex(connection).use(walletAdapterIdentity(wallet));
 
+    const candyMachine = await metaplex.candyMachines().findByAddress({ address: candyMachineAddress });
+
     console.log('🎯 [CandyMachine] Minting NFT');
     const { nft } = await metaplex.candyMachines().mint({
       candyMachine,
-      collectionUpdateAuthority: wallet.publicKey
+      collectionUpdateAuthority: wallet.publicKey,
     });
 
     console.log('✅ [CandyMachine] NFT minted successfully:', {
