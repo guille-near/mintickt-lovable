@@ -9,7 +9,7 @@ import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 export default defineConfig({
   server: {
     port: 8080,
-    host: true, // This enables listening on all available network interfaces
+    host: true,
   },
   plugins: [
     react(),
@@ -25,7 +25,6 @@ export default defineConfig({
       https: 'https-browserify',
       os: 'os-browserify',
       url: 'url',
-      buffer: 'buffer',
     },
   },
   define: {
@@ -39,7 +38,8 @@ export default defineConfig({
       target: 'esnext',
       plugins: [
         NodeGlobalsPolyfillPlugin({
-          buffer: true,
+          process: true,
+          buffer: true
         }),
         NodeModulesPolyfillPlugin()
       ],
@@ -48,12 +48,6 @@ export default defineConfig({
       '@solana/web3.js',
       '@solana/spl-token',
       'buffer',
-      'crypto-browserify',
-      'events',
-      'stream-browserify',
-      'util',
-      'bn.js',
-      'bigint-buffer',
     ],
   },
   build: {

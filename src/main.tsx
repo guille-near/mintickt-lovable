@@ -1,27 +1,15 @@
-import './utils/polyfills';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './index.css';
-import { ThemeProvider } from './contexts/ThemeProvider';
 import { WalletContextProvider } from './contexts/WalletContextProvider';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'sonner';
-import { AuthProvider } from './contexts/AuthProvider';
+import './index.css';
+import { Buffer } from 'buffer';
+window.Buffer = Buffer;
 
-const queryClient = new QueryClient();
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AuthProvider>
-          <WalletContextProvider>
-            <App />
-            <Toaster />
-          </WalletContextProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <WalletContextProvider>
+      <App />
+    </WalletContextProvider>
   </React.StrictMode>
 );
