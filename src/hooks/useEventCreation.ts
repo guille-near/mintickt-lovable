@@ -29,6 +29,10 @@ export const useEventCreation = () => {
         return null;
       }
 
+      // Set price to 0 for free events, otherwise use the provided price
+      const price = formData.ticketType === 'free' ? 0 : parseFloat(formData.price || '0');
+      console.log("💰 [useEventCreation] Event price:", price);
+
       const nftCollectionData = {
         eventId: 'temp-id',
         name: formData.title!,
@@ -36,7 +40,7 @@ export const useEventCreation = () => {
         description: formData.description || '',
         imageUrl: imageUrl || '',
         totalSupply: parseInt(formData.totalTickets!),
-        price: formData.ticketType === 'paid' ? parseFloat(formData.price || '0') : 0,
+        price: price,
         sellerFeeBasisPoints: 500,
       };
 
@@ -54,7 +58,7 @@ export const useEventCreation = () => {
           date: formData.date?.toISOString(),
           location: formData.location,
           image_url: imageUrl,
-          price: formData.ticketType === 'free' ? 0 : parseFloat(formData.price || "0"),
+          price: price,
           total_tickets: parseInt(formData.totalTickets!),
           remaining_tickets: parseInt(formData.totalTickets!),
           creator_id: userId,
