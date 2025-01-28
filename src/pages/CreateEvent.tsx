@@ -120,9 +120,9 @@ export default function CreateEvent() {
       }
 
       console.log("🎯 [CreateEvent] Initializing NFT collection via Edge Function");
-      const { data: nftData, error: nftError } = await supabase.functions.invoke('NewEvent-Nft-Collection', {
+      const { data: nftData, error: nftError } = await supabase.functions.invoke('initialize-nft-collection', {
         body: {
-          eventId: 'temp-id', // Will be updated after event creation
+          eventId: 'temp-id',
           name: formData.title,
           symbol: 'TCKT',
           description: formData.description || '',
