@@ -19,8 +19,7 @@ interface CreateCollectionInput {
 
 serve(async (req) => {
   console.log('🚀 [initialize-nft-collection] Function started');
-  console.log('📨 [initialize-nft-collection] Request method:', req.method);
-
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     console.log('✨ [initialize-nft-collection] Handling CORS preflight request');
@@ -28,51 +27,54 @@ serve(async (req) => {
   }
 
   try {
-    // Get the request body as text first
+    // Log request details
+    console.log('📨 [initialize-nft-collection] Request method:', req.method);
+    console.log('📨 [initialize-nft-collection] Content-Type:', req.headers.get('content-type'));
+
+    // Get the request body
     const bodyText = await req.text();
     console.log('📝 [initialize-nft-collection] Raw request body:', bodyText);
 
-    // Try to parse the JSON
+    // Parse JSON with error handling
     let input: CreateCollectionInput;
     try {
       input = JSON.parse(bodyText);
     } catch (parseError) {
       console.error('❌ [initialize-nft-collection] JSON parse error:', parseError);
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Invalid JSON in request body',
           details: parseError.message,
           receivedBody: bodyText
         }),
-        { 
+        {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
-
-    console.log('📝 [initialize-nft-collection] Parsed input:', {
-      eventId: input.eventId,
-      name: input.name,
-      symbol: input.symbol,
-      totalSupply: input.totalSupply,
-      price: input.price
-    });
 
     // Validate input
     if (!input.name || !input.symbol || !input.totalSupply || input.price === undefined) {
       console.error('❌ [initialize-nft-collection] Validation failed: Missing required fields');
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Missing required fields',
           receivedInput: input
         }),
-        { 
+        {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
+
+    console.log('✅ [initialize-nft-collection] Input validation passed:', {
+      name: input.name,
+      symbol: input.symbol,
+      totalSupply: input.totalSupply,
+      price: input.price
+    });
 
     // Initialize Solana connection
     console.log('🔗 [initialize-nft-collection] Connecting to Solana devnet');
@@ -80,13 +82,12 @@ serve(async (req) => {
     console.log('✅ [initialize-nft-collection] Connected to Solana devnet');
 
     // Get private key from environment
-    console.log('🔑 [initialize-nft-collection] Retrieving private key from environment');
     const privateKey = Deno.env.get('CANDY_MACHINE_PRIVATE_KEY');
     if (!privateKey) {
       console.error('❌ [initialize-nft-collection] Missing CANDY_MACHINE_PRIVATE_KEY environment variable');
       return new Response(
         JSON.stringify({ error: 'Server configuration error: Missing private key' }),
-        { 
+        {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
@@ -94,14 +95,12 @@ serve(async (req) => {
     }
 
     // Create keypair
-    console.log('🔐 [initialize-nft-collection] Creating keypair from private key');
     const keypairArray = new Uint8Array(JSON.parse(privateKey));
     const keypair = Keypair.fromSecretKey(keypairArray);
     console.log('✅ [initialize-nft-collection] Keypair created successfully');
     console.log('📍 [initialize-nft-collection] Public key:', keypair.publicKey.toString());
 
-    // For now, return a mock response while we implement the full NFT collection creation
-    console.log('📤 [initialize-nft-collection] Preparing response');
+    // For now, return a mock response
     const response = {
       candyMachineAddress: keypair.publicKey.toString(),
       config: {
@@ -117,7 +116,7 @@ serve(async (req) => {
         },
       },
     };
-    
+
     console.log('✅ [initialize-nft-collection] Function completed successfully');
     return new Response(
       JSON.stringify(response),
@@ -131,9 +130,9 @@ serve(async (req) => {
     console.error('❌ [initialize-nft-collection] Error occurred:', error);
     console.error('❌ [initialize-nft-collection] Error stack:', error.stack);
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message,
-        stack: error.stack 
+        stack: error.stack
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
