@@ -125,7 +125,9 @@ export default function EventDetails() {
             </div>
             <div className={`${isMobile ? 'px-4 pb-32' : 'lg:col-span-2 pr-4 max-h-[calc(100vh-8rem)] overflow-y-auto'}`}>
               <div className="space-y-6">
-                <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-gradient-to-r from-custom-gradient-start to-custom-gradient-end bg-clip-text text-transparent dark:text-primary mb-4">{event.title}</h1>
+                <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-custom-gradient-start to-custom-gradient-end bg-clip-text text-transparent dark:text-primary mb-4">
+                  {event.title}
+                </h1>
                 {isMobile && (
                   <EventHeader
                     title={event.title}

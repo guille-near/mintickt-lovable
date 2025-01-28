@@ -20,8 +20,8 @@ export const EventNFTInfo = ({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold mb-4 text-primary font-yrsa">NFT Collection Details</h2>
-      <div className="space-y-4 text-muted-foreground font-yrsa font-light text-xl">
+      <h2 className="text-2xl font-semibold mb-4 text-primary">NFT Collection Details</h2>
+      <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
         <div className="flex flex-col gap-2">
           <p>Collection Name: {collectionName}</p>
           {symbol && <p>Symbol: {symbol}</p>}
