@@ -119,19 +119,29 @@ export default function CreateEvent() {
         console.log("✅ [CreateEvent] Image public URL generated:", imageUrl);
       }
 
-      console.log("🎯 [CreateEvent] Initializing NFT collection via Edge Function");
-      const { data: nftData, error: nftError } = await supabase.functions.invoke('initialize-nft-collection', {
-        body: {
-          eventId: 'temp-id',
-          name: formData.title,
-          symbol: 'TCKT',
-          description: formData.description || '',
-          imageUrl: imageUrl || '',
-          totalSupply: parseInt(formData.totalTickets),
-          price: formData.ticketType === 'paid' ? parseFloat(formData.price || '0') : 0,
-          sellerFeeBasisPoints: 500, // 5%
-        },
-      });
+      // Prepare NFT collection initialization data
+      const nftCollectionData = {
+        eventId: 'temp-id',
+        name: formData.title,
+        symbol: 'TCKT',
+        description: formData.description || '',
+        imageUrl: imageUrl || '',
+        totalSupply: parseInt(formData.totalTickets),
+        price: formData.ticketType === 'paid' ? parseFloat(formData.price || '0') : 0,
+        sellerFeeBasisPoints: 500, // 5%
+      };
+
+      console.log("🎯 [CreateEvent] Initializing NFT collection with data:", nftCollectionData);
+      
+      const { data: nftData, error: nftError } = await supabase.functions.invoke(
+        'initialize-nft-collection',
+        {
+          body: JSON.stringify(nftCollectionData),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       if (nftError) {
         console.error('❌ [CreateEvent] Error initializing NFT collection:', nftError);
