@@ -11,7 +11,6 @@ import AuthenticatedLayout from "@/components/AuthenticatedLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthProvider";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { initializeCandyMachine } from "@/utils/candy-machine";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -120,17 +119,27 @@ export default function CreateEvent() {
         console.log("✅ [CreateEvent] Image public URL generated:", imageUrl);
       }
 
-      console.log("🎯 [CreateEvent] Initializing Candy Machine");
-      const candyMachine = await initializeCandyMachine(
-        wallet,
-        formData.title || '',
-        parseInt(formData.totalTickets || '0'),
-        formData.ticketType === 'paid' ? parseFloat(formData.price || '0') : 0,
-        imageUrl || '',
-        formData.description || ''
-      );
+      console.log("🎯 [CreateEvent] Initializing NFT collection via Edge Function");
+      const { data: nftData, error: nftError } = await supabase.functions.invoke('initialize-nft-collection', {
+        body: {
+          eventId: 'temp-id', // Will be updated after event creation
+          name: formData.title,
+          symbol: 'TCKT',
+          description: formData.description || '',
+          imageUrl: imageUrl || '',
+          totalSupply: parseInt(formData.totalTickets),
+          price: formData.ticketType === 'paid' ? parseFloat(formData.price || '0') : 0,
+          sellerFeeBasisPoints: 500, // 5%
+        },
+      });
 
-      console.log("✅ [CreateEvent] Candy Machine initialized:", candyMachine);
+      if (nftError) {
+        console.error('❌ [CreateEvent] Error initializing NFT collection:', nftError);
+        toast.error("Failed to initialize NFT collection");
+        return;
+      }
+
+      console.log("✅ [CreateEvent] NFT collection initialized:", nftData);
 
       console.log("🎯 [CreateEvent] Creating event in database");
       const { data: event, error } = await supabase
@@ -147,8 +156,8 @@ export default function CreateEvent() {
           creator_id: profile.id,
           is_free: formData.ticketType === 'free',
           organizer_name: profile.username || 'Anonymous',
-          candy_machine_address: candyMachine.address,
-          candy_machine_config: candyMachine.config,
+          candy_machine_address: nftData.candyMachineAddress,
+          candy_machine_config: nftData.config || {},
         })
         .select()
         .single();

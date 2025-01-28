@@ -26,29 +26,37 @@ interface CreateCollectionInput {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const { eventId, name, symbol, description, imageUrl, totalSupply, price, sellerFeeBasisPoints } = await req.json() as CreateCollectionInput
+    console.log('🎯 [initialize-nft-collection] Starting function');
+    
+    const input = await req.json() as CreateCollectionInput;
+    console.log('📝 [initialize-nft-collection] Input:', input);
 
     // Validate input
-    if (!eventId || !name || !symbol || !description || !imageUrl || !totalSupply || price === undefined) {
+    if (!input.name || !input.symbol || !input.totalSupply || input.price === undefined) {
       throw new Error('Missing required fields')
     }
 
     // Initialize Solana connection
+    console.log('🔗 [initialize-nft-collection] Connecting to Solana devnet');
     const connection = new Connection(clusterApiUrl('devnet'))
     
     // Create keypair from environment variable
     const privateKey = Deno.env.get('CANDY_MACHINE_PRIVATE_KEY')
     if (!privateKey) {
+      console.error('❌ [initialize-nft-collection] Missing CANDY_MACHINE_PRIVATE_KEY');
       throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable')
     }
 
     const keypairArray = new Uint8Array(JSON.parse(privateKey))
     const keypair = Keypair.fromSecretKey(keypairArray)
+
+    console.log('🔑 [initialize-nft-collection] Keypair created');
 
     // Initialize Metaplex
     const metaplex = Metaplex.make(connection)
@@ -59,63 +67,46 @@ serve(async (req) => {
         timeout: 60000,
       }))
 
-    console.log('🎯 Creating Candy Machine...')
+    console.log('🎨 [initialize-nft-collection] Metaplex initialized');
+    console.log('🎯 [initialize-nft-collection] Creating Candy Machine...');
 
     // Create Candy Machine
     const { candyMachine } = await metaplex.candyMachines().create({
-      itemsAvailable: totalSupply,
-      sellerFeeBasisPoints: sellerFeeBasisPoints,
+      itemsAvailable: input.totalSupply,
+      sellerFeeBasisPoints: input.sellerFeeBasisPoints,
       collection: {
-        name: name,
-        family: symbol,
+        name: input.name,
+        family: input.symbol,
       },
-      items: Array(totalSupply).fill({
-        name: `${name} #$ID+1$`,
-        uri: imageUrl,
+      items: Array(input.totalSupply).fill({
+        name: `${input.name} #$ID+1$`,
+        uri: input.imageUrl,
       }) as CandyMachineItem[],
-      guards: {
+      guards: input.price > 0 ? {
         solPayment: {
-          amount: { basisPoints: price * 1_000_000_000, currency: { symbol: 'SOL', decimals: 9 } },
+          amount: { basisPoints: input.price * 1_000_000_000, currency: { symbol: 'SOL', decimals: 9 } },
           destination: keypair.publicKey,
         },
-      },
+      } : undefined,
     })
 
-    console.log('✅ Candy Machine created:', candyMachine.address.toString())
-
-    // Initialize Supabase client
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-
-    // Update event with Candy Machine details
-    const { error: updateError } = await supabaseClient
-      .from('events')
-      .update({
-        candy_machine_address: candyMachine.address.toString(),
-        candy_machine_config: {
-          price: price,
-          totalSupply: totalSupply,
-          itemsRedeemed: 0,
-          isActive: true,
-        },
-        nft_collection_name: name,
-        nft_symbol: symbol,
-        nft_description: description,
-        nft_metadata_uri: imageUrl,
-      })
-      .eq('id', eventId)
-
-    if (updateError) {
-      console.error('❌ Error updating event:', updateError)
-      throw updateError
-    }
+    console.log('✅ [initialize-nft-collection] Candy Machine created:', candyMachine.address.toString());
 
     return new Response(
       JSON.stringify({
         candyMachineAddress: candyMachine.address.toString(),
-        message: 'Candy Machine created successfully',
+        config: {
+          price: input.price,
+          totalSupply: input.totalSupply,
+          itemsRedeemed: 0,
+          isActive: true,
+          collection: {
+            name: input.name,
+            family: input.symbol,
+            description: input.description,
+            image: input.imageUrl
+          },
+        },
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -124,7 +115,7 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('❌ Error:', error)
+    console.error('❌ [initialize-nft-collection] Error:', error);
     return new Response(
       JSON.stringify({
         error: error.message,
