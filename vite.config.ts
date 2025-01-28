@@ -24,7 +24,6 @@ export default defineConfig({
       assert: 'assert',
       crypto: 'crypto-browserify',
       util: 'util',
-      buffer: 'buffer',  // Use the buffer package directly
     },
   },
   define: {
@@ -39,7 +38,7 @@ export default defineConfig({
       plugins: [
         NodeGlobalsPolyfillPlugin({
           process: true,
-          buffer: true  // Enable buffer polyfill
+          buffer: false  // Disable buffer polyfill here
         }),
         NodeModulesPolyfillPlugin(),
       ],
