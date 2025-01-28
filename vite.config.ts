@@ -24,6 +24,7 @@ export default defineConfig({
       assert: 'assert',
       crypto: 'crypto-browserify',
       util: 'util',
+      buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6', // Updated buffer alias
     },
   },
   define: {
