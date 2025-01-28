@@ -1,63 +1,42 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import path from 'path';
-import { componentTagger } from "lovable-tagger";
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
+import path from 'path';
 
 export default defineConfig({
-  server: {
-    port: 8080,
-    host: true,
-  },
-  plugins: [
-    react(),
-    componentTagger(),
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      stream: 'stream-browserify',
+      stream: 'rollup-plugin-node-polyfills/polyfills/stream',
+      events: 'rollup-plugin-node-polyfills/polyfills/events',
+      assert: 'assert',
       crypto: 'crypto-browserify',
-      events: 'events',
-      http: 'stream-http',
-      https: 'https-browserify',
-      os: 'os-browserify',
-      url: 'url',
-      buffer: 'buffer',
+      util: 'util',
     },
-  },
-  define: {
-    'process.env.BROWSER': true,
-    'process.env.NODE_DEBUG': JSON.stringify(''),
-    'process.env.REACT_APP_CLUSTER': JSON.stringify('devnet'),
-    global: 'globalThis',
   },
   optimizeDeps: {
     esbuildOptions: {
-      target: 'esnext',
+      define: {
+        global: 'globalThis',
+      },
       plugins: [
         NodeGlobalsPolyfillPlugin({
           buffer: true,
-          process: true
+          process: true,
         }),
-        NodeModulesPolyfillPlugin()
+        NodeModulesPolyfillPlugin(),
       ],
     },
-    include: [
-      '@solana/web3.js',
-      '@solana/spl-token',
-      'buffer',
-    ],
   },
   build: {
     target: 'esnext',
     rollupOptions: {
       plugins: [
-        // @ts-ignore - Known issue with types, but the plugin works correctly
-        rollupNodePolyFill()
-      ]
+        rollupNodePolyFill(),
+      ],
     },
     commonjsOptions: {
       transformMixedEsModules: true,

@@ -1,10 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { 
-  Metaplex, 
-  keypairIdentity, 
-  bundlrStorage,
-} from 'https://esm.sh/@metaplex-foundation/js@0.19.4'
-import { Connection, Keypair, clusterApiUrl } from 'https://esm.sh/@solana/web3.js@1.87.6'
+import { Metaplex } from "https://esm.sh/@metaplex-foundation/js@0.19.4"
+import { Connection, Keypair, clusterApiUrl } from "https://esm.sh/@solana/web3.js@1.87.6"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -41,57 +37,39 @@ serve(async (req) => {
 
     // Initialize Solana connection
     console.log('🔗 [NewEvent-Nft-Collection] Connecting to Solana devnet');
-    const connection = new Connection(clusterApiUrl('devnet'))
-    
+    const connection = new Connection(clusterApiUrl('devnet'));
+
     // Create keypair from environment variable
-    const privateKey = Deno.env.get('CANDY_MACHINE_PRIVATE_KEY')
+    const privateKey = Deno.env.get('CANDY_MACHINE_PRIVATE_KEY');
     if (!privateKey) {
       console.error('❌ [NewEvent-Nft-Collection] Missing CANDY_MACHINE_PRIVATE_KEY');
-      throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable')
+      throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable');
     }
 
-    const keypairArray = new Uint8Array(JSON.parse(privateKey))
-    const keypair = Keypair.fromSecretKey(keypairArray)
-
+    const keypairArray = new Uint8Array(JSON.parse(privateKey));
+    const keypair = Keypair.fromSecretKey(keypairArray);
     console.log('🔑 [NewEvent-Nft-Collection] Keypair created');
 
     // Initialize Metaplex
     const metaplex = Metaplex.make(connection)
-      .use(keypairIdentity(keypair))
-      .use(bundlrStorage({
-        address: 'https://devnet.bundlr.network',
-        providerUrl: clusterApiUrl('devnet'),
-        timeout: 60000,
-      }))
+      .use(keypairIdentity(keypair));
 
     console.log('🎨 [NewEvent-Nft-Collection] Metaplex initialized');
-    console.log('🎯 [NewEvent-Nft-Collection] Creating Candy Machine...');
 
-    // Create Candy Machine
-    const { candyMachine } = await metaplex.candyMachines().create({
-      itemsAvailable: input.totalSupply,
+    // Create basic NFT collection
+    const { nft } = await metaplex.nfts().create({
+      name: input.name,
+      symbol: input.symbol,
       sellerFeeBasisPoints: input.sellerFeeBasisPoints,
-      collection: {
-        name: input.name,
-        family: input.symbol,
-      },
-      items: Array(input.totalSupply).fill({
-        name: `${input.name} #$ID+1$`,
-        uri: input.imageUrl,
-      }),
-      guards: input.price > 0 ? {
-        solPayment: {
-          amount: { basisPoints: input.price * 1_000_000_000, currency: { symbol: 'SOL', decimals: 9 } },
-          destination: keypair.publicKey,
-        },
-      } : undefined,
-    })
+      uri: input.imageUrl,
+      maxSupply: input.totalSupply,
+    });
 
-    console.log('✅ [NewEvent-Nft-Collection] Candy Machine created:', candyMachine.address.toString());
+    console.log('✅ [NewEvent-Nft-Collection] Collection created:', nft.address.toString());
 
     return new Response(
       JSON.stringify({
-        candyMachineAddress: candyMachine.address.toString(),
+        collectionAddress: nft.address.toString(),
         config: {
           price: input.price,
           totalSupply: input.totalSupply,
@@ -99,7 +77,7 @@ serve(async (req) => {
           isActive: true,
           collection: {
             name: input.name,
-            family: input.symbol,
+            symbol: input.symbol,
             description: input.description,
             image: input.imageUrl
           },
@@ -114,9 +92,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('❌ [NewEvent-Nft-Collection] Error:', error);
     return new Response(
-      JSON.stringify({
-        error: error.message,
-      }),
+      JSON.stringify({ error: error.message }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
