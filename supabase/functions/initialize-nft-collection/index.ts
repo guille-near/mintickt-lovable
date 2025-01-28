@@ -55,7 +55,8 @@ serve(async (req) => {
       );
     }
 
-    const requiredFields = ['name', 'symbol', 'totalSupply', 'price'];
+    // Validate all required fields
+    const requiredFields = ['name', 'symbol', 'totalSupply'];
     const missingFields = requiredFields.filter(field => !input[field]);
     
     if (missingFields.length > 0) {
@@ -71,6 +72,10 @@ serve(async (req) => {
         }
       );
     }
+
+    // Ensure price is a number (default to 0 if not provided)
+    input.price = Number(input.price) || 0;
+    console.log('💰 [initialize-nft-collection] Validated price:', input.price);
 
     // Initialize Solana connection
     console.log('🔗 [initialize-nft-collection] Connecting to Solana devnet');
@@ -143,7 +148,16 @@ serve(async (req) => {
 
     } catch (txError) {
       console.error('❌ [initialize-nft-collection] Transaction error:', txError);
-      throw new Error(`Failed to create mint account: ${txError.message}`);
+      return new Response(
+        JSON.stringify({
+          error: 'Transaction failed',
+          details: txError.message,
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
   } catch (error) {
