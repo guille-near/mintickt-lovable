@@ -1,13 +1,15 @@
+import { Buffer } from 'buffer';
+
 declare global {
   interface Window {
-    process: any;
-    global: typeof globalThis;
+    Buffer: typeof Buffer;
   }
 }
 
 if (typeof window !== 'undefined') {
-  window.global = window;
-  window.process = { env: {} };
+  if (!window.Buffer) {
+    window.Buffer = Buffer;
+  }
 }
 
 export {};

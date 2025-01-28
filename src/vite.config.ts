@@ -40,6 +40,7 @@ export default defineConfig({
       plugins: [
         NodeGlobalsPolyfillPlugin({
           buffer: true,
+          process: true,
         }),
         NodeModulesPolyfillPlugin()
       ],
@@ -54,7 +55,8 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       plugins: [
-        rollupNodePolyFill() as any
+        // @ts-ignore Known type issue with rollup-plugin-node-polyfills
+        rollupNodePolyFill()
       ]
     },
     commonjsOptions: {
