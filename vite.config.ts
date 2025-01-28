@@ -25,6 +25,7 @@ export default defineConfig({
       https: 'https-browserify',
       os: 'os-browserify',
       url: 'url',
+      buffer: 'buffer',
     },
   },
   define: {
@@ -38,8 +39,8 @@ export default defineConfig({
       target: 'esnext',
       plugins: [
         NodeGlobalsPolyfillPlugin({
-          process: true,
-          buffer: true
+          buffer: true,
+          process: true
         }),
         NodeModulesPolyfillPlugin()
       ],
@@ -54,7 +55,7 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       plugins: [
-        rollupNodePolyFill() as any
+        rollupNodePolyFill()
       ]
     },
     commonjsOptions: {

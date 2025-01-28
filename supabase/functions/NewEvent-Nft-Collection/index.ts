@@ -1,11 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { 
   Metaplex, 
   keypairIdentity, 
   bundlrStorage,
-  toMetaplexFile,
-  CandyMachineItem,
 } from 'https://esm.sh/@metaplex-foundation/js@0.19.4'
 import { Connection, Keypair, clusterApiUrl } from 'https://esm.sh/@solana/web3.js@1.87.6'
 
@@ -81,7 +78,7 @@ serve(async (req) => {
       items: Array(input.totalSupply).fill({
         name: `${input.name} #$ID+1$`,
         uri: input.imageUrl,
-      }) as CandyMachineItem[],
+      }),
       guards: input.price > 0 ? {
         solPayment: {
           amount: { basisPoints: input.price * 1_000_000_000, currency: { symbol: 'SOL', decimals: 9 } },
