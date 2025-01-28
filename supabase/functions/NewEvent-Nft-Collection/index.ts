@@ -32,10 +32,10 @@ serve(async (req) => {
   }
 
   try {
-    console.log('🎯 [initialize-nft-collection] Starting function');
+    console.log('🎯 [NewEvent-Nft-Collection] Starting function');
     
     const input = await req.json() as CreateCollectionInput;
-    console.log('📝 [initialize-nft-collection] Input:', input);
+    console.log('📝 [NewEvent-Nft-Collection] Input:', input);
 
     // Validate input
     if (!input.name || !input.symbol || !input.totalSupply || input.price === undefined) {
@@ -43,20 +43,20 @@ serve(async (req) => {
     }
 
     // Initialize Solana connection
-    console.log('🔗 [initialize-nft-collection] Connecting to Solana devnet');
+    console.log('🔗 [NewEvent-Nft-Collection] Connecting to Solana devnet');
     const connection = new Connection(clusterApiUrl('devnet'))
     
     // Create keypair from environment variable
     const privateKey = Deno.env.get('CANDY_MACHINE_PRIVATE_KEY')
     if (!privateKey) {
-      console.error('❌ [initialize-nft-collection] Missing CANDY_MACHINE_PRIVATE_KEY');
+      console.error('❌ [NewEvent-Nft-Collection] Missing CANDY_MACHINE_PRIVATE_KEY');
       throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable')
     }
 
     const keypairArray = new Uint8Array(JSON.parse(privateKey))
     const keypair = Keypair.fromSecretKey(keypairArray)
 
-    console.log('🔑 [initialize-nft-collection] Keypair created');
+    console.log('🔑 [NewEvent-Nft-Collection] Keypair created');
 
     // Initialize Metaplex
     const metaplex = Metaplex.make(connection)
@@ -67,8 +67,8 @@ serve(async (req) => {
         timeout: 60000,
       }))
 
-    console.log('🎨 [initialize-nft-collection] Metaplex initialized');
-    console.log('🎯 [initialize-nft-collection] Creating Candy Machine...');
+    console.log('🎨 [NewEvent-Nft-Collection] Metaplex initialized');
+    console.log('🎯 [NewEvent-Nft-Collection] Creating Candy Machine...');
 
     // Create Candy Machine
     const { candyMachine } = await metaplex.candyMachines().create({
@@ -90,7 +90,7 @@ serve(async (req) => {
       } : undefined,
     })
 
-    console.log('✅ [initialize-nft-collection] Candy Machine created:', candyMachine.address.toString());
+    console.log('✅ [NewEvent-Nft-Collection] Candy Machine created:', candyMachine.address.toString());
 
     return new Response(
       JSON.stringify({
@@ -115,7 +115,7 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('❌ [initialize-nft-collection] Error:', error);
+    console.error('❌ [NewEvent-Nft-Collection] Error:', error);
     return new Response(
       JSON.stringify({
         error: error.message,
