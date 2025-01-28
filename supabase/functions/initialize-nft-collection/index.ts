@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
-import * as anchor from "https://esm.sh/@project-serum/anchor@0.26.0"
 import { Connection, Keypair, PublicKey, clusterApiUrl } from "https://esm.sh/@solana/web3.js@1.95.8"
+import { Metaplex } from "https://esm.sh/@metaplex-foundation/js@0.19.4"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -9,7 +9,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -26,13 +25,11 @@ serve(async (req) => {
 
     console.log('Initializing NFT collection for event:', eventId)
 
-    // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Fetch event details
     const { data: event, error: eventError } = await supabaseClient
       .from('events')
       .select('*')
@@ -47,48 +44,44 @@ serve(async (req) => {
       )
     }
 
-    // Initialize Solana connection (using devnet for development)
     const connection = new Connection(clusterApiUrl('devnet'), 'confirmed')
-
-    // Create a new keypair for the collection
     const collectionKeypair = Keypair.generate()
+    
     console.log('Generated collection keypair:', collectionKeypair.publicKey.toString())
 
-    // Initialize Anchor provider
-    const wallet = new anchor.Wallet(collectionKeypair)
-    const provider = new anchor.AnchorProvider(
-      connection,
-      wallet,
-      { commitment: 'confirmed' }
-    )
+    // Request airdrop for the collection keypair
+    const airdropTx = await connection.requestAirdrop(collectionKeypair.publicKey, 2 * 1_000_000_000) // 2 SOL
+    await connection.confirmTransaction(airdropTx)
+    console.log('Airdrop confirmed:', airdropTx)
 
-    // Initialize the program
-    const programId = new PublicKey(Deno.env.get('PROGRAM_ID') ?? '')
+    // Initialize Metaplex
+    const metaplex = new Metaplex(connection)
+    metaplex.use({
+      keypair: collectionKeypair,
+    })
 
-    // Generate PDA for the event
-    const [eventPda] = PublicKey.findProgramAddressSync(
-      [Buffer.from("event"), collectionKeypair.publicKey.toBuffer()],
-      programId
-    )
+    console.log('Creating NFT collection...')
+    const { nft: collectionNft } = await metaplex.nfts().create({
+      name: event.title,
+      symbol: event.nft_symbol || 'TCKT',
+      uri: event.image_url || '',
+      sellerFeeBasisPoints: (event.royalties_percentage || 5) * 100,
+      isCollection: true,
+      updateAuthority: collectionKeypair,
+    })
 
-    console.log('Event PDA:', eventPda.toString())
+    console.log('Collection NFT created:', collectionNft.address.toString())
 
-    // Create the NFT collection
-    const tx = await connection.requestAirdrop(collectionKeypair.publicKey, 1000000000)
-    await connection.confirmTransaction(tx)
-
-    console.log('Transaction signature:', tx)
-
-    // Update the event with the collection address and metadata
     const { error: updateError } = await supabaseClient
       .from('events')
       .update({
         candy_machine_address: collectionKeypair.publicKey.toString(),
         candy_machine_config: {
           itemsAvailable: event.total_tickets,
-          sellerFeeBasisPoints: event.royalties_percentage * 100,
+          sellerFeeBasisPoints: (event.royalties_percentage || 5) * 100,
           symbol: event.nft_symbol || 'TCKT',
           collection: {
+            address: collectionNft.address.toString(),
             name: event.title,
             family: "NFT Tickets",
           }
@@ -107,8 +100,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         message: 'NFT collection initialized successfully',
-        collectionAddress: collectionKeypair.publicKey.toString(),
-        transactionSignature: tx
+        collectionAddress: collectionNft.address.toString(),
+        candyMachineAddress: collectionKeypair.publicKey.toString(),
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     )

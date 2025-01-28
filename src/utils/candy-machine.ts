@@ -1,4 +1,4 @@
-import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
+import { Metaplex, walletAdapterIdentity, CreateCandyMachineInput } from "@metaplex-foundation/js";
 import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "sonner";
@@ -6,12 +6,17 @@ import { toast } from "sonner";
 export const initializeCandyMachine = async (
   wallet: any,
   eventTitle: string,
-  totalTickets: number
+  totalTickets: number,
+  price: number,
+  imageUrl: string,
+  description: string,
+  royaltiesPercentage: number = 5
 ) => {
   try {
     console.log('🍬 [CandyMachine] Starting initialization with params:', {
       eventTitle,
       totalTickets,
+      price,
       walletPublicKey: wallet.publicKey?.toString()
     });
     
@@ -22,34 +27,46 @@ export const initializeCandyMachine = async (
     console.log('🎨 [CandyMachine] Metaplex instance created');
 
     console.log('⚙️ [CandyMachine] Configuring Candy Machine settings');
-    // Create the Candy Machine with more detailed configuration
-    const { candyMachine } = await metaplex.candyMachines().create({
+
+    const candyMachineSettings: CreateCandyMachineInput = {
       itemsAvailable: totalTickets,
-      sellerFeeBasisPoints: 500, // 5% royalties
-      collection: {
-        address: wallet.publicKey,
-        updateAuthority: wallet
-      },
-      guards: {
-        solPayment: {
-          amount: { 
-            basisPoints: 0, 
-            currency: { 
-              symbol: "SOL", 
-              decimals: 9 
-            } 
-          },
-          destination: wallet.publicKey,
-        },
-      },
+      sellerFeeBasisPoints: royaltiesPercentage * 100, // Convert percentage to basis points
+      symbol: "TCKT",
+      maxEditionSupply: 0,
+      isMutable: true,
       creators: [
         {
           address: wallet.publicKey,
           share: 100,
         },
       ],
-      isMutable: true,
-    });
+      collection: {
+        address: wallet.publicKey,
+        updateAuthority: wallet
+      },
+      items: [{
+        name: `${eventTitle} Ticket`,
+        uri: imageUrl,
+        sellerFeeBasisPoints: royaltiesPercentage * 100,
+      }],
+      guards: {
+        solPayment: {
+          amount: { 
+            basisPoints: price * 1_000_000_000, // Convert SOL to lamports
+            currency: { 
+              symbol: "SOL",
+              decimals: 9,
+              namespace: "spl-token"
+            }
+          },
+          destination: wallet.publicKey,
+        },
+      }
+    };
+
+    console.log('🎯 [CandyMachine] Creating Candy Machine with settings:', candyMachineSettings);
+    
+    const { candyMachine } = await metaplex.candyMachines().create(candyMachineSettings);
 
     console.log('✅ [CandyMachine] Created successfully:', {
       address: candyMachine.address.toString(),
@@ -61,10 +78,13 @@ export const initializeCandyMachine = async (
       address: candyMachine.address.toString(),
       config: {
         itemsAvailable: totalTickets,
-        sellerFeeBasisPoints: 500,
+        sellerFeeBasisPoints: royaltiesPercentage * 100,
+        price: price,
         collection: {
           name: eventTitle,
           family: "NFT Tickets",
+          description: description,
+          image: imageUrl
         },
         creators: [{
           address: wallet.publicKey.toString(),
@@ -82,12 +102,14 @@ export const initializeCandyMachine = async (
 export const mintTicketNFT = async (
   wallet: any,
   candyMachineAddress: string,
-  eventTitle: string
+  eventTitle: string,
+  price: number
 ) => {
   try {
     console.log('🎫 [CandyMachine] Starting NFT mint process:', {
       candyMachineAddress,
-      eventTitle
+      eventTitle,
+      price
     });
     
     const connection = new Connection(clusterApiUrl("devnet"));
@@ -102,11 +124,12 @@ export const mintTicketNFT = async (
     const { nft } = await metaplex.candyMachines().mint({
       candyMachine,
       collectionUpdateAuthority: wallet.publicKey,
+      price: price
     });
 
     console.log('✅ [CandyMachine] NFT minted successfully:', {
       mintAddress: nft.address.toString(),
-      ownerAddress: nft.token.ownerAddress.toString() // Updated this line to use token.ownerAddress
+      ownerAddress: nft.token.ownerAddress.toString()
     });
     
     return nft.address.toString();
