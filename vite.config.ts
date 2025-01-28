@@ -6,14 +6,14 @@ import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 import path from 'path';
 import { componentTagger } from 'lovable-tagger';
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 8080,
   },
   plugins: [
     react(),
-    mode === 'development' && componentTagger(),
+    process.env.NODE_ENV === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -37,8 +37,7 @@ export default defineConfig(({ mode }) => ({
       plugins: [
         NodeGlobalsPolyfillPlugin({
           process: true,
-          // Disable buffer polyfill since we're handling it in polyfills.ts
-          buffer: false
+          buffer: true
         }),
         NodeModulesPolyfillPlugin(),
       ],
@@ -56,4 +55,4 @@ export default defineConfig(({ mode }) => ({
       transformMixedEsModules: true,
     },
   },
-}));
+});
