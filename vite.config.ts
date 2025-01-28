@@ -21,6 +21,10 @@ export default defineConfig({
       util: 'util',
     },
   },
+  define: {
+    'process.env.NODE_DEBUG': JSON.stringify(''),
+    global: 'globalThis',
+  },
   optimizeDeps: {
     esbuildOptions: {
       define: {
@@ -28,8 +32,9 @@ export default defineConfig({
       },
       plugins: [
         NodeGlobalsPolyfillPlugin({
-          buffer: true,
           process: true,
+          // Remove buffer from here since we're handling it in polyfills.ts
+          buffer: false
         }),
         NodeModulesPolyfillPlugin(),
       ],
