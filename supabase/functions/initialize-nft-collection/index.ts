@@ -3,8 +3,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { 
   Connection, 
   Keypair,
-  clusterApiUrl,
-  PublicKey
+  clusterApiUrl
 } from "https://esm.sh/@solana/web3.js@1.87.6"
 
 import { corsHeaders } from "./cors.ts"
@@ -14,7 +13,10 @@ import {
   createKeypairFromPrivateKey,
   checkConnection,
   checkBalance,
-  validateInput
+  validateInput,
+  generateSugarConfig,
+  initializeSugarEnvironment,
+  runSugarCommand
 } from "./utils.ts"
 import { CreateCollectionInput } from "./types.ts"
 
@@ -61,25 +63,54 @@ serve(async (req) => {
       );
     }
 
+    // Generate Sugar configuration
+    const config = generateSugarConfig(input, keypair);
+    console.log('📝 [initialize-nft-collection] Generated Sugar config:', config);
+
+    // Create temporary directory for Sugar files
+    const configDir = await Deno.makeTempDir();
+    console.log('📁 [initialize-nft-collection] Created temp directory:', configDir);
+
+    // Initialize Sugar environment
+    await initializeSugarEnvironment(input, configDir);
+
+    // Run Sugar commands
+    const createResult = await runSugarCommand(['create-config'], configDir);
+    if (!createResult.success) {
+      throw new Error(`Failed to create Sugar config: ${createResult.output}`);
+    }
+
+    const uploadResult = await runSugarCommand(['upload'], configDir);
+    if (!uploadResult.success) {
+      throw new Error(`Failed to upload assets: ${uploadResult.output}`);
+    }
+
+    const deployResult = await runSugarCommand(['deploy'], configDir);
+    if (!deployResult.success) {
+      throw new Error(`Failed to deploy collection: ${deployResult.output}`);
+    }
+
+    // Parse collection mint address from deploy output
+    const mintAddressMatch = deployResult.output.match(/Collection mint ID: ([A-Za-z0-9]+)/);
+    const collectionMint = mintAddressMatch ? mintAddressMatch[1] : null;
+
     // Create response data
     const responseData = {
       success: true,
-      candyMachineAddress: keypair.publicKey.toString(),
-      config: {
-        price: input.price,
-        totalSupply: input.totalSupply,
-        itemsRedeemed: 0,
-        isActive: true,
-        collection: {
-          name: input.name,
-          symbol: input.symbol || 'TCKT',
-          description: input.description || '',
-          image: input.imageUrl || '',
-        },
-      },
+      config,
+      cache: null, // Sugar will generate this
+      collectionMint
     };
 
     console.log('✅ [initialize-nft-collection] Operation successful:', responseData);
+
+    // Cleanup temp directory
+    try {
+      await Deno.remove(configDir, { recursive: true });
+      console.log('🧹 [initialize-nft-collection] Cleaned up temp directory');
+    } catch (cleanupError) {
+      console.error('⚠️ [initialize-nft-collection] Failed to cleanup temp directory:', cleanupError);
+    }
 
     return new Response(
       customJSONStringify(responseData),
