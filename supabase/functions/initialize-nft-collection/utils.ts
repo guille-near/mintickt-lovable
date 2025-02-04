@@ -49,7 +49,6 @@ export const checkConnection = async (connection: Connection): Promise<void> => 
 export const checkBalance = async (connection: Connection, publicKey: PublicKey): Promise<void> => {
   try {
     const balance = await connection.getBalance(publicKey);
-    const balanceInSOL = balance.toString();
     console.log('💰 [initialize-nft-collection] Keypair balance (lamports):', balance.toString());
     
     // Convert balance to SOL for display (1 SOL = 1e9 lamports)
@@ -69,6 +68,8 @@ export const checkBalance = async (connection: Connection, publicKey: PublicKey)
 };
 
 export const validateInput = (input: any): void => {
+  console.log('🔍 [initialize-nft-collection] Validating input:', input);
+
   const requiredFields = ['name', 'symbol', 'totalSupply'];
   const missingFields = requiredFields.filter(field => !input[field]);
   
@@ -76,4 +77,17 @@ export const validateInput = (input: any): void => {
     console.error('❌ [initialize-nft-collection] Missing required fields:', missingFields);
     throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
   }
+
+  // Validate totalSupply is a positive number
+  if (typeof input.totalSupply !== 'number' || input.totalSupply <= 0) {
+    throw new Error('totalSupply must be a positive number');
+  }
+
+  // Validate price is a non-negative number
+  if (input.price && (typeof input.price !== 'number' || input.price < 0)) {
+    throw new Error('price must be a non-negative number');
+  }
+
+  console.log('✅ [initialize-nft-collection] Input validation passed');
 };
+
