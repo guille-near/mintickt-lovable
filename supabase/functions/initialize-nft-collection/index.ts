@@ -15,6 +15,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Custom JSON serializer to handle bigint
+const customJSONStringify = (obj: any): string => {
+  return JSON.stringify(obj, (_, value) =>
+    typeof value === 'bigint'
+      ? value.toString()
+      : value
+  );
+};
+
 interface CreateCollectionInput {
   eventId: string;
   name: string;
@@ -39,7 +48,7 @@ serve(async (req) => {
     if (!privateKeyString) {
       console.error('❌ [initialize-nft-collection] Missing CANDY_MACHINE_PRIVATE_KEY');
       return new Response(
-        JSON.stringify({ 
+        customJSONStringify({ 
           error: 'Missing CANDY_MACHINE_PRIVATE_KEY environment variable. Please set it in Supabase Edge Function secrets.' 
         }),
         { 
@@ -67,7 +76,7 @@ serve(async (req) => {
       console.error('❌ [initialize-nft-collection] Parse error details:', parseError);
       console.error('❌ [initialize-nft-collection] Invalid private key format. Expected a JSON array of numbers.');
       return new Response(
-        JSON.stringify({
+        customJSONStringify({
           error: 'Invalid private key format. Please ensure CANDY_MACHINE_PRIVATE_KEY is set to a JSON array of numbers in Supabase Edge Function secrets.',
           details: parseError.message
         }),
@@ -86,7 +95,7 @@ serve(async (req) => {
     } catch (keypairError) {
       console.error('❌ [initialize-nft-collection] Failed to create keypair:', keypairError);
       return new Response(
-        JSON.stringify({
+        customJSONStringify({
           error: 'Invalid keypair. Please check the CANDY_MACHINE_PRIVATE_KEY format.',
           details: keypairError.message
         }),
@@ -104,7 +113,7 @@ serve(async (req) => {
     
     if (balance < 1000000) { // Less than 0.001 SOL
       return new Response(
-        JSON.stringify({
+        customJSONStringify({
           error: `Insufficient balance (${balance / 1e9} SOL). Please fund the wallet with some devnet SOL`,
           publicKey: keypair.publicKey.toString()
         }),
@@ -121,7 +130,7 @@ serve(async (req) => {
 
     if (!rawBody) {
       return new Response(
-        JSON.stringify({ error: 'Request body is empty' }),
+        customJSONStringify({ error: 'Request body is empty' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -133,7 +142,7 @@ serve(async (req) => {
     } catch (parseError) {
       console.error('❌ [initialize-nft-collection] JSON parse error:', parseError);
       return new Response(
-        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        customJSONStringify({ error: 'Invalid JSON in request body' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -144,7 +153,7 @@ serve(async (req) => {
     if (missingFields.length > 0) {
       console.error('❌ [initialize-nft-collection] Missing required fields:', missingFields);
       return new Response(
-        JSON.stringify({ error: 'Missing required fields', missingFields }),
+        customJSONStringify({ error: 'Missing required fields', missingFields }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -179,7 +188,7 @@ serve(async (req) => {
       console.log('✅ [initialize-nft-collection] Transaction successful. Signature:', signature);
 
       return new Response(
-        JSON.stringify({
+        customJSONStringify({
           success: true,
           candyMachineAddress: mintKeypair.publicKey.toString(),
           signature,
@@ -202,7 +211,7 @@ serve(async (req) => {
     } catch (txError) {
       console.error('❌ [initialize-nft-collection] Transaction error:', txError);
       return new Response(
-        JSON.stringify({
+        customJSONStringify({
           error: 'Transaction failed',
           details: txError.message,
           publicKey: keypair.publicKey.toString()
@@ -217,7 +226,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('❌ [initialize-nft-collection] Error:', error);
     return new Response(
-      JSON.stringify({
+      customJSONStringify({
         error: error.message,
         stack: error.stack,
       }),
