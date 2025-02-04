@@ -40,7 +40,10 @@ export const checkBalance = async (connection: Connection, publicKey: PublicKey)
   console.log('💰 [initialize-nft-collection] Keypair balance:', balance / 1e9, 'SOL');
   
   if (balance < 1000000) { // Less than 0.001 SOL
-    throw new Error(`Insufficient balance (${balance / 1e9} SOL). Please fund the wallet with some devnet SOL`);
+    throw new Error(
+      `The system wallet (${publicKey.toString()}) has insufficient balance (${balance / 1e9} SOL) to create NFT collections. ` +
+      `Please fund it with some devnet SOL at https://solfaucet.com`
+    );
   }
 };
 
@@ -53,4 +56,3 @@ export const validateInput = (input: any): void => {
     throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
   }
 };
-
