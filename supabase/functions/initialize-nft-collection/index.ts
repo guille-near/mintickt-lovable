@@ -41,16 +41,24 @@ serve(async (req) => {
       throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable');
     }
 
-    console.log('🔑 [initialize-nft-collection] Got private key string:', privateKeyString.substring(0, 20) + '...');
+    console.log('🔍 [initialize-nft-collection] Private key type:', typeof privateKeyString);
+    console.log('🔑 [initialize-nft-collection] Private key string (first 20 chars):', privateKeyString.substring(0, 20) + '...');
+    console.log('📏 [initialize-nft-collection] Private key length:', privateKeyString.length);
 
     // Test private key parsing
     let privateKeyUint8: Uint8Array;
     try {
-      privateKeyUint8 = new Uint8Array(JSON.parse(privateKeyString));
-      console.log('✅ [initialize-nft-collection] Successfully parsed private key to Uint8Array of length:', privateKeyUint8.length);
+      // First, try to parse the string as JSON
+      const parsedJson = JSON.parse(privateKeyString);
+      console.log('✅ [initialize-nft-collection] Successfully parsed JSON. Type:', Array.isArray(parsedJson) ? 'array' : typeof parsedJson);
+      
+      // Convert to Uint8Array
+      privateKeyUint8 = new Uint8Array(parsedJson);
+      console.log('✅ [initialize-nft-collection] Successfully created Uint8Array of length:', privateKeyUint8.length);
     } catch (parseError) {
-      console.error('❌ [initialize-nft-collection] Invalid private key format:', parseError);
-      throw new Error('Invalid private key format. Please ensure it is a properly formatted JSON array');
+      console.error('❌ [initialize-nft-collection] Parse error details:', parseError);
+      console.error('❌ [initialize-nft-collection] Invalid private key format. Expected a JSON array of numbers.');
+      throw new Error(`Invalid private key format: ${parseError.message}. Please ensure it is a properly formatted JSON array of numbers.`);
     }
 
     // Test keypair creation
@@ -60,7 +68,7 @@ serve(async (req) => {
       console.log('✅ [initialize-nft-collection] Successfully created keypair. Public key:', keypair.publicKey.toString());
     } catch (keypairError) {
       console.error('❌ [initialize-nft-collection] Failed to create keypair:', keypairError);
-      throw new Error('Invalid keypair. Please check the private key format');
+      throw new Error(`Invalid keypair: ${keypairError.message}. Please check the private key format.`);
     }
 
     // Test connection and balance
