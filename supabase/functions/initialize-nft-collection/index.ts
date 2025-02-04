@@ -14,9 +14,7 @@ import {
   checkConnection,
   checkBalance,
   validateInput,
-  generateSugarConfig,
-  initializeSugarEnvironment,
-  runSugarCommand
+  generateSugarConfig
 } from "./utils.ts"
 import { CreateCollectionInput } from "./types.ts"
 
@@ -67,50 +65,16 @@ serve(async (req) => {
     const config = generateSugarConfig(input, keypair);
     console.log('📝 [initialize-nft-collection] Generated Sugar config:', config);
 
-    // Create temporary directory for Sugar files
-    const configDir = await Deno.makeTempDir();
-    console.log('📁 [initialize-nft-collection] Created temp directory:', configDir);
-
-    // Initialize Sugar environment
-    await initializeSugarEnvironment(input, configDir);
-
-    // Run Sugar commands
-    const createResult = await runSugarCommand(['create-config'], configDir);
-    if (!createResult.success) {
-      throw new Error(`Failed to create Sugar config: ${createResult.output}`);
-    }
-
-    const uploadResult = await runSugarCommand(['upload'], configDir);
-    if (!uploadResult.success) {
-      throw new Error(`Failed to upload assets: ${uploadResult.output}`);
-    }
-
-    const deployResult = await runSugarCommand(['deploy'], configDir);
-    if (!deployResult.success) {
-      throw new Error(`Failed to deploy collection: ${deployResult.output}`);
-    }
-
-    // Parse collection mint address from deploy output
-    const mintAddressMatch = deployResult.output.match(/Collection mint ID: ([A-Za-z0-9]+)/);
-    const collectionMint = mintAddressMatch ? mintAddressMatch[1] : null;
-
-    // Create response data
+    // For now, return just the configuration since Sugar CLI is not available
+    // TODO: Implement alternative approach for NFT collection creation
     const responseData = {
       success: true,
       config,
-      cache: null, // Sugar will generate this
-      collectionMint
+      message: "Sugar configuration generated. Manual deployment required.",
+      publicKey: keypair.publicKey.toString()
     };
 
-    console.log('✅ [initialize-nft-collection] Operation successful:', responseData);
-
-    // Cleanup temp directory
-    try {
-      await Deno.remove(configDir, { recursive: true });
-      console.log('🧹 [initialize-nft-collection] Cleaned up temp directory');
-    } catch (cleanupError) {
-      console.error('⚠️ [initialize-nft-collection] Failed to cleanup temp directory:', cleanupError);
-    }
+    console.log('✅ [initialize-nft-collection] Operation completed:', responseData);
 
     return new Response(
       customJSONStringify(responseData),

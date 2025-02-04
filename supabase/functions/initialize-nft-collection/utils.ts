@@ -1,8 +1,6 @@
 
 import { Connection, Keypair, PublicKey } from "https://esm.sh/@solana/web3.js@1.87.6";
 import { CreateCollectionInput } from "./types.ts";
-import { join } from "https://deno.land/std/path/mod.ts";
-import { ensureDir } from "https://deno.land/std/fs/mod.ts";
 
 export const customJSONStringify = (obj: any): string => {
   return JSON.stringify(obj, (_, value) =>
@@ -79,12 +77,10 @@ export const validateInput = (input: CreateCollectionInput): void => {
     throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
   }
 
-  // Validate totalSupply is a positive number
   if (typeof input.totalSupply !== 'number' || input.totalSupply <= 0) {
     throw new Error('totalSupply must be a positive number');
   }
 
-  // Validate price is a non-negative number
   if (input.price && (typeof input.price !== 'number' || input.price < 0)) {
     throw new Error('price must be a non-negative number');
   }
@@ -125,87 +121,4 @@ export const generateSugarConfig = (
       family: "NFT Tickets"
     }
   };
-};
-
-export const initializeSugarEnvironment = async (
-  input: CreateCollectionInput,
-  configDir: string
-): Promise<void> => {
-  console.log('🏗️ [initialize-nft-collection] Setting up Sugar environment');
-  
-  try {
-    await ensureDir(configDir);
-    
-    // Create assets directory
-    const assetsDir = join(configDir, 'assets');
-    await ensureDir(assetsDir);
-
-    // Create metadata files
-    for (let i = 0; i < input.totalSupply; i++) {
-      const metadata = {
-        name: `${input.name} #${i + 1}`,
-        symbol: input.symbol || "TCKT",
-        description: input.description || `Ticket #${i + 1} for ${input.name}`,
-        image: input.imageUrl || 'placeholder.png',
-        attributes: [
-          {
-            trait_type: "Event",
-            value: input.name
-          },
-          {
-            trait_type: "Ticket Number",
-            value: `${i + 1}`
-          }
-        ],
-        properties: {
-          files: [
-            {
-              uri: input.imageUrl || 'placeholder.png',
-              type: "image/png"
-            }
-          ]
-        }
-      };
-
-      await Deno.writeTextFile(
-        join(assetsDir, `${i}.json`),
-        JSON.stringify(metadata, null, 2)
-      );
-    }
-
-    console.log('✅ [initialize-nft-collection] Sugar environment setup complete');
-  } catch (error) {
-    console.error('❌ [initialize-nft-collection] Error setting up Sugar environment:', error);
-    throw error;
-  }
-};
-
-export const runSugarCommand = async (
-  command: string[],
-  configDir: string
-): Promise<{ success: boolean; output: string }> => {
-  console.log('🏃 [initialize-nft-collection] Running Sugar command:', command.join(' '));
-  
-  try {
-    const process = new Deno.Command('sugar', {
-      args: command,
-      cwd: configDir,
-      stdout: 'piped',
-      stderr: 'piped',
-    });
-
-    const { code, stdout, stderr } = await process.output();
-    const output = new TextDecoder().decode(code === 0 ? stdout : stderr);
-
-    if (code !== 0) {
-      console.error('❌ [initialize-nft-collection] Sugar command failed:', output);
-      return { success: false, output };
-    }
-
-    console.log('✅ [initialize-nft-collection] Sugar command completed successfully');
-    return { success: true, output };
-  } catch (error) {
-    console.error('❌ [initialize-nft-collection] Error running Sugar command:', error);
-    return { success: false, output: error.message };
-  }
 };
