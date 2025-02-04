@@ -49,6 +49,7 @@ export type Database = {
           candy_machine_address: string | null
           candy_machine_config: Json | null
           category: string | null
+          collection_mint: string | null
           created_at: string
           creator_id: string
           date: string
@@ -70,6 +71,8 @@ export type Database = {
           remaining_tickets: number
           royalties_percentage: number | null
           status: string | null
+          sugar_cache: Json | null
+          sugar_config: Json | null
           tags: string[] | null
           title: string
           total_tickets: number
@@ -84,6 +87,7 @@ export type Database = {
           candy_machine_address?: string | null
           candy_machine_config?: Json | null
           category?: string | null
+          collection_mint?: string | null
           created_at?: string
           creator_id: string
           date: string
@@ -105,6 +109,8 @@ export type Database = {
           remaining_tickets: number
           royalties_percentage?: number | null
           status?: string | null
+          sugar_cache?: Json | null
+          sugar_config?: Json | null
           tags?: string[] | null
           title: string
           total_tickets: number
@@ -119,6 +125,7 @@ export type Database = {
           candy_machine_address?: string | null
           candy_machine_config?: Json | null
           category?: string | null
+          collection_mint?: string | null
           created_at?: string
           creator_id?: string
           date?: string
@@ -140,6 +147,8 @@ export type Database = {
           remaining_tickets?: number
           royalties_percentage?: number | null
           status?: string | null
+          sugar_cache?: Json | null
+          sugar_config?: Json | null
           tags?: string[] | null
           title?: string
           total_tickets?: number

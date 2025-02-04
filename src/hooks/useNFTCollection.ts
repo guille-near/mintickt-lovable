@@ -18,7 +18,6 @@ export const useNFTCollection = () => {
     try {
       console.log("🎯 [useNFTCollection] Initializing NFT collection with data:", data);
       
-      // Format the data for the edge function
       const formattedData = {
         eventId: data.eventId,
         name: data.name,
@@ -27,7 +26,7 @@ export const useNFTCollection = () => {
         imageUrl: data.imageUrl || '',
         totalSupply: data.totalSupply,
         price: typeof data.price === 'number' ? data.price : 0,
-        sellerFeeBasisPoints: data.sellerFeeBasisPoints || 500 // 5% default
+        sellerFeeBasisPoints: data.sellerFeeBasisPoints || 500
       };
 
       console.log("📝 [useNFTCollection] Formatted data:", formattedData);
@@ -45,7 +44,24 @@ export const useNFTCollection = () => {
         return null;
       }
 
+      // Update event with Sugar configuration
+      const { error: updateError } = await supabase
+        .from('events')
+        .update({
+          sugar_config: nftData.config,
+          sugar_cache: nftData.cache,
+          collection_mint: nftData.collectionMint
+        })
+        .eq('id', data.eventId);
+
+      if (updateError) {
+        console.error('❌ [useNFTCollection] Error updating event with Sugar config:', updateError);
+        toast.error("Failed to save NFT collection configuration");
+        return null;
+      }
+
       console.log("✅ [useNFTCollection] NFT collection initialized:", nftData);
+      toast.success("NFT collection initialized successfully");
       return nftData;
     } catch (error) {
       console.error('❌ [useNFTCollection] Error:', error);
