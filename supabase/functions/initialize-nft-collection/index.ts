@@ -38,7 +38,15 @@ serve(async (req) => {
     const privateKeyString = Deno.env.get('CANDY_MACHINE_PRIVATE_KEY');
     if (!privateKeyString) {
       console.error('❌ [initialize-nft-collection] Missing CANDY_MACHINE_PRIVATE_KEY');
-      throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable');
+      return new Response(
+        JSON.stringify({ 
+          error: 'Missing CANDY_MACHINE_PRIVATE_KEY environment variable. Please set it in Supabase Edge Function secrets.' 
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     console.log('🔍 [initialize-nft-collection] Private key type:', typeof privateKeyString);
@@ -58,7 +66,16 @@ serve(async (req) => {
     } catch (parseError) {
       console.error('❌ [initialize-nft-collection] Parse error details:', parseError);
       console.error('❌ [initialize-nft-collection] Invalid private key format. Expected a JSON array of numbers.');
-      throw new Error(`Invalid private key format: ${parseError.message}. Please ensure it is a properly formatted JSON array of numbers.`);
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid private key format. Please ensure CANDY_MACHINE_PRIVATE_KEY is set to a JSON array of numbers in Supabase Edge Function secrets.',
+          details: parseError.message
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     // Test keypair creation
@@ -68,7 +85,16 @@ serve(async (req) => {
       console.log('✅ [initialize-nft-collection] Successfully created keypair. Public key:', keypair.publicKey.toString());
     } catch (keypairError) {
       console.error('❌ [initialize-nft-collection] Failed to create keypair:', keypairError);
-      throw new Error(`Invalid keypair: ${keypairError.message}. Please check the private key format.`);
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid keypair. Please check the CANDY_MACHINE_PRIVATE_KEY format.',
+          details: keypairError.message
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     // Test connection and balance
@@ -77,7 +103,16 @@ serve(async (req) => {
     console.log('💰 [initialize-nft-collection] Keypair balance:', balance / 1e9, 'SOL');
     
     if (balance < 1000000) { // Less than 0.001 SOL
-      throw new Error(`Insufficient balance (${balance / 1e9} SOL). Please fund the wallet with some devnet SOL`);
+      return new Response(
+        JSON.stringify({
+          error: `Insufficient balance (${balance / 1e9} SOL). Please fund the wallet with some devnet SOL`,
+          publicKey: keypair.publicKey.toString()
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
     // Parse and validate input
@@ -85,7 +120,10 @@ serve(async (req) => {
     console.log('📝 [initialize-nft-collection] Raw request body:', rawBody);
 
     if (!rawBody) {
-      throw new Error('Request body is empty');
+      return new Response(
+        JSON.stringify({ error: 'Request body is empty' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     let input: CreateCollectionInput;
@@ -163,7 +201,17 @@ serve(async (req) => {
 
     } catch (txError) {
       console.error('❌ [initialize-nft-collection] Transaction error:', txError);
-      throw new Error(`Transaction failed: ${txError.message}`);
+      return new Response(
+        JSON.stringify({
+          error: 'Transaction failed',
+          details: txError.message,
+          publicKey: keypair.publicKey.toString()
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
   } catch (error) {
