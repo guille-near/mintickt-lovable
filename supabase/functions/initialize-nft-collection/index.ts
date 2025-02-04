@@ -66,7 +66,7 @@ serve(async (req) => {
 
     // Calculate rent-exempt balance
     const rentExemptBalance = await connection.getMinimumBalanceForRentExemption(82);
-    console.log('💰 [initialize-nft-collection] Rent-exempt balance required:', rentExemptBalance / 1e9, 'SOL');
+    console.log('💰 [initialize-nft-collection] Rent-exempt balance required:', Number(rentExemptBalance) / 1_000_000_000, 'SOL');
 
     // Create transaction
     const createMintAccountTx = new Transaction().add(
