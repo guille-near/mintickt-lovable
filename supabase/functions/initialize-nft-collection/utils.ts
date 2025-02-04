@@ -49,12 +49,13 @@ export const checkConnection = async (connection: Connection): Promise<void> => 
 export const checkBalance = async (connection: Connection, publicKey: PublicKey): Promise<void> => {
   try {
     const balance = await connection.getBalance(publicKey);
-    console.log('💰 [initialize-nft-collection] Keypair balance (lamports):', balance.toString());
+    const balanceNumber = Number(balance);
+    console.log('💰 [initialize-nft-collection] Keypair balance (lamports):', balanceNumber);
     
-    const balanceSOL = Number(balance) / 1_000_000_000;
+    const balanceSOL = balanceNumber / 1_000_000_000;
     console.log('💰 [initialize-nft-collection] Keypair balance:', balanceSOL, 'SOL');
     
-    if (balance < 1_000_000n) { // Less than 0.001 SOL
+    if (balanceNumber < 1_000_000) { // Less than 0.001 SOL
       throw new Error(
         `Insufficient balance (${balanceSOL} SOL) to create NFT collections. ` +
         `Please fund the wallet with some devnet SOL.`
@@ -88,3 +89,4 @@ export const validateInput = (input: CreateCollectionInput): void => {
 
   console.log('✅ [initialize-nft-collection] Input validation passed');
 };
+
