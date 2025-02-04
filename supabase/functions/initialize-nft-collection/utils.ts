@@ -1,7 +1,7 @@
 
 import { Connection, Keypair, PublicKey } from "https://esm.sh/@solana/web3.js@1.87.6";
+import { CreateCollectionInput } from "./types.ts";
 
-// Custom JSON serializer to handle bigint
 export const customJSONStringify = (obj: any): string => {
   return JSON.stringify(obj, (_, value) =>
     typeof value === 'bigint'
@@ -51,14 +51,13 @@ export const checkBalance = async (connection: Connection, publicKey: PublicKey)
     const balance = await connection.getBalance(publicKey);
     console.log('💰 [initialize-nft-collection] Keypair balance (lamports):', balance.toString());
     
-    // Convert balance to SOL for display (1 SOL = 1e9 lamports)
     const balanceSOL = Number(balance) / 1_000_000_000;
     console.log('💰 [initialize-nft-collection] Keypair balance:', balanceSOL, 'SOL');
     
-    if (balance < BigInt(1_000_000)) { // Less than 0.001 SOL
+    if (balance < 1_000_000n) { // Less than 0.001 SOL
       throw new Error(
-        `The system wallet (${publicKey.toString()}) has insufficient balance (${balanceSOL} SOL) to create NFT collections. ` +
-        `Please fund it with some devnet SOL at https://solfaucet.com`
+        `Insufficient balance (${balanceSOL} SOL) to create NFT collections. ` +
+        `Please fund the wallet with some devnet SOL.`
       );
     }
   } catch (error) {
@@ -67,14 +66,13 @@ export const checkBalance = async (connection: Connection, publicKey: PublicKey)
   }
 };
 
-export const validateInput = (input: any): void => {
+export const validateInput = (input: CreateCollectionInput): void => {
   console.log('🔍 [initialize-nft-collection] Validating input:', input);
 
-  const requiredFields = ['name', 'symbol', 'totalSupply'];
+  const requiredFields = ['eventId', 'name', 'totalSupply'];
   const missingFields = requiredFields.filter(field => !input[field]);
   
   if (missingFields.length > 0) {
-    console.error('❌ [initialize-nft-collection] Missing required fields:', missingFields);
     throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
   }
 
@@ -90,4 +88,3 @@ export const validateInput = (input: any): void => {
 
   console.log('✅ [initialize-nft-collection] Input validation passed');
 };
-

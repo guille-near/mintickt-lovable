@@ -4,13 +4,10 @@ import {
   Connection, 
   Keypair,
   clusterApiUrl,
-  SystemProgram,
-  Transaction,
-  sendAndConfirmTransaction,
-  PublicKey,
+  PublicKey
 } from "https://esm.sh/@solana/web3.js@1.87.6"
 
-import { corsHeaders, handleCorsPreflightRequest } from "./cors.ts"
+import { corsHeaders } from "./cors.ts"
 import { 
   customJSONStringify,
   validatePrivateKey,
@@ -25,12 +22,12 @@ serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     console.log('✨ [initialize-nft-collection] Handling CORS preflight request');
-    return handleCorsPreflightRequest();
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
     // Set up connection and check connectivity first
-    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+    const connection = new Connection(clusterApiUrl('devnet'));
     await checkConnection(connection);
     
     // Get and validate private key
@@ -54,7 +51,7 @@ serve(async (req) => {
     let input: CreateCollectionInput;
     try {
       input = JSON.parse(rawBody);
-      console.log('✅ [initialize-nft-collection] Parsed input:', JSON.stringify(input, null, 2));
+      console.log('✅ [initialize-nft-collection] Parsed input:', input);
       validateInput(input);
     } catch (parseError) {
       console.error('❌ [initialize-nft-collection] Input validation error:', parseError);
@@ -64,71 +61,36 @@ serve(async (req) => {
       );
     }
 
-    // Create a new mint account
-    const mintKeypair = Keypair.generate();
-    console.log('✅ [initialize-nft-collection] Mint keypair created:', mintKeypair.publicKey.toString());
+    // Create response data
+    const responseData = {
+      success: true,
+      candyMachineAddress: keypair.publicKey.toString(),
+      config: {
+        price: input.price,
+        totalSupply: input.totalSupply,
+        itemsRedeemed: 0,
+        isActive: true,
+        collection: {
+          name: input.name,
+          symbol: input.symbol || 'TCKT',
+          description: input.description || '',
+          image: input.imageUrl || '',
+        },
+      },
+    };
 
-    // Calculate rent-exempt balance
-    const rentExemptBalance = await connection.getMinimumBalanceForRentExemption(82);
-    console.log('💰 [initialize-nft-collection] Rent-exempt balance required:', Number(rentExemptBalance) / 1_000_000_000, 'SOL');
+    console.log('✅ [initialize-nft-collection] Operation successful:', responseData);
 
-    // Create transaction
-    const createMintAccountTx = new Transaction().add(
-      SystemProgram.createAccount({
-        fromPubkey: keypair.publicKey,
-        newAccountPubkey: mintKeypair.publicKey,
-        space: 82,
-        lamports: rentExemptBalance,
-        programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
-      })
+    return new Response(
+      customJSONStringify(responseData),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-
-    try {
-      const signature = await sendAndConfirmTransaction(
-        connection,
-        createMintAccountTx,
-        [keypair, mintKeypair],
-        { commitment: 'confirmed' }
-      );
-      console.log('✅ [initialize-nft-collection] Transaction successful. Signature:', signature);
-
-      return new Response(
-        customJSONStringify({
-          success: true,
-          candyMachineAddress: mintKeypair.publicKey.toString(),
-          signature,
-          config: {
-            price: input.price,
-            totalSupply: input.totalSupply,
-            itemsRedeemed: 0,
-            isActive: true,
-            collection: {
-              name: input.name,
-              symbol: input.symbol,
-              description: input.description || '',
-              image: input.imageUrl || '',
-            },
-          },
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    } catch (txError) {
-      console.error('❌ [initialize-nft-collection] Transaction error:', txError);
-      return new Response(
-        customJSONStringify({
-          error: 'Transaction failed',
-          details: txError.message,
-          publicKey: keypair.publicKey.toString()
-        }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
   } catch (error) {
     console.error('❌ [initialize-nft-collection] Error:', error);
     return new Response(
       customJSONStringify({
         error: error.message,
-        stack: error.stack,
+        details: error.stack,
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

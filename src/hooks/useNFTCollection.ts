@@ -16,38 +16,31 @@ interface NFTCollectionData {
 export const useNFTCollection = () => {
   const initializeNFTCollection = async (data: NFTCollectionData) => {
     try {
-      // Validate price is a number
-      const validatedData = {
-        ...data,
-        price: typeof data.price === 'number' ? data.price : 0
+      console.log("🎯 [useNFTCollection] Initializing NFT collection with data:", data);
+      
+      // Format the data for the edge function
+      const formattedData = {
+        eventId: data.eventId,
+        name: data.name,
+        symbol: data.symbol || 'TCKT',
+        description: data.description || '',
+        imageUrl: data.imageUrl || '',
+        totalSupply: data.totalSupply,
+        price: typeof data.price === 'number' ? data.price : 0,
+        sellerFeeBasisPoints: data.sellerFeeBasisPoints || 500 // 5% default
       };
 
-      console.log("🎯 [useNFTCollection] Initializing NFT collection with data:", validatedData);
-      
+      console.log("📝 [useNFTCollection] Formatted data:", formattedData);
+
       const { data: nftData, error: nftError } = await supabase.functions.invoke(
         'initialize-nft-collection',
         {
-          body: JSON.stringify(validatedData),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          body: JSON.stringify(formattedData)
         }
       );
 
       if (nftError) {
         console.error('❌ [useNFTCollection] Error initializing NFT collection:', nftError);
-        
-        // Check for insufficient balance error
-        if (nftError.message.includes('Insufficient balance')) {
-          toast.error(
-            "The system wallet needs devnet SOL to create NFT collections. Please contact support.",
-            {
-              duration: 6000,
-            }
-          );
-          return null;
-        }
-
         toast.error("Failed to initialize NFT collection");
         return null;
       }
@@ -56,18 +49,6 @@ export const useNFTCollection = () => {
       return nftData;
     } catch (error) {
       console.error('❌ [useNFTCollection] Error:', error);
-      
-      // Handle known error cases
-      if (error instanceof Error && error.message.includes('Insufficient balance')) {
-        toast.error(
-          "The system wallet needs devnet SOL to create NFT collections. Please contact support.",
-          {
-            duration: 6000,
-          }
-        );
-        return null;
-      }
-
       toast.error("Failed to initialize NFT collection");
       return null;
     }

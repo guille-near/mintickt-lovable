@@ -3,11 +3,11 @@ export interface CreateCollectionInput {
   eventId: string;
   name: string;
   symbol: string;
-  description: string;
-  imageUrl: string;
+  description?: string;
+  imageUrl?: string;
   totalSupply: number;
   price: number;
-  sellerFeeBasisPoints: number;
+  sellerFeeBasisPoints?: number;
 }
 
 export interface CandyMachineConfig {
@@ -22,4 +22,3 @@ export interface CandyMachineConfig {
     image: string;
   };
 }
-
