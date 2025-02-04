@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,19 +17,26 @@ export const useProfile = (userId: string | undefined) => {
       }
 
       try {
-        const profile = await fetchProfile(userId);
-        return profile ? convertFromDbProfile(profile) : null;
-      } catch (error) {
-        if (error instanceof Error && error.message.includes('No rows returned')) {
-          const userData = await supabase.auth.getUser();
-          if (!userData.data.user) {
-            throw new Error('No authenticated user found');
-          }
-
-          const newProfile = await createProfile(userId, userData.data.user.email || '');
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+        
+        if (error) throw error;
+        
+        if (!profile) {
+          // If no profile exists, get user data and create one
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          if (userError) throw userError;
+          if (!user) throw new Error('No authenticated user found');
+          
+          const newProfile = await createProfile(userId, user.email || '');
           return convertFromDbProfile(newProfile);
         }
 
+        return convertFromDbProfile(profile);
+      } catch (error) {
         console.error('❌ Error fetching profile:', error);
         throw error;
       }
