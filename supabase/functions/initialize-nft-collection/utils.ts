@@ -36,14 +36,20 @@ export const createKeypairFromPrivateKey = (privateKeyUint8: Uint8Array): Keypai
 };
 
 export const checkBalance = async (connection: Connection, publicKey: PublicKey): Promise<void> => {
-  const balance = await connection.getBalance(publicKey);
-  console.log('💰 [initialize-nft-collection] Keypair balance:', balance / 1e9, 'SOL');
-  
-  if (balance < 1000000) { // Less than 0.001 SOL
-    throw new Error(
-      `The system wallet (${publicKey.toString()}) has insufficient balance (${balance / 1e9} SOL) to create NFT collections. ` +
-      `Please fund it with some devnet SOL at https://solfaucet.com`
-    );
+  try {
+    const balance = await connection.getBalance(publicKey);
+    const balanceSOL = Number(balance) / 1e9; // Convert lamports to SOL and ensure it's a number
+    console.log('💰 [initialize-nft-collection] Keypair balance:', balanceSOL, 'SOL');
+    
+    if (balance < BigInt(1000000)) { // Less than 0.001 SOL
+      throw new Error(
+        `The system wallet (${publicKey.toString()}) has insufficient balance (${balanceSOL} SOL) to create NFT collections. ` +
+        `Please fund it with some devnet SOL at https://solfaucet.com`
+      );
+    }
+  } catch (error) {
+    console.error('❌ [initialize-nft-collection] Error checking balance:', error);
+    throw error;
   }
 };
 
@@ -56,3 +62,4 @@ export const validateInput = (input: any): void => {
     throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
   }
 };
+
