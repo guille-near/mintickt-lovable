@@ -41,11 +41,13 @@ serve(async (req) => {
       throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable');
     }
 
+    console.log('🔑 [initialize-nft-collection] Got private key string:', privateKeyString.substring(0, 20) + '...');
+
     // Test private key parsing
     let privateKeyUint8: Uint8Array;
     try {
       privateKeyUint8 = new Uint8Array(JSON.parse(privateKeyString));
-      console.log('✅ [initialize-nft-collection] Successfully parsed private key');
+      console.log('✅ [initialize-nft-collection] Successfully parsed private key to Uint8Array of length:', privateKeyUint8.length);
     } catch (parseError) {
       console.error('❌ [initialize-nft-collection] Invalid private key format:', parseError);
       throw new Error('Invalid private key format. Please ensure it is a properly formatted JSON array');
@@ -55,14 +57,14 @@ serve(async (req) => {
     let keypair: Keypair;
     try {
       keypair = Keypair.fromSecretKey(privateKeyUint8);
-      console.log('✅ [initialize-nft-collection] Successfully created keypair:', keypair.publicKey.toString());
+      console.log('✅ [initialize-nft-collection] Successfully created keypair. Public key:', keypair.publicKey.toString());
     } catch (keypairError) {
       console.error('❌ [initialize-nft-collection] Failed to create keypair:', keypairError);
       throw new Error('Invalid keypair. Please check the private key format');
     }
 
     // Test connection and balance
-    const connection = new Connection(clusterApiUrl('devnet'));
+    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
     const balance = await connection.getBalance(keypair.publicKey);
     console.log('💰 [initialize-nft-collection] Keypair balance:', balance / 1e9, 'SOL');
     
@@ -106,7 +108,8 @@ serve(async (req) => {
     console.log('✅ [initialize-nft-collection] Mint keypair created:', mintKeypair.publicKey.toString());
 
     // Calculate the rent-exempt minimum balance
-    const rentExemptBalance = await connection.getMinimumBalanceForRentExemption(0);
+    const rentExemptBalance = await connection.getMinimumBalanceForRentExemption(82); // Size for mint account
+    console.log('💰 [initialize-nft-collection] Rent-exempt balance required:', rentExemptBalance / 1e9, 'SOL');
 
     // Create transaction to create mint account
     const createMintAccountTx = new Transaction().add(
@@ -124,7 +127,8 @@ serve(async (req) => {
       const signature = await sendAndConfirmTransaction(
         connection,
         createMintAccountTx,
-        [keypair, mintKeypair]
+        [keypair, mintKeypair],
+        { commitment: 'confirmed' }
       );
       console.log('✅ [initialize-nft-collection] Transaction successful. Signature:', signature);
 
