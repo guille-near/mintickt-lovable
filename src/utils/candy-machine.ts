@@ -1,3 +1,4 @@
+
 import { Metaplex, walletAdapterIdentity, CreateCandyMachineInput } from "@metaplex-foundation/js";
 import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
 import { toast } from "sonner";
@@ -105,7 +106,7 @@ export const mintTicketNFT = async (
     const connection = new Connection(clusterApiUrl("devnet"));
     const metaplex = new Metaplex(connection).use(walletAdapterIdentity(wallet));
 
-    // Convertir la dirección string a PublicKey
+    // Convert string address to PublicKey
     const candyMachinePublicKey = new PublicKey(candyMachineAddress);
 
     const candyMachine = await metaplex.candyMachines().findByAddress({
