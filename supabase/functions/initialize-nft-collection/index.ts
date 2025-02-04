@@ -34,16 +34,50 @@ serve(async (req) => {
   }
 
   try {
-    // Log the raw request
+    // Get private key from environment and validate it
+    const privateKeyString = Deno.env.get('CANDY_MACHINE_PRIVATE_KEY');
+    if (!privateKeyString) {
+      console.error('❌ [initialize-nft-collection] Missing CANDY_MACHINE_PRIVATE_KEY');
+      throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable');
+    }
+
+    // Test private key parsing
+    let privateKeyUint8: Uint8Array;
+    try {
+      privateKeyUint8 = new Uint8Array(JSON.parse(privateKeyString));
+      console.log('✅ [initialize-nft-collection] Successfully parsed private key');
+    } catch (parseError) {
+      console.error('❌ [initialize-nft-collection] Invalid private key format:', parseError);
+      throw new Error('Invalid private key format. Please ensure it is a properly formatted JSON array');
+    }
+
+    // Test keypair creation
+    let keypair: Keypair;
+    try {
+      keypair = Keypair.fromSecretKey(privateKeyUint8);
+      console.log('✅ [initialize-nft-collection] Successfully created keypair:', keypair.publicKey.toString());
+    } catch (keypairError) {
+      console.error('❌ [initialize-nft-collection] Failed to create keypair:', keypairError);
+      throw new Error('Invalid keypair. Please check the private key format');
+    }
+
+    // Test connection and balance
+    const connection = new Connection(clusterApiUrl('devnet'));
+    const balance = await connection.getBalance(keypair.publicKey);
+    console.log('💰 [initialize-nft-collection] Keypair balance:', balance / 1e9, 'SOL');
+    
+    if (balance < 1000000) { // Less than 0.001 SOL
+      throw new Error(`Insufficient balance (${balance / 1e9} SOL). Please fund the wallet with some devnet SOL`);
+    }
+
+    // Parse and validate input
     const rawBody = await req.text();
     console.log('📝 [initialize-nft-collection] Raw request body:', rawBody);
 
-    // Validate raw body
     if (!rawBody) {
       throw new Error('Request body is empty');
     }
 
-    // Parse and validate input
     let input: CreateCollectionInput;
     try {
       input = JSON.parse(rawBody);
@@ -67,87 +101,57 @@ serve(async (req) => {
       );
     }
 
-    // Initialize Solana connection
-    console.log('🔗 [initialize-nft-collection] Connecting to Solana devnet');
-    const connection = new Connection(clusterApiUrl('devnet'));
+    // Create a new mint account
+    const mintKeypair = Keypair.generate();
+    console.log('✅ [initialize-nft-collection] Mint keypair created:', mintKeypair.publicKey.toString());
 
-    // Get private key from environment
-    const privateKeyString = Deno.env.get('CANDY_MACHINE_PRIVATE_KEY');
-    if (!privateKeyString) {
-      console.error('❌ [initialize-nft-collection] Missing CANDY_MACHINE_PRIVATE_KEY');
-      throw new Error('Missing CANDY_MACHINE_PRIVATE_KEY environment variable');
-    }
+    // Calculate the rent-exempt minimum balance
+    const rentExemptBalance = await connection.getMinimumBalanceForRentExemption(0);
 
-    // Create keypair from private key
+    // Create transaction to create mint account
+    const createMintAccountTx = new Transaction().add(
+      SystemProgram.createAccount({
+        fromPubkey: keypair.publicKey,
+        newAccountPubkey: mintKeypair.publicKey,
+        space: 82,
+        lamports: rentExemptBalance,
+        programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
+      })
+    );
+
     try {
-      const privateKeyUint8 = new Uint8Array(JSON.parse(privateKeyString));
-      const keypair = Keypair.fromSecretKey(privateKeyUint8);
-      console.log('✅ [initialize-nft-collection] Keypair created:', keypair.publicKey.toString());
+      // Send and confirm transaction
+      const signature = await sendAndConfirmTransaction(
+        connection,
+        createMintAccountTx,
+        [keypair, mintKeypair]
+      );
+      console.log('✅ [initialize-nft-collection] Transaction successful. Signature:', signature);
 
-      // Check keypair balance
-      const balance = await connection.getBalance(keypair.publicKey);
-      console.log('💰 [initialize-nft-collection] Keypair balance:', balance / 1e9, 'SOL');
-      
-      if (balance < 1000000) { // Less than 0.001 SOL
-        throw new Error('Insufficient balance in keypair wallet');
-      }
-
-      // Create a new mint account
-      const mintKeypair = Keypair.generate();
-      console.log('✅ [initialize-nft-collection] Mint keypair created:', mintKeypair.publicKey.toString());
-
-      // Calculate the rent-exempt minimum balance
-      const rentExemptBalance = await connection.getMinimumBalanceForRentExemption(0);
-
-      // Create transaction to create mint account
-      const createMintAccountTx = new Transaction().add(
-        SystemProgram.createAccount({
-          fromPubkey: keypair.publicKey,
-          newAccountPubkey: mintKeypair.publicKey,
-          space: 82,
-          lamports: rentExemptBalance,
-          programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'),
-        })
+      return new Response(
+        JSON.stringify({
+          success: true,
+          candyMachineAddress: mintKeypair.publicKey.toString(),
+          signature,
+          config: {
+            price: input.price,
+            totalSupply: input.totalSupply,
+            itemsRedeemed: 0,
+            isActive: true,
+            collection: {
+              name: input.name,
+              symbol: input.symbol,
+              description: input.description || '',
+              image: input.imageUrl || '',
+            },
+          },
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
 
-      try {
-        // Send and confirm transaction
-        const signature = await sendAndConfirmTransaction(
-          connection,
-          createMintAccountTx,
-          [keypair, mintKeypair]
-        );
-        console.log('✅ [initialize-nft-collection] Transaction successful. Signature:', signature);
-
-        return new Response(
-          JSON.stringify({
-            success: true,
-            candyMachineAddress: mintKeypair.publicKey.toString(),
-            signature,
-            config: {
-              price: input.price,
-              totalSupply: input.totalSupply,
-              itemsRedeemed: 0,
-              isActive: true,
-              collection: {
-                name: input.name,
-                symbol: input.symbol,
-                description: input.description || '',
-                image: input.imageUrl || '',
-              },
-            },
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-
-      } catch (txError) {
-        console.error('❌ [initialize-nft-collection] Transaction error:', txError);
-        throw new Error(`Transaction failed: ${txError.message}`);
-      }
-
-    } catch (keypairError) {
-      console.error('❌ [initialize-nft-collection] Keypair error:', keypairError);
-      throw new Error(`Invalid private key or keypair error: ${keypairError.message}`);
+    } catch (txError) {
+      console.error('❌ [initialize-nft-collection] Transaction error:', txError);
+      throw new Error(`Transaction failed: ${txError.message}`);
     }
 
   } catch (error) {
