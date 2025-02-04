@@ -24,7 +24,7 @@ export default defineConfig({
       assert: 'assert',
       crypto: 'crypto-browserify',
       util: 'util',
-      buffer: 'buffer',  // Use the buffer package directly
+      buffer: 'buffer',
     },
   },
   define: {
@@ -39,11 +39,17 @@ export default defineConfig({
       plugins: [
         NodeGlobalsPolyfillPlugin({
           process: true,
-          buffer: true  // Enable buffer polyfill
+          buffer: true
         }),
         NodeModulesPolyfillPlugin(),
       ],
     },
+    include: [
+      '@solana/web3.js',
+      '@solana/spl-token',
+      '@metaplex-foundation/js',
+      'buffer',
+    ],
   },
   build: {
     target: 'esnext',
@@ -52,6 +58,7 @@ export default defineConfig({
         // @ts-ignore - known issue with rollup-plugin-node-polyfills
         rollupNodePolyFill(),
       ],
+      external: ['fsevents'],
     },
     commonjsOptions: {
       transformMixedEsModules: true,
