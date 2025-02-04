@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthProvider";
 import { Card } from "@/components/ui/card";
@@ -33,6 +34,12 @@ export default function Auth() {
               input: {
                 borderRadius: '6px',
                 height: '40px',
+                color: 'var(--foreground)',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--border)',
+              },
+              label: {
+                color: 'var(--foreground)',
               },
             },
           }}
