@@ -64,9 +64,9 @@ serve(async (req) => {
     const mintKeypair = Keypair.generate();
     console.log('✅ [initialize-nft-collection] Mint keypair created:', mintKeypair.publicKey.toString());
 
-    // Calculate rent-exempt balance and ensure it's handled as a bigint
-    const rentExemptBalance = BigInt(await connection.getMinimumBalanceForRentExemption(82));
-    console.log('💰 [initialize-nft-collection] Rent-exempt balance required:', Number(rentExemptBalance) / 1e9, 'SOL');
+    // Calculate rent-exempt balance
+    const rentExemptBalance = await connection.getMinimumBalanceForRentExemption(82);
+    console.log('💰 [initialize-nft-collection] Rent-exempt balance required:', rentExemptBalance / 1e9, 'SOL');
 
     // Create transaction
     const createMintAccountTx = new Transaction().add(
