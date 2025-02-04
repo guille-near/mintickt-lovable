@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthProvider";
 import { Card } from "@/components/ui/card";
@@ -39,6 +38,12 @@ export default function Auth() {
                 border: '1px solid var(--border)',
               },
               label: {
+                color: 'var(--foreground)',
+              },
+              anchor: {
+                color: 'var(--foreground)',
+              },
+              message: {
                 color: 'var(--foreground)',
               },
             },
