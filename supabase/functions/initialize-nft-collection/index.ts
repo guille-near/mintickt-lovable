@@ -15,6 +15,7 @@ import {
   customJSONStringify,
   validatePrivateKey,
   createKeypairFromPrivateKey,
+  checkConnection,
   checkBalance,
   validateInput
 } from "./utils.ts"
@@ -28,12 +29,15 @@ serve(async (req) => {
   }
 
   try {
+    // Set up connection and check connectivity first
+    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+    await checkConnection(connection);
+    
     // Get and validate private key
     const privateKeyUint8 = validatePrivateKey(Deno.env.get('CANDY_MACHINE_PRIVATE_KEY'));
     const keypair = createKeypairFromPrivateKey(privateKeyUint8);
     
-    // Set up connection and check balance
-    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+    // Check balance after confirming connection
     await checkBalance(connection, keypair.publicKey);
     
     // Parse and validate request body

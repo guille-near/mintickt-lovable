@@ -35,6 +35,17 @@ export const createKeypairFromPrivateKey = (privateKeyUint8: Uint8Array): Keypai
   }
 };
 
+export const checkConnection = async (connection: Connection): Promise<void> => {
+  try {
+    console.log('🔄 [initialize-nft-collection] Checking Solana connection...');
+    const version = await connection.getVersion();
+    console.log('✅ [initialize-nft-collection] Connected to Solana:', version);
+  } catch (error) {
+    console.error('❌ [initialize-nft-collection] Connection error:', error);
+    throw new Error('Failed to connect to Solana network');
+  }
+};
+
 export const checkBalance = async (connection: Connection, publicKey: PublicKey): Promise<void> => {
   try {
     const balance = await connection.getBalance(publicKey);
