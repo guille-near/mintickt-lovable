@@ -1,6 +1,7 @@
-// We'll use a more controlled way to initialize Buffer
-if (typeof window !== 'undefined' && !window.Buffer) {
-  const { Buffer } = require('buffer/');
+import { Buffer } from 'buffer';
+
+// Make Buffer available globally
+if (typeof window !== 'undefined') {
   window.Buffer = Buffer;
 }
 
