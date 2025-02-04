@@ -26,37 +26,31 @@ interface CreateCollectionInput {
 }
 
 serve(async (req) => {
+  // Log the start of the function
   console.log('🚀 [initialize-nft-collection] Function started');
   console.log('📝 [initialize-nft-collection] Request method:', req.method);
   
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     console.log('✨ [initialize-nft-collection] Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Get and log the raw request body
+    // Log the raw request
     const rawBody = await req.text();
     console.log('📝 [initialize-nft-collection] Raw request body:', rawBody);
     
+    // Early validation of raw body
     if (!rawBody) {
       throw new Error('Request body is empty');
     }
 
-    // Safely parse JSON and validate
+    // Try to parse the JSON and log the result
     let input: CreateCollectionInput;
     try {
-      // Trim any whitespace and ensure we have valid JSON
-      const cleanBody = rawBody.trim();
-      input = JSON.parse(cleanBody);
-      
-      // Log the parsed input for debugging
-      console.log('✅ [initialize-nft-collection] Parsed input:', {
-        name: input.name,
-        symbol: input.symbol,
-        totalSupply: input.totalSupply,
-        price: input.price
-      });
+      input = JSON.parse(rawBody);
+      console.log('✅ [initialize-nft-collection] Parsed input:', JSON.stringify(input, null, 2));
     } catch (parseError) {
       console.error('❌ [initialize-nft-collection] JSON parse error:', parseError);
       return new Response(
@@ -73,7 +67,7 @@ serve(async (req) => {
     }
 
     // Validate required fields
-    const requiredFields = ['name', 'symbol', 'totalSupply'] as const;
+    const requiredFields = ['name', 'symbol', 'totalSupply'];
     const missingFields = requiredFields.filter(field => !input[field]);
     
     if (missingFields.length > 0) {
@@ -137,7 +131,7 @@ serve(async (req) => {
       );
       console.log('✅ [initialize-nft-collection] Mint account created. Signature:', signature);
 
-      // Prepare response
+      // Prepare response with necessary information for frontend
       const response = {
         success: true,
         candyMachineAddress: mintKeypair.publicKey.toString(),

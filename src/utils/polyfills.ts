@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 
-// Make Buffer available globally
-if (typeof window !== 'undefined') {
+// Only set Buffer if it's not already defined in the global scope
+if (typeof window !== 'undefined' && !window.Buffer) {
   window.Buffer = Buffer;
 }
 
